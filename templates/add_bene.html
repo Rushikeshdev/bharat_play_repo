@@ -1,0 +1,131 @@
+{% load static %}
+
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+    
+    <!----===== Iconscout CSS ===== -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+
+    <title>Add Bene</title>
+  </head>
+  <body>
+    <nav>
+      <div class="logo-name">
+        <div class="logo-image">
+          <img src="{% static 'images/logo.png' %}" alt="" />
+        </div>
+      </div>
+
+      <div class="menu-items">
+        <ul class="nav-links">
+          <li>
+            <a href="{% url 'dashboard-client-form' %}" class="active">
+              <i class="uil uil-chart-pie"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add-bene-template'  %}">
+              <i class="uil uil-user-plus"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Add Beneficiary</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'withdrawal-requests-template'  %}">
+              <i class="uil uil-money-withdraw"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Withdrawal Request</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Add Benediciary Section -->
+    <section id="add_beneficiary" class="dashboard">
+      <div class="top">
+        <i class="uil sidebar-toggle"></i>
+
+        <div class="search-box">
+            <a href="{% url 'logout' %}"><span class="link-name"
+                >Logout
+                <span style="font-weight: 600; font-size: 16px">↪️</span></span
+              ></a>
+        </div>
+
+        <!--<img src="images/profile.jpg" alt="">-->
+      </div>
+
+      <div class="dash-content">
+        <div class="overview">
+          <div class="title">
+            <i class="uil uil-money-withdraw"></i>
+            <span class="text">Add Beneficiary</span>
+          </div>
+        </div>
+
+        <div class="activity">
+          <div class="activity-data">
+            <div class="activity">
+              <div class="activity-data">
+                <form action="" class="withdraw_form" id="bene_form_id">
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Name*"
+                    required
+                  /><br />
+                  <input
+                    type="text"
+                    id="wnumber"
+                    name="accountnumber"
+                    placeholder="Account Number*"
+                    required
+                  /><br />
+                  <input
+                    type="text"
+                    id="wname"
+                    name="bankname"
+                    placeholder="bank name*"
+                    required
+                  /><br />
+                  <input
+                    type="text"
+                    id="wbranch"
+                    name="bankifsc"
+                    placeholder="IFSC Code*"
+                    required
+                  /><br />
+
+                  <div class="submit_div">
+                    <input class="submit_btn" type="submit" value="ADD" />
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Add Benediciary Section -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {% include 'js/add_bene_js.html' %}
+   
+
+    
+  </body>
+</html>

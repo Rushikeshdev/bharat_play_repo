@@ -1,0 +1,39 @@
+{% csrf_token %}
+<script>
+$(document).ready(function() {
+
+    $("#withdrawal-requests_form_id").submit(function(event) {
+                var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                event.preventDefault();
+                console.log("hello");
+                var formData = $(this).serialize();
+                console.log(formData);
+                $.ajax({
+                    type: "POST",
+                    url: "/withdrawal-requests/",
+                    data: formData,
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    success: function(response) {
+                        // If login is successful, display success message
+                        console.log(typeof response);
+
+                       
+                    },
+                    error: function(xhr, status, error) {
+                        // If login fails, display error message
+                        console.log("fail");
+                        var errorMessage = xhr.responseJSON.error;
+                        $("#message").text(errorMessage).css("color", "red");
+                    }
+                });
+            });
+     
+
+
+
+
+
+});
+</script>

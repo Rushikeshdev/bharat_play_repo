@@ -1,0 +1,124 @@
+{% csrf_token %}
+<script>
+
+
+    
+$(document).ready(function() {
+
+    $("#createClientBtn").click(function(e) {
+        e.preventDefault()
+        var clientForm = $("#clientForm");
+        var clientList = $("#clientList");
+
+        // Hide the client list when creating a new client
+        clientList.hide();
+
+        // Toggle the visibility of the client form
+        clientForm.toggle();
+    });
+
+
+
+    // Move form submission event binding outside the click event handler
+    $("#clientForm").submit(function(event) {
+        console.log("BTN");
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        event.preventDefault(); // Prevent form submission
+        
+
+        var clientTableBody = document.querySelector("#clientTable tbody");
+        var username = this.querySelector("input[type='text']").value;
+        var password = this.querySelector("input[type='password']").value;
+
+        console.log(username);
+
+        var data = {
+
+            'username':username,
+            'password':password
+        }
+
+        var formData =$(this).serialize();
+        console.log(formData);
+
+        $.ajax({
+            type: "POST",
+            url: "/users/",
+            data: data,
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(response) {
+                // If login is successful, display success message
+                console.log("success");
+                $("#message").text(response.message).css("color", "green");
+                
+                // Hide form after successful submission
+                $("#clientForm").hide();
+                
+                // You might want to reload the client list here or update it with the new client data
+            },
+            error: function(xhr, status, error) {
+                // If login fails, display error message
+                console.log("fail");
+                var errorMessage = xhr.responseJSON.error;
+                $("#message").text(errorMessage).css("color", "red");
+            }
+        });
+    });
+
+
+    
+    
+    $("#viewClientListBtn").click(function() {
+        var clientForm = $("#clientForm");
+        var clientList = $("#clientList");
+
+        // Hide the form when showing the client list
+        clientForm.hide();
+
+        // Perform a GET request to fetch client data
+        $.ajax({
+            type: "GET",
+            url: "/users/", // Replace this with your actual endpoint URL
+            success: function(response) {
+                // Assuming response is an array of client objects with properties like username, password, etc.
+                // Clear any existing data in the client table body
+                console.log(typeof response);
+                $("#clientTable tbody").empty();
+                var sequence = 1;
+                // Iterate over each client object in the response and append it to the client table body
+                response.forEach(function(client) {
+                    var row = $("<tr>");
+                    row.append($("<td>").text(sequence++));
+                    row.append($("<td>").text(client.username));
+                    row.append($("<td>").text(client.password));
+                    // Add more columns as needed
+                    $("#clientTable tbody").append(row);
+                });
+
+                // Show the client list
+                clientList.show();
+            },
+            error: function(xhr, status, error) {
+                // Handle errors
+                console.log("Error:", error);
+            }
+        });
+    });
+
+   
+
+
+
+   
+    
+});
+
+
+ 
+        
+
+
+
+</script>
