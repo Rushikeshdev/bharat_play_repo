@@ -94,12 +94,12 @@ class WithdrawalRequestList(APIView, TemplateView):
     def get(self, request):
        
 
-        if request.user.is_client:
-
-            self.template_name = self.html_template_client
+        if request.user.is_admin:
+            self.template_name = self.html_template_admin
+            
         else:
 
-            self.template_name = self.html_template_admin
+            self.template_name = self.html_template_client
 
         withdrawal_requests = WithdrawalRequest.objects.all()
         serializer = WithdrawalRequestSerializer(withdrawal_requests, many=True)
