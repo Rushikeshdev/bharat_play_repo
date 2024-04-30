@@ -31,6 +31,7 @@ urlpatterns = [
 
 
     path('withdrawal-requests/', WithdrawalRequestList.as_view(), name='withdrawal-request-list'),
+    path('admin_client_wallet/', AdminClientWallet.as_view(), name='admin-client-wallet'),
     path('withdrawal-requests/<int:pk>/', WithdrawalRequestDetail.as_view(), name='withdrawal-request-detail'),
     path('withdrawal-requests/template/', TemplateView.as_view(template_name='client_dashboard.html'), name='withdrawal-requests-template'),
 

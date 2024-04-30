@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+    
+    <!----===== Iconscout CSS ===== -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+
+    <title>Add Bene</title>
+  </head>
+  <body>
+    <nav>
+      <div class="logo-name">
+        <div class="logo-image">
+          <img src="{% static 'images/logo.png' %}" alt="" />
+        </div>
+      </div>
+
+      <div class="menu-items">
+        <ul class="nav-links">
+          <li>
+            <a href="{% url 'dashboard-client-form' %}" class="active">
+              <i class="uil uil-chart-pie"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add-bene-template'  %}">
+              <i class="uil uil-user-plus"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Add Beneficiary</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'withdrawal-requests-template'  %}">
+              <i class="uil uil-money-withdraw"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Withdrawal Request</span>
+            </a>
+          </li>
+          <li>
+            <a href="">
+              <i class="uil uil-wallet"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Client wallet</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    </body>
+    </html>

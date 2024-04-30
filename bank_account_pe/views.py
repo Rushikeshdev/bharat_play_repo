@@ -1,8 +1,10 @@
+from typing import Any
+from django.http.response import HttpResponse as HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import *
-from django.http import Http404
+from django.http import Http404, HttpRequest
 from .serializers import *
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
@@ -80,7 +82,16 @@ class ClientDashboard(APIView, TemplateView):
         return self.render_to_response(context)
 
 
+class AdminClientWallet(APIView, TemplateView):
+    html_template = 'admin_client_wallet.html'
 
+    def get(self, request):
+        
+        pass
+ 
+    
+
+    
 class WithdrawalRequestList(APIView, TemplateView):
 
     html_template_client = 'client_main_dashboard.html'
@@ -91,14 +102,27 @@ class WithdrawalRequestList(APIView, TemplateView):
 
     
 
-    def get(self, request):
+    # def get(self, request):
        
 
-        if request.user.is_admin:
-            self.template_name = self.html_template_admin
+    #     if request.user.is_admin:
+    #         self.template_name = self.html_template_admin
             
-        else:
+    #     else:
 
+    #         self.template_name = self.html_template_client
+    
+    def get(self, request):
+        # Check if the user is authenticated
+        if request.user.is_authenticated:
+            if request.user.is_admin:
+                self.template_name = self.html_template_admin
+            else:
+                self.template_name = self.html_template_client
+        else:
+            # Handle the case where the user is not authenticated
+            # You may want to redirect the user to a login page or show an error message
+            # For simplicity, I'll set the template for unauthenticated users to the client template
             self.template_name = self.html_template_client
 
         withdrawal_requests = WithdrawalRequest.objects.all()
