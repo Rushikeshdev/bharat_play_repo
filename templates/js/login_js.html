@@ -18,14 +18,14 @@ $(document).ready(function() {
                     success: function(response) {
                         // If login is successful, display success message
                         console.log("success",response);
-                        if (response.user == true){
+                        if (response.user == 'is_admin'){
 
                             window.location.href = "/admin_dashboard/template/"; 
                             $("#message").text(response.message).css("color", "green");
 
 
                         }
-                        else{
+                        if (response.user == 'is_client'){
 
                             window.location.href = "/dashboard_client/template/"; 
                         }

@@ -38,6 +38,7 @@ urlpatterns = [
     
 
 
-    # path('client_main_dashboard/template/', TemplateView.as_view(template_name='client_main_dashboard.html'), name='client-main-dashboard-template'),
+    path('client_wallet_list/template/', WalletListView.as_view(),name='client_wallet_list'),
+    path('account_statement/template/',AccountStatementView.as_view(),name='account_statement_list'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

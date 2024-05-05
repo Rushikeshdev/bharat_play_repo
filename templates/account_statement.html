@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - codingnepalweb.com -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+
+   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+    <!----===== Iconscout CSS ===== -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+
+    <title>Account Statement</title>
+    <style>
+      .top
+      {
+        display: flex !important;
+    justify-content: space-between !important;
+      }
+      .client_balance
+      {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo-name">
+        <div class="logo-image">
+          <img src="{% static 'images/logo.png' %}" alt="" />
+        </div>
+      </div>
+
+      <div class="menu-items">
+        <ul class="nav-links">
+          <li>
+            <a href="{% url 'dashboard-client-form' %}" class="active">
+              <i class="uil uil-chart-pie"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'add-bene-template'  %}">
+              <i class="uil uil-user-plus"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Add Beneficiary</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'withdrawal-requests-template'  %}">
+              <i class="uil uil-money-withdraw"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Withdrawal Request</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'account_statement_list' %}">
+              <i class="uil uil-wallet"></i>
+              <!-- Example icon class -->
+              <span class="link-name">Account Statement</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+     <!-- Dashboard Section -->
+     <section id="dashboard_section" class="dashboard" active>
+        <div class="top">
+          <div class="client_balance">
+          
+              <p style="margin-right:15px;">Balance :</p>
+              
+
+
+              
+                <p>{{balance}}</p>
+              
+               
+              
+          </div>
+          <div class="search-box">
+            <a href="{% url 'logout' %}"><span class="link-name">Logout
+                <span
+                  style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+          </div>
+  
+          <!--<img src="images/profile.jpg" alt="">-->
+        </div>
+  
+        <div class="dash-content">
+          <div class="overview">
+            <div class="title">
+              <i class="uil uil-tachometer-fast-alt"></i>
+              <span class="text">Client Wallet</span>
+            </div>
+          </div>
+  
+          <div class="activity">
+            <div class="activity-data">
+              <div class="container">
+                <table class="rwd-table">
+                  <tbody>
+                      <tr>
+                          <th>Serial No</th>
+                          <th>Date</th>
+                          <th>Deposit</th>
+                          <th>Withdraw</th>
+                        </tr>
+                        {% for acc_ste in account_statement %}
+                        <tr>
+                          <td data-th="Serial No">{{forloop.counter}}</td>
+                          <td data-th="Created Date">{{acc_ste.txn_date}}</td>
+                          <td data-th="Created Date">{{acc_ste.deposit}}</td>
+                          <td data-th="Created Date">{{acc_ste.withdraw}}</td>
+                        </tr>
+                        {% endfor %}
+                        
+                  </tbody>
+              
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- End Dashboard Section -->
+   
+    </body>
+    </html>

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
@@ -9,55 +10,108 @@
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
     <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
-    
+
+   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+
     <!----===== Iconscout CSS ===== -->
     <link
       rel="stylesheet"
-      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
-    />
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
 
-    <title>Add Bene</title>
+    <title>Admin Client Wallet List</title>
   </head>
   <body>
     <nav>
       <div class="logo-name">
         <div class="logo-image">
-          <img src="{% static 'images/logo.png' %}" alt="" />
+          <img src="{% static 'images/logo.png' %}" alt />
         </div>
       </div>
 
       <div class="menu-items">
         <ul class="nav-links">
           <li>
-            <a href="{% url 'dashboard-client-form' %}" class="active">
+            <a href="{% url 'admin_dashboard' %}">
               <i class="uil uil-chart-pie"></i>
-              <!-- Example icon class -->
               <span class="link-name">Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'add-bene-template'  %}">
+            <a href="{% url 'client-list-template' %}">
               <i class="uil uil-user-plus"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Add Beneficiary</span>
+              <span class="link-name">Client List</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'withdrawal-requests-template'  %}">
+            <a href="{% url 'withdrawal-request-list' %}">
               <i class="uil uil-money-withdraw"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Withdrawal Request</span>
+              <span class="link-name">Withdrawal Request List</span>
             </a>
           </li>
           <li>
-            <a href="">
+            <a href="{% url 'client_wallet_list' %}">
               <i class="uil uil-wallet"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Client wallet</span>
+              <span class="link-name">Client Wallet</span>
             </a>
           </li>
         </ul>
       </div>
     </nav>
-    </body>
-    </html>
+    <!-- Dashboard Section -->
+    <section id="dashboard_section" class="dashboard" active>
+      <div class="top">
+        <div class="search-box">
+          <a href="{% url 'logout' %}"><span class="link-name">Logout
+              <span
+                style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+        </div>
+
+        <!--<img src="images/profile.jpg" alt="">-->
+      </div>
+
+      <div class="dash-content">
+        <div class="overview">
+          <div class="title">
+            <i class="uil uil-tachometer-fast-alt"></i>
+            <span class="text">Client Wallet List</span>
+          </div>
+        </div>
+
+        <div class="activity">
+          <div class="activity-data">
+            <div class="container">
+              <table class="rwd-table">
+                
+                
+                <tbody>
+                 
+                    <tr>
+                        <th>Serial No</th>
+                        <th>Client Id</th>
+                        <th>Created Date</th>
+                        <th>Amount</th>
+                      </tr>
+                      {% for wallet in wallet %}
+                      
+                      <tr>
+                        <td data-th="Serial No">{{forloop.counter}}</td>
+                        <td id="client_for_wallet" data-th="client_id">{{wallet.client}}</td>
+                        <td data-th="Created Date">{{wallet.created_at}}</td>
+                        <td id="{{ wallet.id }}" data-th="Amount">{{wallet.ammount}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
+                      </tr>
+                      {% endfor %}
+                </tbody>
+                
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- End Dashboard Section -->
+
+    {% include 'js/admin_wallet_js.html' %}
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,141 @@
+{% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        var tdId;
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        $(".client1, .client2, .client3, .client4").on("click", function() {
+            
+            tdId = $(this).parent().attr("id");
+            console.log("ID of clicked td:", tdId);
+
+
+
+            var popup = $(".popup");
+            var inputPopup = $(".input-popup");
+
+            if (popup.length) {
+                popup.remove();
+                return;
+            }
+
+            if (inputPopup.length) {
+                inputPopup.remove();
+                return;
+            }
+
+            popup = $("<div>").addClass("popup");
+
+            var withdrawOption = $("<input>").attr({
+                type: "radio",
+                name: "reasonOption",
+                value: "withdraw",
+                id: "withdrawOption"
+            });
+
+            var depositOption = $("<input>").attr({
+                type: "radio",
+                name: "reasonOption",
+                value: "deposit",
+                id: "depositOption"
+            });
+
+            var withdrawLabel = $("<label>").attr("for", "withdrawOption").text("Withdraw");
+            var depositLabel = $("<label>").attr("for", "depositOption").text("Deposit");
+
+            popup.append(withdrawOption, withdrawLabel, "<br>", depositOption, depositLabel);
+            $("body").append(popup);
+
+            var cellRect = this.getBoundingClientRect();
+            popup.css({
+                position: "absolute",
+                top: (cellRect.bottom + window.scrollY) + "px",
+                left: (cellRect.left + window.scrollX) + "px"
+            });
+
+            withdrawOption.on("change", function() {
+                generateInputBoxPopup("withdraw");
+            });
+
+            depositOption.on("change", function() {
+                generateInputBoxPopup("deposit");
+            });
+        });
+
+        function generateInputBoxPopup(reason) {
+            $(".input-popup").remove();
+
+            var inputPopup = $("<div>").addClass("input-popup");
+            var inputBox = $("<input>").attr({
+                type: "text",
+                placeholder: "Amount"
+            }).css({
+                color: "black",
+                padding: "10px",
+                border: "none",
+                backgroundColor: "#f2f2f2",
+                marginRight: "5px",
+                width: "140px"
+            });
+
+            var submitButton = $("<button>").text("Submit").css({
+                backgroundColor: "#0e0e37",
+                color: "white",
+                padding: "10px",
+                border: "none",
+                cursor: "pointer"
+            }).addClass("submit-button");
+
+            inputPopup.append(inputBox, submitButton);
+            $("body").append(inputPopup);
+
+            var popupRect = $(".popup").get(0).getBoundingClientRect();
+            inputPopup.css({
+                position: "absolute",
+                top: (popupRect.bottom + window.scrollY) + "px",
+                left: popupRect.left + "px"
+            });
+
+            submitButton.on("click", function() {
+                var cell1Value = $("#account_id").text();
+                var amount = inputBox.val();
+                var transactionType = reason;
+
+                // Get the id attribute of the clicked td element
+                $(".client1").on("click", function() {
+                    
+                });
+
+
+                // Perform AJAX request to Django view
+                $.ajax({
+                    url: '/withdrawal-requests/'+ tdId + '/', // Replace with your backend URL
+                    type: 'PUT',
+                    beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                    data: {
+                        account_id: tdId,
+                        amount: amount,
+                        transaction_type: transactionType
+                    },
+                    success: function(response) {
+                        window.location.reload();
+                        console.log("Transaction successful!");
+                        // Handle success response
+                    },
+                    error: function(xhr, errmsg, err) {
+                        console.log("Error occurred while processing transaction!");
+                        // Handle error response
+                    }
+                });
+
+                $(this).css({
+                    backgroundColor: "#0e0e37",
+                    fontWeight: "800"
+                });
+            });
+        }
+    });
+</script>

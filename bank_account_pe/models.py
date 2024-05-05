@@ -1,3 +1,4 @@
+from http import client
 from django.db import models
 from datetime import datetime
 from django.utils import timezone
@@ -36,7 +37,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser,PermissionsMixin):
+class User(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -82,10 +83,14 @@ class User(AbstractBaseUser,PermissionsMixin):
         return f'{self.email}'
 
 
+        
 
 
-class WithdrawalRequest(models.Model):
 
+
+class Account(models.Model):
+
+    client = models.OneToOneField(User, on_delete=models.CASCADE,related_name='client')
     ammount = models.IntegerField()
     account_name = models.CharField(max_length=255,blank=True,null=True)
     account_number = models.BigIntegerField()
@@ -111,5 +116,23 @@ class BeneficiaryDetails(models.Model):
 
     def __str__(self):
         return f"{self.bene_account_name},{self.bene_account_number}"
+
+
+
+class AccountStatement(models.Model):
+
+    account = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='account')
+    deposit = models.IntegerField()
+    withdraw = models.IntegerField()
+    trn_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.account},{self.trn_date}"
+
+
+
+
+
+
 
         
