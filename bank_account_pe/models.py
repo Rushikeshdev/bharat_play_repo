@@ -99,6 +99,7 @@ class Account(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     req_status = models.CharField(max_length=255,default='pending')
     reasons = models.CharField(max_length=255,default='')
+    
 
 
     def __str__(self):

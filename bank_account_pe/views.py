@@ -81,10 +81,38 @@ class ClientDashboard(APIView, TemplateView):
        
         withdrawal_requests = Account.objects.all()
         serializer = AccountSerializer(withdrawal_requests, many=True)
+        
         if len(withdrawal_requests) >0:
             balance=withdrawal_requests[0].ammount
-        balance = 0
-        context = {'withdrawal_requests': serializer.data,'balance':balance}
+        else:
+            balance = 0
+
+        account_statements = AccountStatement.objects.select_related('account').all()
+
+        acc_ste_list=[]
+        account_access = []
+        for acc in account_statements:
+            acc_ste={}
+
+            if acc.withdraw != 0:
+
+                acc_ste['txn'] = 'withdraw'
+            elif acc.deposit !=0:
+                acc_ste['txn'] = 'deposit'
+
+            acc_ste_list.append(acc_ste)
+        
+        print()
+
+        zip_acc_ste=zip(serializer.data,acc_ste_list)
+
+        for zip_obj in zip_acc_ste:
+
+            account_access.append(zip_obj)
+
+        print(account_access)
+
+        context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list}
         return self.render_to_response(context)
 
 
