@@ -90,7 +90,7 @@ class User(AbstractBaseUser):
 
 class Account(models.Model):
 
-    client = models.OneToOneField(User, on_delete=models.CASCADE,related_name='client')
+    client = models.ForeignKey(User, on_delete=models.CASCADE,related_name='client')
     ammount = models.IntegerField()
     account_name = models.CharField(max_length=255,blank=True,null=True)
     account_number = models.BigIntegerField()

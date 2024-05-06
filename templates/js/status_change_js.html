@@ -1,0 +1,56 @@
+{% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Add event listener to all dropdowns with class "status-dropdown"
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var requestId 
+        $('.status-dropdown').change(function() {
+            requestId = $(this).data('request-id');
+            var selectedOption = $(this).val();
+            var parentTd = $(this).parent();
+            var extraFieldsDiv = parentTd.find('.extra-fields');
+
+            // Show extra fields if "approved" option is selected, hide otherwise
+            if (selectedOption === 'approved') {
+                extraFieldsDiv.show();
+            } else {
+                extraFieldsDiv.show();
+            }
+        });
+
+        // Add event listener to submit button
+        $('.submit-button').click(function() {
+            var parentTd = $(this).parent();
+            var textboxValue = parentTd.find('.extra-textbox').val();
+            $('#reason_status').text(textboxValue);
+            console.log('Submitted value:', textboxValue);
+            
+            
+            $.ajax({
+                url: '/withdrawal-requests/'+ requestId + '/',
+                type: 'PUT',
+                beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'id': requestId,
+                    'reasons':textboxValue,
+                    'transaction_type':'NA'
+                }),
+                success: function (data) {
+                    // Update the status cell text with the new status
+                    console.log("Resoans Submitted");
+                    window.location.reload();
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+
+
+            // You can perform further processing here, such as AJAX request to submit the value
+        });
+    });
+</script>

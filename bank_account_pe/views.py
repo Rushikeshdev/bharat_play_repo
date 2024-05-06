@@ -81,17 +81,14 @@ class ClientDashboard(APIView, TemplateView):
        
         withdrawal_requests = Account.objects.all()
         serializer = AccountSerializer(withdrawal_requests, many=True)
-        balance=withdrawal_requests[0].ammount
+        if len(withdrawal_requests) >0:
+            balance=withdrawal_requests[0].ammount
+        balance = 0
         context = {'withdrawal_requests': serializer.data,'balance':balance}
         return self.render_to_response(context)
 
 
-class AdminClientWallet(APIView, TemplateView):
-    html_template = 'admin_client_wallet.html'
 
-    def get(self, request):
-        
-        pass
  
     
 
@@ -112,11 +109,11 @@ class WithdrawalRequestList(APIView, TemplateView):
         # Check if the user is authenticated
         
         if request.user.is_authenticated:
-           
+            print('REQUEST',request.user)
             if request.user.is_admin:
-                
+                print('is_admin...')
                 self.template_name = self.html_template_admin
-            else:
+            elif request.user.is_client:
                 self.template_name = self.html_template_client
         else:
             print("not auth...")
@@ -129,22 +126,39 @@ class WithdrawalRequestList(APIView, TemplateView):
 
     def post(self, request):
 
-        print("USER=",request.user)
+        print("USER=",request.user.id)
+
+        print("USER=",type(request.user.id))
 
         data = {
+
             'client':request.user.id,
             'ammount': int(request.data['amount']),
             'account_name': request.data['aname'],
             'account_number':int(request.data['anumber']),
             'branch_ifsc': request.data['abranch'],
-            'bank_name': request.data['bname']
+            'bank_name': request.data['bname'],
+            'req_status':'pending',
+            'reasons':'NA'
 
         }
+        
 
         serializer = AccountSerializer(data=data)
+       
         if serializer.is_valid():
             serializer.save()
+
+            account=Account.objects.filter(client__email=request.user)
+            
+
+            acc = account.last()
+           
+            account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
+            deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class WithdrawalRequestDetail(APIView):
@@ -161,30 +175,31 @@ class WithdrawalRequestDetail(APIView):
 
     def put(self, request, pk):
         transaction_request = self.get_object(pk)
-        
+        print(pk)
 
         total_amt = transaction_request.ammount
 
-        transaction_type = request.data['transaction_type']
+        if request.data['transaction_type']:
+            transaction_type = request.data['transaction_type']
 
-        if transaction_type.lower() == 'withdraw':
+            if transaction_type.lower() == 'withdraw':
 
-                amount=request.data['amount']
+                    amount=request.data['amount']
 
-                ammount = total_amt- int(amount)
+                    ammount = total_amt- int(amount)
 
-                transaction_request.ammount = ammount
+                    transaction_request.ammount = ammount
 
-                AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
+                    AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
 
-        elif transaction_type.lower() == 'deposit':
+            elif transaction_type.lower() == 'deposit':
 
-                amount=request.data['amount']
+                    amount=request.data['amount']
 
-                ammount = total_amt+ int(amount)
+                    ammount = total_amt+ int(amount)
 
-                transaction_request.ammount = ammount
-                AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
+                    transaction_request.ammount = ammount
+                    AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
 
                 
 
@@ -203,7 +218,7 @@ class WithdrawalRequestDetail(APIView):
 
 
 
-class BeneficiaryDetailsList(APIView):
+class BeneficiaryDetailsList(APIView,View):
     def get(self, request):
         beneficiaries = BeneficiaryDetails.objects.all()
         serializer = BeneficiaryDetailsSerializer(beneficiaries, many=True)
@@ -323,16 +338,22 @@ class WalletListView(View):
                     'client': client.email
             }
 
-            # Retrieve account data for the current client
-            account = Account.objects.get(client__email=client.email)
             
-            # Add account data to client_data
-            client_data['id'] = account.id
-            client_data['ammount'] = account.ammount
-            client_data['created_at'] = account.created_at
 
-            # Append client_data to the context list
-            context.append(client_data)
+            # Retrieve account data for the current client
+            account = Account.objects.filter(client__email=client.email)
+
+            
+            
+            for account in account:
+                print("account=",account.id)
+                client_data['id'] = account.id
+                client_data['ammount'] = account.ammount
+                client_data['created_at'] = account.created_at
+
+                
+                context.append(client_data)
+                
 
 
         
@@ -373,15 +394,34 @@ class AccountStatementView(View):
                         }
                         context.append(account_statement)
 
-                        if acc_ste:
-                            balance=acc_ste[0].account.ammount
+                if len(acc_ste) > 0:
+                    balance=acc_ste[0].account.ammount
+
+                balance =0
 
                 print(context)
 
                 print()
 
 
-                return render(request,self.template_name,context={"account_statement":context,'balance':context[0]['balance']})
+                return render(request,self.template_name,context={"account_statement":context,'balance':balance})
         
             return render(request,'login.html')
     
+
+
+class BeneView(View):
+
+    template_name = 'client_dashboard.html'
+
+    def get(self, request):
+
+        beneficiaries = BeneficiaryDetails.objects.all()
+        print('beneficiaries',beneficiaries)
+        return render(request,self.template_name,context=beneficiaries)
+
+
+
+
+
+

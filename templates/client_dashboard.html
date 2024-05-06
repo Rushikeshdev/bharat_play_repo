@@ -140,6 +140,34 @@
               </div>
             </form>
           </div>
+          <div class="container">
+            <table class="rwd-table">
+              {{bene_table}}
+
+                <tbody>
+                 
+                  <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Account Number</th>
+                    <th>Bank Name</th>
+                    <th>IFSC Code</th>
+                    
+                  </tr>
+                 
+                  <tr>
+                    <td><input type="radio" name="selected_account" value="{{ entry.id }}"></td>
+                    <td data-th="Serial No"></td>
+                    <td data-th="Created Date"></td>
+                    <td data-th="Amount"></td>
+                    <td data-th="Status"></td>
+                    <td data-th="Reason"></td>
+                  </tr>
+                
+                </tbody>
+              </table>
+        </div>
+
         </div>
       </div>
     </section>

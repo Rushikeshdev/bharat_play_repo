@@ -21,7 +21,8 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     'id': requestId,
-                    'req_status': selectedStatus
+                    'req_status': selectedStatus,
+                    'transaction_type':'NA'
                 }),
                 success: function (data) {
                     // Update the status cell text with the new status

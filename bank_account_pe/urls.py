@@ -31,14 +31,15 @@ urlpatterns = [
 
 
     path('withdrawal-requests/', WithdrawalRequestList.as_view(), name='withdrawal-request-list'),
-    path('admin_client_wallet/', AdminClientWallet.as_view(), name='admin-client-wallet'),
     path('withdrawal-requests/<int:pk>/', WithdrawalRequestDetail.as_view(), name='withdrawal-request-detail'),
-    path('withdrawal-requests/template/', TemplateView.as_view(template_name='client_dashboard.html'), name='withdrawal-requests-template'),
+    path('withdrawal-requests/template/', BeneView.as_view(), name='withdrawal-requests-template'),
 
     
 
 
     path('client_wallet_list/template/', WalletListView.as_view(),name='client_wallet_list'),
     path('account_statement/template/',AccountStatementView.as_view(),name='account_statement_list'),
+
+    # path('bene_table/template/',BeneView.as_view(),name='bene-table-list'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
