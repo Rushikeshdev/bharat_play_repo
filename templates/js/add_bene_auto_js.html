@@ -1,0 +1,19 @@
+<script>
+$(document).ready(function() {
+    // Add click event listener to radio buttons
+    $('input[type="radio"]').click(function() {
+        // Find the closest table row to the clicked radio button
+        var tableRow = $(this).closest('tr');
+        // Extract data from table row cells
+        var name = tableRow.find('td[data-th="Name"]').text().trim();
+        var accountNumber = tableRow.find('td[data-th="account_number"]').text().trim();
+        var bankName = tableRow.find('td[data-th="bank name"]').text().trim();
+        var ifscCode = tableRow.find('td[data-th="IFSC Code"]').text().trim();
+        // Populate form fields with extracted data
+        $('#aname').val(name);
+        $('#anumber').val(accountNumber);
+        $('#abranch').val(ifscCode);
+        $('#bname').val(bankName);
+    });
+});
+</script>

@@ -142,28 +142,29 @@
           </div>
           <div class="container">
             <table class="rwd-table">
-              {{bene_table}}
+             
 
                 <tbody>
                  
                   <tr>
-                    <th></th>
+                    <th> </th>
+                    <th>Sr.No</th>
                     <th>Name</th>
                     <th>Account Number</th>
                     <th>Bank Name</th>
                     <th>IFSC Code</th>
                     
                   </tr>
-                 
+                 {% for bene in bene %}
                   <tr>
                     <td><input type="radio" name="selected_account" value="{{ entry.id }}"></td>
-                    <td data-th="Serial No"></td>
-                    <td data-th="Created Date"></td>
-                    <td data-th="Amount"></td>
-                    <td data-th="Status"></td>
-                    <td data-th="Reason"></td>
+                    <td data-th="Serial No">{{forloop.counter}}</td>
+                    <td data-th="Name">{{bene.bene_account_name}}</td>
+                    <td data-th="account_number">{{bene.bene_account_number}}</td>
+                    <td data-th="bank name">{{bene.bene_bank_name}}</td>
+                    <td data-th="IFSC Code">{{bene.bene_branch_ifsc}}</td>
                   </tr>
-                
+                {% endfor %}
                 </tbody>
               </table>
         </div>
@@ -176,6 +177,8 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% include 'js/withdrawal_form_js.html' %}
+
+    {% include 'js/add_bene_auto_js.html' %}
    
   </body>
 </html>

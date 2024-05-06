@@ -418,7 +418,7 @@ class BeneView(View):
 
         beneficiaries = BeneficiaryDetails.objects.all()
         print('beneficiaries',beneficiaries)
-        return render(request,self.template_name,context=beneficiaries)
+        return render(request,self.template_name,{'bene':beneficiaries})
 
 
 
