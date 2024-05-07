@@ -4,6 +4,8 @@ from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='email')
+   
+    
     class Meta:
         model = User
         fields = ['username','password' ,'is_active', 'is_client', 'is_admin',]
@@ -17,9 +19,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
+    client_email = serializers.SerializerMethodField()
     class Meta:
         model = Account
         fields = '__all__'
+    def get_client_email(self, obj):
+        # Access the email of the related client User
+        return obj.client.email
 
 
 

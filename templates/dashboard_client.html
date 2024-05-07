@@ -171,7 +171,7 @@
                       {% for withdrawal_request,ac_ste in withdrawal_requests %}
                       <tr>
                         <td data-th="Serial No">{{forloop.counter}}</td>
-                        <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
+                        <td data-th="Created Date">{{ac_ste.trn_date}}</td>
                         <td data-th="Amount">{{withdrawal_request.ammount}}</td>
                         <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at }}', '{{ withdrawal_request.ammount }}', '{{ withdrawal_request.account_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
                         <td data-th="Status">{{withdrawal_request.req_status}}</td>

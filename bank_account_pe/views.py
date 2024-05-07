@@ -1,3 +1,4 @@
+from distutils.log import error
 from typing import Any
 from django.http.response import HttpResponse as HttpResponse
 from rest_framework.views import APIView
@@ -18,7 +19,7 @@ class UserList(APIView):
 
     
     def get(self, request):
-        users = User.objects.all()
+        users = User.objects.filter(is_client=True)
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
 
@@ -84,7 +85,7 @@ class ClientDashboard(APIView, TemplateView):
         serializer = AccountSerializer(withdrawal_requests, many=True)
         
         if len(withdrawal_requests) >0:
-            balance=withdrawal_requests[0].ammount
+            balance=withdrawal_requests.last().total_balnce
         else:
             balance = 0
 
@@ -98,8 +99,10 @@ class ClientDashboard(APIView, TemplateView):
             if acc.withdraw != 0:
 
                 acc_ste['txn'] = 'withdraw'
+                acc_ste['trn_date'] = acc.trn_date
             elif acc.deposit !=0:
                 acc_ste['txn'] = 'deposit'
+                acc_ste['trn_date'] = acc.trn_date
 
             acc_ste_list.append(acc_ste)
         
@@ -159,37 +162,54 @@ class WithdrawalRequestList(APIView, TemplateView):
 
         print("USER=",type(request.user.id))
 
-        data = {
+        bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
-            'client':request.user.id,
-            'ammount': int(request.data['amount']),
-            'account_name': request.data['aname'],
-            'account_number':int(request.data['anumber']),
-            'branch_ifsc': request.data['abranch'],
-            'bank_name': request.data['bname'],
-            'req_status':'pending',
-            'reasons':'NA',
-            'ref_number':0
+        account= Account.objects.filter(account_bene=bene)
 
-        }
+        def dict_compare(d1, d2):
+            # Compare relevant keys
+            return d1['client'] == d2['client'] 
+
+        # Use a list comprehension to filter out duplicate dictionaries
+        account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
+
         
+        
+        if  account and account[0].total_balnce > int(request.data['amount']):
+            data = {
 
-        serializer = AccountSerializer(data=data)
-       
-        if serializer.is_valid():
-            serializer.save()
+                'client':request.user.id,
+                'account_bene':bene.id,
+                'ammount': int(request.data['amount']),
+                'account_name': request.data['aname'],
+                'account_number':int(request.data['anumber']),
+                'branch_ifsc': request.data['abranch'],
+                'bank_name': request.data['bname'],
+                'req_status':'pending',
+                'reasons':'NA',
+                'ref_number':0
 
-            account=Account.objects.filter(client__email=request.user)
+            }
             
 
-            acc = account.last()
-           
-            account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
-            deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
-            )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = AccountSerializer(data=data)
+        
+            if serializer.is_valid():
+                serializer.save()
+
+                account=Account.objects.filter(client__email=request.user)
+                
+
+                acc = account.last()
+            
+                account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
+                deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
+                )
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
 
 class WithdrawalRequestDetail(APIView):
     def get_object(self, pk):
@@ -205,7 +225,8 @@ class WithdrawalRequestDetail(APIView):
 
     def put(self, request, pk):
         transaction_request = self.get_object(pk)
-        print('MYDATA',request.data)
+       
+        print(transaction_request.id)
 
         if request.data['req_status']=='approved':
 
@@ -220,14 +241,16 @@ class WithdrawalRequestDetail(APIView):
         if request.data['transaction_type']:
            
             transaction_type = request.data['transaction_type']
-            print('hello...',request.data['transaction_type'])
+           
             if transaction_type.lower() == 'withdraw':
-                    print('hello...')
+                   
                     amount=request.data['amount']
 
                     ammount = total_amt- int(amount)
 
                     transaction_request.ammount = ammount
+
+                    transaction_request.total_balnce = ammount
 
                     AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
 
@@ -238,8 +261,9 @@ class WithdrawalRequestDetail(APIView):
                     ammount = total_amt+ int(amount)
 
                     transaction_request.ammount = ammount
+                    transaction_request.total_balnce = ammount
                     AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
-
+                    
                 
 
         serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
@@ -369,35 +393,69 @@ class WalletListView(View):
 
         client =User.objects.filter(is_client=True)
 
+       
+
         context =[]
 
         for client in client:
 
             client_data = {
-                    'client': client.email
+                    'client': client.email,
+                    'created_at':client.created
             }
 
-            
-
+           
             # Retrieve account data for the current client
             account = Account.objects.filter(client__email=client.email)
 
-            
-            
-            for account in account:
-                print("account=",account.id)
-                client_data['id'] = account.id
-                client_data['ammount'] = account.ammount
-                client_data['created_at'] = account.created_at
+           
+            if  not account:
+                bene_account = BeneficiaryDetails.objects.all()
+
+                if bene_account:
+                    first_account=Account.objects.create(client=client,account_bene=bene_account[0],
+                    ammount=0,ref_number=0)
+                    client_data['id'] = first_account.id
+                    client_data['ammount'] = first_account.ammount
+                    # client_data['total_balnce'] = first_account.total_balnce
+                    
+                    
+                    context.append(client_data)
 
                 
-                context.append(client_data)
-                
+
+
+            
+            
+            if account:
+                for account in account:
+                    print("account=",account.id)
+                    client_data['id'] = account.id
+                    client_data['ammount'] = account.ammount
+                    # client_data['total_balnce'] = account.total_balnce
+                    
+                    
+                    context.append(client_data)
+            
 
 
         
 
         print(context)
+
+        def dict_compare(d1, d2):
+            # Compare relevant keys
+            return d1['client'] == d2['client'] and d1['ammount'] == d2['ammount']
+
+        # Use a list comprehension to filter out duplicate dictionaries
+        context = [context[i] for i in range(len(context)) if all(not dict_compare(context[i], context[j]) for j in range(i+1, len(context)))]
+
+       
+
+        print(context)
+
+
+
 
 
         return render(request,self.template_name,context={"wallet":context})
@@ -437,14 +495,36 @@ class AccountStatementView(View):
 
                 # client_new = acc_ste.select_related('account').values('account__client').filter(account__client=request.user)
 
-                client_new = Account.objects.select_related('client').values('client__email').get(client__email=request.user)
+                client_new = Account.objects.select_related('client').values('client__email').filter(client__email=request.user)
                 
-                if client_new['client__email']==str(request.user):
-                    acc=Account.objects.get(client=request.user)
-                   
-                    balance=acc.ammount
+                
+                def dict_compare(d1, d2):
+           
+                        return d1['client__email'] == d2['client__email'] 
+
+                    # Use a list comprehension to filter out duplicate dictionaries
+                client_new    = [client_new[i] for i in range(len(client_new)) if all(not dict_compare(client_new[i], client_new[j]) for j in range(i+1, len(client_new)))]
+
+               
+
+                if  client_new:
+
+                    if client_new[0]['client__email']==str(request.user):
+                        acc=Account.objects.filter(client=request.user).last()
+                        # print(acc)
+                        # def dict_compare(d1, d2):
+            
+                        #     return d1['account_bene'] == d2['account_bene'] 
+
+                        # # Use a list comprehension to filter out duplicate dictionaries
+                        # acc = [acc[i] for i in range(len(acc)) if all(not dict_compare(acc[i], acc[j]) for j in range(i+1, len(acc)))]
+                    
+                        balance=acc.total_balnce
+                    else:
+                        balance =0
                 else:
                     balance =0
+                
 
                 print(context)
 

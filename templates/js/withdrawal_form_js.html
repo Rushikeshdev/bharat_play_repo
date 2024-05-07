@@ -18,15 +18,20 @@ $(document).ready(function() {
                     success: function(response) {
                         // If login is successful, display success message
                         console.log(typeof response);
-                        window.location.reload();
+                        // window.location.reload();
 
                        
                     },
                     error: function(xhr, status, error) {
                         // If login fails, display error message
-                        console.log("fail");
-                        var errorMessage = xhr.responseJSON.error;
-                        $("#message").text(errorMessage).css("color", "red");
+                        // console.log("fail",xhr.responseJSON.data);
+                        // var errorMessage = xhr.responseJSON.error;
+                        // console.log(errorMessage);
+                        // $("#message").text(errorMessage).css("color", "red");
+
+                        var errorMessage = JSON.parse(xhr.responseText).Message;
+                        // Handle the error message accordingly
+                        console.error(errorMessage)
                     }
                 });
             });
