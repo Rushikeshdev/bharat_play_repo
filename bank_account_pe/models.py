@@ -99,7 +99,8 @@ class Account(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     req_status = models.CharField(max_length=255,default='pending')
     reasons = models.CharField(max_length=255,default='')
-    
+    ref_number = models.BigIntegerField()
+
 
 
     def __str__(self):
@@ -108,7 +109,7 @@ class Account(models.Model):
 
 
 class BeneficiaryDetails(models.Model):
-
+    client = models.ForeignKey(User, on_delete=models.CASCADE,related_name='client_bene')
     bene_account_name = models.CharField(max_length=255,blank=True,null=True)
     bene_account_number = models.BigIntegerField()
     bene_branch_ifsc = models.CharField(max_length=255,blank=True,null=True)

@@ -5,9 +5,10 @@
         // Add event listener to all dropdowns with class "status-dropdown"
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         var requestId 
+        var selectedOption
         $('.status-dropdown').change(function() {
             requestId = $(this).data('request-id');
-            var selectedOption = $(this).val();
+            selectedOption = $(this).val();
             var parentTd = $(this).parent();
             var extraFieldsDiv = parentTd.find('.extra-fields');
 
@@ -23,10 +24,34 @@
         $('.submit-button').click(function() {
             var parentTd = $(this).parent();
             var textboxValue = parentTd.find('.extra-textbox').val();
-            $('#reason_status').text(textboxValue);
+            
             console.log('Submitted value:', textboxValue);
+            var data
+            if (selectedOption === 'approved') {
+
+                data ={
+
+                    'id': requestId,
+                    'ref_number':textboxValue,
+                    'reasons':'NA',
+                    'transaction_type':'NA',
+                    'req_status':selectedOption
+
+                }
+                
+            } if(selectedOption === 'rejected'){
+
+                data={
+
+                    'id': requestId,
+                    'reasons':textboxValue,
+                    'transaction_type':'NA',
+                    'req_status':selectedOption
+                }
+                $('#reason_status').text(textboxValue);
+            }
             
-            
+            console.log("data",data);
             $.ajax({
                 url: '/withdrawal-requests/'+ requestId + '/',
                 type: 'PUT',
@@ -34,11 +59,9 @@
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     },
                 contentType: 'application/json',
-                data: JSON.stringify({
-                    'id': requestId,
-                    'reasons':textboxValue,
-                    'transaction_type':'NA'
-                }),
+                data: JSON.stringify(
+                    data
+                ),
                 success: function (data) {
                     // Update the status cell text with the new status
                     console.log("Resoans Submitted");

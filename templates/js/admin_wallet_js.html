@@ -118,7 +118,9 @@
                     data: {
                         account_id: tdId,
                         amount: amount,
-                        transaction_type: transactionType
+                        transaction_type: transactionType,
+                        'req_status':'NA',
+                        'reasons':'NA'
                     },
                     success: function(response) {
                         window.location.reload();

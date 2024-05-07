@@ -78,8 +78,9 @@ class ClientDashboard(APIView, TemplateView):
     template_name = 'dashboard_client.html'
 
     def get(self, request):
-       
-        withdrawal_requests = Account.objects.all()
+        
+        print('request-user',request.user)
+        withdrawal_requests = Account.objects.select_related('client').filter(client=request.user)
         serializer = AccountSerializer(withdrawal_requests, many=True)
         
         if len(withdrawal_requests) >0:
@@ -102,7 +103,7 @@ class ClientDashboard(APIView, TemplateView):
 
             acc_ste_list.append(acc_ste)
         
-        print()
+       
 
         zip_acc_ste=zip(serializer.data,acc_ste_list)
 
@@ -167,7 +168,8 @@ class WithdrawalRequestList(APIView, TemplateView):
             'branch_ifsc': request.data['abranch'],
             'bank_name': request.data['bname'],
             'req_status':'pending',
-            'reasons':'NA'
+            'reasons':'NA',
+            'ref_number':0
 
         }
         
@@ -203,15 +205,24 @@ class WithdrawalRequestDetail(APIView):
 
     def put(self, request, pk):
         transaction_request = self.get_object(pk)
-        print(pk)
+        print('MYDATA',request.data)
+
+        if request.data['req_status']=='approved':
+
+            transaction_request.ref_number = request.data['ref_number']
+            transaction_request.reasons = request.data['reasons']
+        elif request.data['req_status']=='rejected':
+            transaction_request.reasons = request.data['reasons']
+
 
         total_amt = transaction_request.ammount
 
         if request.data['transaction_type']:
+           
             transaction_type = request.data['transaction_type']
-
+            print('hello...',request.data['transaction_type'])
             if transaction_type.lower() == 'withdraw':
-
+                    print('hello...')
                     amount=request.data['amount']
 
                     ammount = total_amt- int(amount)
@@ -256,7 +267,7 @@ class BeneficiaryDetailsList(APIView,View):
         print('data=',request.data)
         
         data = {
-           
+            'client':request.user.id,
             'bene_account_name':request.data['name'],
             'bene_account_number': int(request.data['accountnumber']),
             'bene_bank_name': request.data['bankname'],
@@ -422,10 +433,18 @@ class AccountStatementView(View):
                         }
                         context.append(account_statement)
 
-                if len(acc_ste) > 0:
-                    balance=acc_ste[0].account.ammount
+                
 
-                balance =0
+                # client_new = acc_ste.select_related('account').values('account__client').filter(account__client=request.user)
+
+                client_new = Account.objects.select_related('client').values('client__email').get(client__email=request.user)
+                
+                if client_new['client__email']==str(request.user):
+                    acc=Account.objects.get(client=request.user)
+                   
+                    balance=acc.ammount
+                else:
+                    balance =0
 
                 print(context)
 
@@ -444,7 +463,7 @@ class BeneView(View):
 
     def get(self, request):
 
-        beneficiaries = BeneficiaryDetails.objects.all()
+        beneficiaries = BeneficiaryDetails.objects.select_related('client').filter(client=request.user)
         print('beneficiaries',beneficiaries)
         return render(request,self.template_name,{'bene':beneficiaries})
 

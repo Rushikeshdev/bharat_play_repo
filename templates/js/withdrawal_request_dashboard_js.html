@@ -12,6 +12,7 @@ $(document).ready(function () {
             var requestId = $(this).data('request-id');
             console.log('----',requestId);
             // Send an AJAX request to update the status
+            
             $.ajax({
                 url: '/withdrawal-requests/'+ requestId + '/',
                 type: 'PUT',
@@ -21,6 +22,8 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     'id': requestId,
+                    'ref_number':0,
+                    'reasons':'NA',
                     'req_status': selectedStatus,
                     'transaction_type':'NA'
                 }),
