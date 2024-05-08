@@ -32,6 +32,50 @@
     margin-bottom: 20px;
     border-bottom: 1px solid #0e0e37;
       }
+      .rwd-table
+      {
+        color: #333;
+    border-radius: 0.4em;
+    overflow: hidden;
+    margin: auto;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+      }
+      .rwd-table tr:first-child {
+    border-top: none;
+    background: #0e0e37;
+    color: #fff;
+}
+.rwd-table tr {
+    border-color: #bfbfbf;
+}
+.rwd-table tr {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background-color: #f5f9fc;
+}
+.rwd-table th, .rwd-table td {
+    padding: 1em 1em !important;
+    text-align: center;
+}
+.top
+{
+  display: flex !important;
+    justify-content: space-between !important;
+    height: 50px;
+    line-height: 50px;
+}
+.search_box input
+{
+  padding: 10px;
+  border: white;
+  border-bottom: 2px solid #f2f2f2;
+
+}
+.highlight {
+    background-color: #eeedf6;
+  }
     </style>
   </head>
   <body>
@@ -78,6 +122,9 @@
     <!-- Withdrawal Request Section -->
     <section id="add_beneficiary" class="dashboard">
       <div class="top">
+        <div class="search_box">
+          <input type="search" placeholder="Search Client Id" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
+        </div>
         <div class="search-box">
             <a href="{% url 'logout' %}"><span class="link-name"
                 >Logout
@@ -141,6 +188,8 @@
               </div>
             </form>
           </div>
+          <br>
+          <br>
           <div class="container">
             <table class="rwd-table">
              
@@ -182,5 +231,36 @@
 
     {% include 'js/add_bene_auto_js.html' %}
    
+
+
+
+<script>
+function highlightRows(searchTerm) {
+  const rows = document.querySelectorAll('.container .rwd-table tbody tr');
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td[data-th]');
+    let found = false;
+    cells.forEach(cell => {
+      if (cell.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+        found = true;
+        cell.classList.add('highlight');
+      } else {
+        cell.classList.remove('highlight');
+      }
+    });
+    if (found) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+function refreshPage() {
+  window.location.reload();
+}
+</script>
+
+     
   </body>
 </html>
