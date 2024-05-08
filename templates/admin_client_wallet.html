@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
 
    <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 
     <!----===== Iconscout CSS ===== -->
     <link
@@ -89,7 +90,8 @@
                         <th>Serial No</th>
                         <th>Client Id</th>
                         <th>Created Date</th>
-                        <th>Amount</th>
+                        <th>Total Balance</th>
+                       
                       </tr>
                       {% for wallet in wallet %}
                       
@@ -97,7 +99,7 @@
                         <td data-th="Serial No">{{forloop.counter}}</td>
                         <td id="client_for_wallet" data-th="client_id">{{wallet.client}}</td>
                         <td data-th="Created Date">{{wallet.created_at}}</td>
-                        <td id="{{ wallet.id }}" data-th="Amount">{{wallet.ammount}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
+                        <td id="{{ wallet.id }}" data-th="Amount">{{wallet.total_balnce}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
                       </tr>
                       {% endfor %}
                 </tbody>

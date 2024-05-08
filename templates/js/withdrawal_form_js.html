@@ -17,17 +17,51 @@ $(document).ready(function() {
                     },
                     success: function(response) {
                         // If login is successful, display success message
+
+                        $.confirm({
+                            title: ``,
+                            content:"Withdrawal Requested Succussfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
                         console.log(typeof response);
                         // window.location.reload();
 
                        
                     },
                     error: function(xhr, status, error) {
-                        // If login fails, display error message
-                        // console.log("fail",xhr.responseJSON.data);
-                        // var errorMessage = xhr.responseJSON.error;
-                        // console.log(errorMessage);
-                        // $("#message").text(errorMessage).css("color", "red");
+                        $.confirm({
+                            title:'',
+                            content:JSON.parse(xhr.responseText).Message,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Close',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
 
                         var errorMessage = JSON.parse(xhr.responseText).Message;
                         // Handle the error message accordingly

@@ -1,6 +1,7 @@
 
 {% csrf_token %}
-<script>
+
+<script type="text/javascript">
 
 
 
@@ -23,15 +24,52 @@ $(document).ready(function() {
                     },
                     success: function(response) {
                         // If login is successful, display success message
+
+                        $.confirm({
+                            title: ``,
+                            content:"Beneficiary Added Succussfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
+                        
                         console.log("success",response);
                         
                       
                     },
                     error: function(xhr, status, error) {
                         // If login fails, display error message
-                        console.log("fail");
-                        var errorMessage = xhr.responseJSON.error;
-                        $("#message").text(errorMessage).css("color", "red");
+                        $.confirm({
+                            title:'',
+                            content:data.status,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Try again',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
                     }
                 });
             });

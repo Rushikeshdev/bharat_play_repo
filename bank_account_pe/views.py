@@ -24,16 +24,22 @@ class UserList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False}
-        
-        serializer = UserSerializer(data=data_to_update)
-        
-        if serializer.is_valid():
+        try:
+            data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False}
             
-            serializer.save()
-           
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer = UserSerializer(data=data_to_update)
+            
+            if serializer.is_valid():
+                
+                serializer.save()
+            
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print("e=",e.__context__)
+            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class UserDetail(APIView):
     def get_object(self, pk):
@@ -166,14 +172,15 @@ class WithdrawalRequestList(APIView, TemplateView):
 
         account= Account.objects.filter(account_bene=bene)
 
+        
         def dict_compare(d1, d2):
             # Compare relevant keys
-            return d1['client'] == d2['client'] 
+            return d1.client == d2.client 
 
         # Use a list comprehension to filter out duplicate dictionaries
         account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
-        
+        print(account[0].total_balnce)
         
         if  account and account[0].total_balnce > int(request.data['amount']):
             data = {
@@ -236,7 +243,7 @@ class WithdrawalRequestDetail(APIView):
             transaction_request.reasons = request.data['reasons']
 
 
-        total_amt = transaction_request.ammount
+        total_amt = transaction_request.total_balnce
 
         if request.data['transaction_type']:
            
@@ -245,22 +252,26 @@ class WithdrawalRequestDetail(APIView):
             if transaction_type.lower() == 'withdraw':
                    
                     amount=request.data['amount']
+                    print('total_balance',total_amt)
+                    print('amount',amount)
+                    if total_amt > int(amount):
+                        print
+                        ammount = total_amt- int(amount)
 
-                    ammount = total_amt- int(amount)
+                        transaction_request.ammount = int(amount)
 
-                    transaction_request.ammount = ammount
+                        transaction_request.total_balnce = ammount
 
-                    transaction_request.total_balnce = ammount
-
-                    AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
-
+                        AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
+                    else:
+                        return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
             elif transaction_type.lower() == 'deposit':
 
                     amount=request.data['amount']
 
                     ammount = total_amt+ int(amount)
 
-                    transaction_request.ammount = ammount
+                    transaction_request.ammount =int(amount)
                     transaction_request.total_balnce = ammount
                     AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
                     
@@ -432,7 +443,7 @@ class WalletListView(View):
                     print("account=",account.id)
                     client_data['id'] = account.id
                     client_data['ammount'] = account.ammount
-                    # client_data['total_balnce'] = account.total_balnce
+                    client_data['total_balnce'] = account.total_balnce
                     
                     
                     context.append(client_data)

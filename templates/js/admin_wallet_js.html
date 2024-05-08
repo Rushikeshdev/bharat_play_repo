@@ -1,5 +1,6 @@
 {% csrf_token %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script>
     $(document).ready(function() {
 
@@ -128,6 +129,25 @@
                         // Handle success response
                     },
                     error: function(xhr, errmsg, err) {
+
+                        $.confirm({
+                            title:'',
+                            content:JSON.parse(xhr.responseText).Message,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Close',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
                         console.log("Error occurred while processing transaction!");
                         // Handle error response
                     }

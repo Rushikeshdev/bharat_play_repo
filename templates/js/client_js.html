@@ -51,18 +51,57 @@ $(document).ready(function() {
             success: function(response) {
                 // If login is successful, display success message
                 console.log("success");
-                $("#message").text(response.message).css("color", "green");
+                $.confirm({
+                            title: ``,
+                            content:"Client Added Succussfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
                 
-                // Hide form after successful submission
-                $("#clientForm").hide();
                 
                 // You might want to reload the client list here or update it with the new client data
             },
             error: function(xhr, status, error) {
                 // If login fails, display error message
                 console.log("fail");
-                var errorMessage = xhr.responseJSON.error;
-                $("#message").text(errorMessage).css("color", "red");
+
+                $.confirm({
+                            title:'',
+                            content:'Email is already register!',
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Try again',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
+
+
+                
+                console.log("fail",error);
+               
             }
         });
     });
