@@ -13,6 +13,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth import logout,login
 from django.views import View
 from django.shortcuts import render
+from django.contrib.auth.hashers import check_password
 
 
 class UserList(APIView):
@@ -25,7 +26,7 @@ class UserList(APIView):
 
     def post(self, request):
         try:
-            data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False}
+            data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
             
             serializer = UserSerializer(data=data_to_update)
             

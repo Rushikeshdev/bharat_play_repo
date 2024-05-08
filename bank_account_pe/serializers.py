@@ -1,21 +1,37 @@
 from rest_framework import serializers
 from .models import *
-
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='email')
-   
+    password = serializers.CharField(write_only=True)
     
     class Meta:
         model = User
-        fields = ['username','password' ,'is_active', 'is_client', 'is_admin',]
+        fields = ['username','password' ,'is_active', 'is_client', 'is_admin','raw_password']
     
+    # def create(self, validated_data):
+    #     password = validated_data.pop('password')
+    #     user = User.objects.create(**validated_data)
+    #     user.set_password(password)
+    #     user.save()
+    #     return user
+
     def create(self, validated_data):
+        # Extract and encrypt the password before creating the user
         password = validated_data.pop('password')
+        validated_data['password'] = make_password(password)  # Encrypt password
         user = User.objects.create(**validated_data)
-        user.set_password(password)
-        user.save()
         return user
+    
+    def to_representation(self, instance):
+        # Override to_representation to include password in original form
+        representation = super().to_representation(instance)
+        representation['password'] = instance.raw_password  # Display original password
+        print(representation)
+        return representation
+
+
 
 
 class AccountSerializer(serializers.ModelSerializer):

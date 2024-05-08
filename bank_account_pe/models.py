@@ -44,7 +44,7 @@ class User(AbstractBaseUser):
         unique=True,
     )
     
-    
+    raw_password = models.CharField(max_length=128)
     created     = models.DateTimeField(auto_now_add=True)
     is_active       = models.BooleanField(default=True, help_text = 'Enable or disable user account')
   
