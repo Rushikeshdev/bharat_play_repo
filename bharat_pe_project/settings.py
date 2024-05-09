@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-29aak3#ke4g4nhb!3u2jx8tip&%#(tb_f@1a%ubj3w#q$#=*l_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['withdrawform.com','www.withdrawform.com']
 
 
 # Application definition
@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'bharat_pe_project.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "bharat_play",
-        "USER": "bharat",
-        "PASSWORD": "Bharat@123#",
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "withdraw",
+        "USER": "myprojectuser",
+        "PASSWORD": "withdraw@321",
         "HOST": "127.0.0.1",
         "PORT": "5432",
     }
