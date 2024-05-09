@@ -87,28 +87,6 @@ class User(AbstractBaseUser):
 
 
 
-
-class Account(models.Model):
-
-    client = models.ForeignKey(User, on_delete=models.CASCADE,related_name='client')
-    ammount = models.IntegerField()
-    total_balnce = models.IntegerField()
-    account_name = models.CharField(max_length=255,blank=True,null=True)
-    account_number = models.BigIntegerField()
-    branch_ifsc = models.CharField(max_length=255,blank=True,null=True)
-    bank_name = models.CharField(max_length=255,blank=True,null=True)
-    created_at = models.DateTimeField(auto_now=True)
-    req_status = models.CharField(max_length=255,default='pending')
-    reasons = models.CharField(max_length=255,default='')
-    ref_number = models.BigIntegerField()
-
-
-
-    def __str__(self):
-        return f"{self.account_name},{self.account_number}"
-
-
-
 class BeneficiaryDetails(models.Model):
     client = models.ForeignKey(User, on_delete=models.CASCADE,related_name='client_bene')
     bene_account_name = models.CharField(max_length=255,blank=True,null=True)
@@ -124,7 +102,7 @@ class BeneficiaryDetails(models.Model):
 class Account(models.Model):
 
     client = models.ForeignKey(User, on_delete=models.CASCADE,related_name='client')
-    account_bene = models.ForeignKey(BeneficiaryDetails, on_delete=models.CASCADE,related_name='bene')
+    account_bene = models.ForeignKey(BeneficiaryDetails, on_delete=models.CASCADE,related_name='bene',null=True)
     ammount = models.IntegerField()
     req_status = models.CharField(max_length=255,default='pending')
     reasons = models.CharField(max_length=255,default='')

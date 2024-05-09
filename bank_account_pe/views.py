@@ -171,9 +171,16 @@ class WithdrawalRequestList(APIView, TemplateView):
 
             bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
-            account= Account.objects.filter(account_bene=bene)
+            check_acc=Account.objects.all()
 
             
+
+            if len(check_acc) ==1:
+                check_acc.update(account_bene = bene)
+
+            account=check_acc.filter(account_bene=bene)
+
+           
             def dict_compare(d1, d2):
                 # Compare relevant keys
                 return d1.client == d2.client 
@@ -204,7 +211,7 @@ class WithdrawalRequestList(APIView, TemplateView):
             
                 if serializer.is_valid():
                     serializer.save()
-
+                    print(account[0])
                     account=Account.objects.filter(client__email=request.user)
                     
 
@@ -430,12 +437,28 @@ class WalletListView(View):
                 if bene_account:
                     first_account=Account.objects.create(client=client,account_bene=bene_account[0],
                     ammount=0,ref_number=0)
+                    print('with bene')
                     client_data['id'] = first_account.id
                     client_data['ammount'] = first_account.ammount
-                    # client_data['total_balnce'] = first_account.total_balnce
+                    client_data['total_balnce'] = first_account.total_balnce
+
                     
                     
                     context.append(client_data)
+
+                else:
+                    print('without bene')
+                    first_account=Account.objects.create(client=client,account_bene=None,
+                    ammount=0,ref_number=0)
+                    client_data['id'] = first_account.id
+                    client_data['ammount'] = first_account.ammount
+                    client_data['total_balnce'] = first_account.total_balnce
+
+                    
+
+                    context.append(client_data)
+
+
 
                 
 
