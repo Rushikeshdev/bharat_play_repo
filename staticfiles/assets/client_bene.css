@@ -1,0 +1,40 @@
+.beneficiary_form input {
+    background-color: #f2f2f2;
+    border: none;
+    padding: 15px 18px;
+    width: 500px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #0e0e37;
+  }
+  .submit_btn {
+    background-color: #0e0e37 !important;
+    color: white;
+    text-align: center;
+    width: 175px !important;
+  
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .submit_div {
+    display: flex;
+    justify-content: center;
+  }
+  .beneficiary_form h2 {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 20px 0;
+  }
+  .withdraw_form input {
+    background-color: #f2f2f2;
+    border: none;
+    padding: 15px 18px;
+    width: 500px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #0e0e37;
+  }
+  a{
+      text-decoration: none;
+      color: black;
+  }
+  
