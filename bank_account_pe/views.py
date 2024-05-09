@@ -181,7 +181,7 @@ class WithdrawalRequestList(APIView, TemplateView):
         # Use a list comprehension to filter out duplicate dictionaries
         account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
-        print(account[0].total_balnce)
+      
         
         if  account and account[0].total_balnce > int(request.data['amount']):
             data = {
