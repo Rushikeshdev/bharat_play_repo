@@ -236,6 +236,7 @@ class WithdrawalRequestDetail(APIView):
         transaction_request = self.get_object(pk)
        
         print(transaction_request.id)
+        print(request.data)
 
         if request.data['req_status']=='approved':
 

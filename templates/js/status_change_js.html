@@ -1,5 +1,6 @@
 {% csrf_token %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script>
     $(document).ready(function() {
         // Add event listener to all dropdowns with class "status-dropdown"
@@ -26,8 +27,9 @@
             var textboxValue = parentTd.find('.extra-textbox').val();
             
             console.log('Submitted value:', textboxValue);
+            console.log('selectedOption:', selectedOption);
             var data
-            if (selectedOption === 'approved') {
+            if (selectedOption === 'Approved') {
 
                 data ={
 
@@ -39,7 +41,7 @@
 
                 }
                 
-            } if(selectedOption === 'rejected'){
+            } if(selectedOption === 'Rejected'){
 
                 data={
 
@@ -64,10 +66,53 @@
                 ),
                 success: function (data) {
                     // Update the status cell text with the new status
-                    console.log("Resoans Submitted");
-                    window.location.reload();
+
+                    $.confirm({
+                            title: ``,
+                            content:"Staus changed Successfully!"+ + textboxValue,
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
+
+                        
+                    
+                    
                 },
                 error: function (error) {
+
+                    $.confirm({
+                            title:'',
+                            content:error,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Try again',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
+
                     console.error('Error:', error);
                 }
             });
