@@ -50,11 +50,14 @@ $(document).ready(function() {
                         
                       
                     },
+                    
                     error: function(xhr, status, error) {
                         // If login fails, display error message
+                        var errorMessage = JSON.parse(xhr.responseText); // Parse the JSON response
+                        var errorDetail = errorMessage.errors.bene_account_number[0];
                         $.confirm({
                             title:'',
-                            content:data.status,
+                            content:errorDetail,
                             type:'red',
                             typeAnimated:true,
                             buttons:{

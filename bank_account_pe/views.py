@@ -164,61 +164,62 @@ class WithdrawalRequestList(APIView, TemplateView):
         return self.render_to_response(context)
 
     def post(self, request):
+        try:
+            print("USER=",request.user.id)
 
-        print("USER=",request.user.id)
+            print("USER=",type(request.user.id))
 
-        print("USER=",type(request.user.id))
+            bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
-        bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
+            account= Account.objects.filter(account_bene=bene)
 
-        account= Account.objects.filter(account_bene=bene)
-
-        
-        def dict_compare(d1, d2):
-            # Compare relevant keys
-            return d1.client == d2.client 
-
-        # Use a list comprehension to filter out duplicate dictionaries
-        account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
-
-      
-        
-        if  account and account[0].total_balnce > int(request.data['amount']):
-            data = {
-
-                'client':request.user.id,
-                'account_bene':bene.id,
-                'ammount': int(request.data['amount']),
-                'account_name': request.data['aname'],
-                'account_number':int(request.data['anumber']),
-                'branch_ifsc': request.data['abranch'],
-                'bank_name': request.data['bname'],
-                'req_status':'pending',
-                'reasons':'NA',
-                'ref_number':0
-
-            }
             
+            def dict_compare(d1, d2):
+                # Compare relevant keys
+                return d1.client == d2.client 
 
-            serializer = AccountSerializer(data=data)
+            # Use a list comprehension to filter out duplicate dictionaries
+            account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
+
         
-            if serializer.is_valid():
-                serializer.save()
+            
+            if  account and account[0].total_balnce > int(request.data['amount']):
+                data = {
 
-                account=Account.objects.filter(client__email=request.user)
+                    'client':request.user.id,
+                    'account_bene':bene.id,
+                    'ammount': int(request.data['amount']),
+                    'account_name': request.data['aname'],
+                    'account_number':int(request.data['anumber']),
+                    'branch_ifsc': request.data['abranch'],
+                    'bank_name': request.data['bname'],
+                    'req_status':'pending',
+                    'reasons':'NA',
+                    'ref_number':0
+
+                }
                 
 
-                acc = account.last()
+                serializer = AccountSerializer(data=data)
             
-                account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
-                deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
-                )
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            print(serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                if serializer.is_valid():
+                    serializer.save()
 
-        return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+                    account=Account.objects.filter(client__email=request.user)
+                    
 
+                    acc = account.last()
+                
+                    account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
+                    deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
+                    )
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                print(serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+        except Exception as  e:
+            return Response(e,status=status.HTTP_400_BAD_REQUEST)
 class WithdrawalRequestDetail(APIView):
     def get_object(self, pk):
         try:
@@ -317,7 +318,8 @@ class BeneficiaryDetailsList(APIView,View):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        print(serializer.errors.values())
+        return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class BeneficiaryDetailsDetail(APIView):
     def get_object(self, pk):
