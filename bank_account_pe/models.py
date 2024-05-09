@@ -109,6 +109,7 @@ class Account(models.Model):
     ref_number = models.BigIntegerField()
     total_balnce = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now=True)
+    withdraw_request_client = models.BooleanField(default=False)
 
 
 

@@ -45,6 +45,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 
+
 class BeneficiaryDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = BeneficiaryDetails

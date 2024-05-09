@@ -157,15 +157,17 @@ class WithdrawalRequestList(APIView, TemplateView):
         else:
             print("not auth...")
             self.template_name = 'login.html'
-
+        acc_ste=AccountStatement.objects.select_related('account').filter(deposit=0)
+       
         withdrawal_requests = Account.objects.all()
         serializer = AccountSerializer(withdrawal_requests, many=True)
         context = {'withdrawal_requests': serializer.data}
         return self.render_to_response(context)
+       
 
     def post(self, request):
         try:
-            print("USER=",request.user.id)
+            print("USER=",request.user)
 
             print("USER=",type(request.user.id))
 
@@ -190,7 +192,7 @@ class WithdrawalRequestList(APIView, TemplateView):
 
         
             
-            if  account and account[0].total_balnce > int(request.data['amount']):
+            if  account and account[0].total_balnce >= int(request.data['amount']):
                 data = {
 
                     'client':request.user.id,
@@ -202,21 +204,27 @@ class WithdrawalRequestList(APIView, TemplateView):
                     'bank_name': request.data['bname'],
                     'req_status':'pending',
                     'reasons':'NA',
-                    'ref_number':0
+                    'ref_number':0,
+                    'withdraw_request_client':True
 
                 }
                 
 
                 serializer = AccountSerializer(data=data)
-            
+               
                 if serializer.is_valid():
+                   
                     serializer.save()
-                    print(account[0])
+                    
                     account=Account.objects.filter(client__email=request.user)
                     
 
                     acc = account.last()
-                
+            
+
+                    total_balance = account[0].total_balnce -int(request.data['amount'])
+                    account.update(total_balnce=total_balance)
+
                     account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
                     deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
                     )
@@ -265,7 +273,7 @@ class WithdrawalRequestDetail(APIView):
                     print('total_balance',total_amt)
                     print('amount',amount)
                     if total_amt > int(amount):
-                        print
+                        
                         ammount = total_amt- int(amount)
 
                         transaction_request.ammount = int(amount)
@@ -325,6 +333,21 @@ class BeneficiaryDetailsList(APIView,View):
 
         if serializer.is_valid():
             serializer.save()
+
+            client_for = serializer.data['client']
+            
+            client = User.objects.get(id=client_for)
+
+            account_q =Account.objects.filter(client=client)
+            
+            
+
+            for acc in account_q:
+
+                if acc.account_bene == None:
+
+                    account_q.update(account_bene=serializer.data['id'])
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors.values())
         return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
