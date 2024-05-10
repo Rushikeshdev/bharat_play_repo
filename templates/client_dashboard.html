@@ -76,6 +76,26 @@
 .highlight {
     background-color: #eeedf6;
   }
+
+  .jconfirm .jconfirm-box.jconfirm-type-red {
+     border-top: solid 7px #1f0e3b !important;
+    animation-name: type-red;
+}
+   .jconfirm .jconfirm-holder
+    {
+      width: 500px;
+    }
+    .jconfirm .jconfirm-cell
+    {
+      display: flex !important;
+    justify-content: center;
+    margin-top: 255px;
+    margin-left: 248px;
+    }
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-red
+{
+    background-color: #EF5350;
+}
     </style>
   </head>
   <body>
@@ -123,7 +143,7 @@
     <section id="add_beneficiary" class="dashboard">
       <div class="top">
         <div class="search_box">
-          <input type="search" placeholder="Search Client Id" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
+          <input type="search" placeholder="Search Beneficiary Name" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
         </div>
         <div class="search-box">
             <a href="{% url 'logout' %}"><span class="link-name"
@@ -180,7 +200,7 @@
                 type="text"
                 id="bname"
                 name="bname"
-                placeholder="bank name*"
+                placeholder="Bank Name*"
                 required
               /><br />
               <div class="submit_div">

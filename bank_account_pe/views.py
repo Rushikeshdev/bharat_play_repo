@@ -100,9 +100,10 @@ class ClientDashboard(APIView, TemplateView):
 
         acc_ste_list=[]
         account_access = []
+        acc_ste={}
         for acc in account_statements:
 
-            acc_ste={}
+           
             
             print('ACC',acc.account.account_bene.bene_account_name)
             if acc.withdraw != 0:
@@ -231,7 +232,7 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                             total_balance = bene_details.total_balnce - int(request.data['amount'])
                         else:
-                            return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+                            return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
 
 
                     
@@ -292,9 +293,12 @@ class WithdrawalRequestList(APIView, TemplateView):
             # Use a list comprehension to filter out duplicate dictionaries
             account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
-        
+            if len(account)>0:
+
+                total_bal_ = account[-1].total_balnce
+           
             
-            if  account and account[0].total_balnce >= int(request.data['amount']):
+            if  account and total_bal_ >= int(request.data['amount']):
                 data = {
 
                     'client':request.user.id,
@@ -342,7 +346,7 @@ class WithdrawalRequestList(APIView, TemplateView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as  e:
             return Response(e,status=status.HTTP_400_BAD_REQUEST)
 class WithdrawalRequestDetail(APIView):
@@ -601,11 +605,13 @@ class WalletListView(View):
             
             
             if account:
-                for account in account:
-                    print("account=",account.id)
-                    client_data['id'] = account.id
-                    client_data['ammount'] = account.ammount
-                    client_data['total_balnce'] = account.total_balnce
+                    acc=   account.last()
+                
+                    print("account",account)
+                    print("account=",acc.id)
+                    client_data['id'] = acc.id
+                    client_data['ammount'] = acc.ammount
+                    client_data['total_balnce'] = acc.total_balnce
                     
                     
                     context.append(client_data)
@@ -614,7 +620,7 @@ class WalletListView(View):
 
         
 
-        print(context)
+       
 
         def dict_compare(d1, d2):
             # Compare relevant keys

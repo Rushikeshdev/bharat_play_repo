@@ -68,6 +68,34 @@
       background-color: #0e0e37 !important;
       color: white;
     }
+    .jconfirm .jconfirm-box.jconfirm-type-red {
+     border-top: solid 7px #1f0e3b !important;
+    animation-name: type-red;
+}
+   .jconfirm .jconfirm-holder
+    {
+      width: 500px;
+    }
+    .jconfirm .jconfirm-cell
+    {
+      display: flex !important;
+    justify-content: center;
+    margin-top: 255px;
+    margin-left: 248px;
+    }
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-red
+{
+    background-color: #EF5350;
+}
+.jconfirm .jconfirm-box.jconfirm-type-green
+{
+  border-top: solid 7px #1f0e3b !important;
+}
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-blue 
+{
+  background-color: #0e0e37 !important;
+      color: white;
+}
   </style>
 </head>
 
@@ -183,6 +211,21 @@
 
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
+  <script>
+    $(document).ready(function() {
+      $('.status-dropdown').change(function() {
+        var selectedOption = $(this).val();
+        if (selectedOption === 'Approved') {
+          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Transaction ID/UTR No');
+        } else if (selectedOption === 'Rejected') {
+          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Reason For Rejection');
+        } else {
+          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Reason');
+        }
+      });
+    });
+  
+    </script>
 </body>
 
 </html>
