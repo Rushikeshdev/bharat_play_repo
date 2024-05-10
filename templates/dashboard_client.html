@@ -182,7 +182,12 @@
                         <td data-th="Serial No">{{forloop.counter}}</td>
                         <td data-th="Created Date">{{ac_ste.trn_date}}</td>
                         <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                        <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at }}', '{{ withdrawal_request.ammount }}', '{{ withdrawal_request.account_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
+                        {% if withdrawal_request.req_status == 'Approved'  %}
+                          <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
+                        {% else %}
+                        <td id=""  data-th="Txn">{{ac_ste.txn}}</td>
+                        {% endif %}
+
                         <td data-th="Status">{{withdrawal_request.req_status}}</td>
                         <td data-th="Reason">{{withdrawal_request.reasons}}</td>
                       </tr>
@@ -206,7 +211,7 @@
                           <div>
                               <p>Paid To</p>
                           </div>
-                          <div class="font_bold"></div>
+                          <div id='paid_to_id' class="font_bold"></div>
                       </div>
                       <div class="statement_info">
                           <div>
@@ -228,7 +233,7 @@
                       </div>
                   <div class="frm_btn">
                       <div>
-                          <button>Done</button>
+                          <button id="id_done">Done</button>
                       </div>
                   </div>
               
@@ -241,17 +246,20 @@
     <!-- End Dashboard Section -->
     
 
- 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
   // Function to show the pop-up form and populate it with data
-  function showForm(formId, createdDate, amount, account_number, reasons,ref_number) {
+  function showForm(formId, createdDate, amount,paid_to ,account_number, reasons,ref_number) {
       var modal = document.getElementById(formId);
       
       var ammount = document.getElementById("model_amount");
       ammount.textContent = '₹'+" "+ amount;
 
-      var ammount = document.getElementById("model_account");
-      ammount.textContent = account_number;
+      var paid_to_1 = document.getElementById("paid_to_id");
+      paid_to_1.textContent = paid_to;
+
+      var account = document.getElementById("model_account");
+      account.textContent = account_number;
 
       var created_at = document.getElementById("model_created_at");
       created_at.textContent = createdDate;
@@ -267,7 +275,18 @@
       var modal = document.getElementById(formId);
       modal.style.display = "none"; // Hide the modal
   }
+ 
+
+  $("#id_done").click(function() {
+        // Assuming the form has an ID "myForm", you can close it like this:
+        $("#debitForm1").hide(); // or $("#myForm").fadeOut();
+    });
+
+
 </script>
+
+
+
 
     
   </body>

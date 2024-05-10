@@ -88,9 +88,9 @@ class ClientDashboard(APIView, TemplateView):
     def get(self, request):
         
         print('request-user',request.user)
-        withdrawal_requests = Account.objects.select_related('client').filter(client=request.user)
+        withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)
         serializer = AccountSerializer(withdrawal_requests, many=True)
-        
+       
         if len(withdrawal_requests) >0:
             balance=withdrawal_requests.last().total_balnce
         else:
@@ -101,19 +101,25 @@ class ClientDashboard(APIView, TemplateView):
         acc_ste_list=[]
         account_access = []
         for acc in account_statements:
+
             acc_ste={}
-
+            
+            print('ACC',acc.account.account_bene.bene_account_name)
             if acc.withdraw != 0:
-
+                
                 acc_ste['txn'] = 'withdraw'
                 acc_ste['trn_date'] = acc.trn_date
+                acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
             elif acc.deposit !=0:
                 acc_ste['txn'] = 'deposit'
                 acc_ste['trn_date'] = acc.trn_date
+                acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
 
-            acc_ste_list.append(acc_ste)
+        acc_ste_list.append(acc_ste)
         
-       
+        print('acc_ste_list=',acc_ste_list)
 
         zip_acc_ste=zip(serializer.data,acc_ste_list)
 
@@ -159,7 +165,7 @@ class WithdrawalRequestList(APIView, TemplateView):
             self.template_name = 'login.html'
         acc_ste=AccountStatement.objects.select_related('account').filter(deposit=0)
        
-        withdrawal_requests = Account.objects.all()
+        withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
         serializer = AccountSerializer(withdrawal_requests, many=True)
         context = {'withdrawal_requests': serializer.data}
         return self.render_to_response(context)
@@ -170,6 +176,102 @@ class WithdrawalRequestList(APIView, TemplateView):
             print("USER=",request.user)
 
             print("USER=",type(request.user.id))
+
+            if request.user.is_admin:
+
+                    
+           
+                    transaction_type = request.data['transaction_type']
+                
+                    if transaction_type.lower() == 'deposit':
+
+                        withdraw_ste =  0
+
+                        deposit_ste =  int(request.data['amount'])
+                   
+                        client = request.data['client']
+                        
+                        client_id=User.objects.get(email=client)
+
+                        
+
+                        account_data = Account.objects.filter(client=client_id.id)
+
+                        bene_details =  account_data.select_related('account_bene').last()
+
+                        print("Bal=",bene_details.total_balnce)
+
+                        account_name = bene_details.account_bene
+
+                        total_balance = bene_details.total_balnce + int(request.data['amount'])
+                    
+                    elif transaction_type.lower() == 'withdraw':
+
+                        withdraw_ste =  int(request.data['amount'])
+
+                        deposit_ste = 0
+
+                        client = request.data['client']
+                        
+                        client_id=User.objects.get(email=client)
+
+                        
+
+                        account_data = Account.objects.filter(client=client_id.id)
+
+                        bene_details =  account_data.select_related('account_bene').last()
+
+                        print("Bal=",bene_details.total_balnce)
+
+                        account_name = bene_details.account_bene
+
+                        print("Ammount=",int(request.data['amount']))
+
+                        if bene_details.total_balnce >= int(request.data['amount']):
+
+                            total_balance = bene_details.total_balnce - int(request.data['amount'])
+                        else:
+                            return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+
+
+                    
+
+
+                    data = {
+
+                        'client':client_id.id,
+                        'account_bene':account_name.id,
+                        'ammount': int(request.data['amount']),
+                        'account_name': account_name.bene_account_name,
+                        'account_number':account_name.bene_account_number,
+                        'branch_ifsc': account_name.bene_branch_ifsc,
+                        'bank_name': account_name.bene_bank_name,
+                        'req_status':'Approved',
+                        'reasons':'NA',
+                        'ref_number':0,
+                        'total_balnce':total_balance
+                    
+
+                    }
+
+                    serializer = AccountSerializer(data=data)
+            
+                    if serializer.is_valid():
+                
+                        serializer.save()
+
+                        account_id = serializer.data['id']
+                        ste_acc=   Account.objects.get(id=account_id)
+
+                        print("main==",serializer.data)
+                        account_statement_from_client_withdr = AccountStatement.objects.create(account=ste_acc,
+                        deposit=deposit_ste,withdraw=withdraw_ste,trn_date=datetime.now())
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    print(serializer.errors)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    
+
+
 
             bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
@@ -211,21 +313,29 @@ class WithdrawalRequestList(APIView, TemplateView):
                 
 
                 serializer = AccountSerializer(data=data)
+
+                account=Account.objects.filter(client__email=request.user)
+                    
+
+                acc = account.last()
+
+                total_bal = account.last().total_balnce 
                
                 if serializer.is_valid():
                    
                     serializer.save()
                     
-                    account=Account.objects.filter(client__email=request.user)
                     
-
-                    acc = account.last()
-            
-
-                    total_balance = account[0].total_balnce -int(request.data['amount'])
+                    
+                    total_balance = total_bal-int(request.data['amount'])
                     account.update(total_balnce=total_balance)
 
-                    account_statement_from_client_withdr = AccountStatement.objects.create(account=acc,
+                    account_id = serializer.data['id']
+
+                    ste_acc=   Account.objects.get(id=account_id)
+
+                    print("main==",serializer.data)
+                    account_statement_from_client_withdr = AccountStatement.objects.create(account=ste_acc,
                     deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
                     )
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -293,7 +403,8 @@ class WithdrawalRequestDetail(APIView):
                     transaction_request.total_balnce = ammount
                     AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
                     
-                
+
+        print("Request_data",request.data)            
 
         serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
         if serializer.is_valid():
@@ -458,6 +569,7 @@ class WalletListView(View):
                 bene_account = BeneficiaryDetails.objects.all()
 
                 if bene_account:
+                    print("bene_account")
                     first_account=Account.objects.create(client=client,account_bene=bene_account[0],
                     ammount=0,ref_number=0)
                     print('with bene')
@@ -534,23 +646,21 @@ class AccountStatementView(View):
                 acc_ste=AccountStatement.objects.all()
 
 
-
                 context = []
 
                 for acc_s in acc_ste:
 
                     
-                   print(request.user)
-                   print(acc_s.account.client)
-                   if request.user == acc_s.account.client:
-                    
-                        account_statement = {
-                            'txn_date': acc_s.trn_date,
-                            'deposit': acc_s.deposit,
-                            'withdraw': acc_s.withdraw,
-                            'balance': acc_s.account.ammount
-                        }
-                        context.append(account_statement)
+
+                    if request.user == acc_s.account.client and acc_s.account.req_status=='Approved':
+                            print("hello")
+                            account_statement = {
+                                'txn_date': acc_s.trn_date,
+                                'deposit': acc_s.deposit,
+                                'withdraw': acc_s.withdraw,
+                                'balance': acc_s.account.ammount
+                            }
+                            context.append(account_statement)
 
                 
 
@@ -572,14 +682,8 @@ class AccountStatementView(View):
 
                     if client_new[0]['client__email']==str(request.user):
                         acc=Account.objects.filter(client=request.user).last()
-                        # print(acc)
-                        # def dict_compare(d1, d2):
-            
-                        #     return d1['account_bene'] == d2['account_bene'] 
-
-                        # # Use a list comprehension to filter out duplicate dictionaries
-                        # acc = [acc[i] for i in range(len(acc)) if all(not dict_compare(acc[i], acc[j]) for j in range(i+1, len(acc)))]
-                    
+                
+                       
                         balance=acc.total_balnce
                     else:
                         balance =0
@@ -589,7 +693,7 @@ class AccountStatementView(View):
 
                 print(context)
 
-                print()
+                
 
 
                 return render(request,self.template_name,context={"account_statement":context,'balance':balance})

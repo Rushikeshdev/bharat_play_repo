@@ -102,26 +102,28 @@
                 var cell1Value = $("#account_id").text();
                 var amount = inputBox.val();
                 var transactionType = reason;
+                var client_id = $("#client_for_wallet").text();
+                
 
-                // Get the id attribute of the clicked td element
-                $(".client1").on("click", function() {
-                    
-                });
+                console.log("client_id",client_id);
+                
 
 
                 // Perform AJAX request to Django view
                 $.ajax({
-                    url: '/withdrawal-requests/'+ tdId + '/', // Replace with your backend URL
-                    type: 'PUT',
+                    url: '/withdrawal-requests/', // Replace with your backend URL
+                    type: 'POST',
                     beforeSend: function(xhr, settings) {
                         xhr.setRequestHeader("X-CSRFToken", csrftoken);
                     },
                     data: {
                         account_id: tdId,
                         amount: amount,
+                        client:client_id,
                         transaction_type: transactionType,
                         'req_status':'NA',
-                        'reasons':'NA'
+                        'reasons':'NA',
+                       
                     },
                     success: function(response) {
                         window.location.reload();
