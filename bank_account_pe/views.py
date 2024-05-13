@@ -90,35 +90,43 @@ class ClientDashboard(APIView, TemplateView):
         print('request-user',request.user)
         withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)
         serializer = AccountSerializer(withdrawal_requests, many=True)
-       
-        if len(withdrawal_requests) >0:
-            balance=withdrawal_requests.last().total_balnce
-        else:
-            balance = 0
+        
+
+        
 
         account_statements = AccountStatement.objects.select_related('account').all()
+
+        
 
         acc_ste_list=[]
         account_access = []
         acc_ste={}
+        balance = 0
         for acc in account_statements:
 
-           
-            
-            print('ACC',acc.account.account_bene.bene_account_name)
-            if acc.withdraw != 0:
-                
-                acc_ste['txn'] = 'withdraw'
-                acc_ste['trn_date'] = acc.trn_date
-                acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
-                acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
-            elif acc.deposit !=0:
-                acc_ste['txn'] = 'deposit'
-                acc_ste['trn_date'] = acc.trn_date
-                acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
-                acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+            if acc:
 
-        acc_ste_list.append(acc_ste)
+                balance=acc.account.total_balnce
+            else:
+              balance = 0
+
+
+            
+            
+            if acc.account.account_bene is not None:
+                if acc.withdraw != 0:
+                    
+                    acc_ste['txn'] = 'withdraw'
+                    acc_ste['trn_date'] = acc.trn_date
+                    acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                    acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+                elif acc.deposit !=0:
+                    acc_ste['txn'] = 'deposit'
+                    acc_ste['trn_date'] = acc.trn_date
+                    acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                    acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+
+                acc_ste_list.append(acc_ste)
         
         print('acc_ste_list=',acc_ste_list)
 
@@ -128,7 +136,7 @@ class ClientDashboard(APIView, TemplateView):
 
             account_access.append(zip_obj)
 
-        print(account_access)
+        print("HELLO",account_access)
 
         context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list}
         return self.render_to_response(context)
@@ -200,11 +208,18 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                         bene_details =  account_data.select_related('account_bene').last()
 
-                        print("Bal=",bene_details.total_balnce)
+                        print("Bal=",bene_details)
+
+                       
 
                         account_name = bene_details.account_bene
 
-                        total_balance = bene_details.total_balnce + int(request.data['amount'])
+                        print("account_name=",account_data)
+
+                        total_balance = bene_details.total_balnce + deposit_ste
+
+                        print("Total balance=",total_balance)
+
                     
                     elif transaction_type.lower() == 'withdraw':
 
@@ -224,6 +239,8 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                         print("Bal=",bene_details.total_balnce)
 
+                      
+
                         account_name = bene_details.account_bene
 
                         print("Ammount=",int(request.data['amount']))
@@ -235,30 +252,53 @@ class WithdrawalRequestList(APIView, TemplateView):
                             return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
 
 
+                    print("HELLO========")
+
+                    if account_name:
+
                     
+                        data = {
 
+                            'client':client_id.id,
+                            'account_bene':account_name.id,
+                            'ammount': int(request.data['amount']),
+                            'account_name': account_name.bene_account_name,
+                            'account_number':account_name.bene_account_number,
+                            'branch_ifsc': account_name.bene_branch_ifsc,
+                            'bank_name': account_name.bene_bank_name,
+                            'req_status':'Approved',
+                            'reasons':'NA',
+                            'ref_number':0,
+                            'total_balnce':total_balance,
+                        
+                        
 
-                    data = {
+                        }
+                    else:
 
-                        'client':client_id.id,
-                        'account_bene':account_name.id,
-                        'ammount': int(request.data['amount']),
-                        'account_name': account_name.bene_account_name,
-                        'account_number':account_name.bene_account_number,
-                        'branch_ifsc': account_name.bene_branch_ifsc,
-                        'bank_name': account_name.bene_bank_name,
-                        'req_status':'Approved',
-                        'reasons':'NA',
-                        'ref_number':0,
-                        'total_balnce':total_balance
-                    
+                        data = {
 
-                    }
+                            'client':client_id.id,
+                            'account_bene':None,
+                            'ammount': int(request.data['amount']),
+                            'account_name': '',
+                            'account_number':0,
+                            'branch_ifsc': '',
+                            'bank_name': '',
+                            'req_status':'Approved',
+                            'reasons':'NA',
+                            'ref_number':0,
+                            'total_balnce':total_balance,
+                        
+                        
+
+                        }
+
 
                     serializer = AccountSerializer(data=data)
-            
+                    print("HELO----------------->> 2")
                     if serializer.is_valid():
-                
+                        print("HELO----------------->> 3")
                         serializer.save()
 
                         account_id = serializer.data['id']
@@ -272,81 +312,88 @@ class WithdrawalRequestList(APIView, TemplateView):
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     
 
+            else:
 
+                    bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
-            bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
+                    check_acc=Account.objects.all()
 
-            check_acc=Account.objects.all()
+                    
 
-            
+                    if len(check_acc) ==1:
+                        check_acc.update(account_bene = bene)
 
-            if len(check_acc) ==1:
-                check_acc.update(account_bene = bene)
+                    account=check_acc.filter(account_bene=bene)
 
-            account=check_acc.filter(account_bene=bene)
-
-           
-            def dict_compare(d1, d2):
-                # Compare relevant keys
-                return d1.client == d2.client 
-
-            # Use a list comprehension to filter out duplicate dictionaries
-            account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
-
-            if len(account)>0:
-
-                total_bal_ = account[-1].total_balnce
-           
-            
-            if  account and total_bal_ >= int(request.data['amount']):
-                data = {
-
-                    'client':request.user.id,
-                    'account_bene':bene.id,
-                    'ammount': int(request.data['amount']),
-                    'account_name': request.data['aname'],
-                    'account_number':int(request.data['anumber']),
-                    'branch_ifsc': request.data['abranch'],
-                    'bank_name': request.data['bname'],
-                    'req_status':'pending',
-                    'reasons':'NA',
-                    'ref_number':0,
-                    'withdraw_request_client':True
-
-                }
                 
+                    def dict_compare(d1, d2):
+                        # Compare relevant keys
+                        return d1.client == d2.client 
 
-                serializer = AccountSerializer(data=data)
+                    # Use a list comprehension to filter out duplicate dictionaries
+                    account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
-                account=Account.objects.filter(client__email=request.user)
+                    if len(account)>0:
+
+                        total_bal_ = account[-1].total_balnce
+                
                     
+                    if  account and total_bal_ >= int(request.data['amount']):
+                        data = {
 
-                acc = account.last()
+                            'client':request.user.id,
+                            'account_bene':bene.id,
+                            'ammount': int(request.data['amount']),
+                            'account_name': request.data['aname'],
+                            'account_number':int(request.data['anumber']),
+                            'branch_ifsc': request.data['abranch'],
+                            'bank_name': request.data['bname'],
+                            'req_status':'pending',
+                            'reasons':'NA',
+                            'ref_number':0,
+                            'total_balnce': total_bal_,
+                            'withdraw_request_client':True
 
-                total_bal = account.last().total_balnce 
-               
-                if serializer.is_valid():
-                   
-                    serializer.save()
+                        }
+                        
+
+                        serializer = AccountSerializer(data=data)
+
+                        account=Account.objects.filter(client__email=request.user)
+                            
+
+                        acc = account.last()
+
+                        total_bal = account.last().total_balnce 
                     
-                    
-                    
-                    total_balance = total_bal-int(request.data['amount'])
-                    account.update(total_balnce=total_balance)
+                        if serializer.is_valid():
+                        
+                            serializer.save()
+                            
+                            account_id = serializer.data['id']
 
-                    account_id = serializer.data['id']
+                            
 
-                    ste_acc=   Account.objects.get(id=account_id)
+                            req_status = Account.objects.get(id=account_id)
+                           
+                            if req_status.req_status == 'Approved': 
+                                total_balance = total_bal-int(request.data['amount'])
+                                account.update(total_balnce=total_balance)
 
-                    print("main==",serializer.data)
-                    account_statement_from_client_withdr = AccountStatement.objects.create(account=ste_acc,
-                    deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
-                    )
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-                print(serializer.errors)
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                                
 
-            return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
+                            ste_acc=   Account.objects.get(id=account_id)
+
+                            print("main==",serializer.data)
+                            account_statement_from_client_withdr = AccountStatement.objects.create(account=ste_acc,
+                            deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
+                            )
+                            print("AccSte",account_statement_from_client_withdr)
+                            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                        print(serializer.errors)
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+                    return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as  e:
             return Response(e,status=status.HTTP_400_BAD_REQUEST)
 class WithdrawalRequestDetail(APIView):
@@ -364,7 +411,7 @@ class WithdrawalRequestDetail(APIView):
     def put(self, request, pk):
         transaction_request = self.get_object(pk)
        
-        print(transaction_request.id)
+        print(transaction_request.ammount)
         print(request.data)
 
         if request.data['req_status']=='approved':
@@ -383,7 +430,7 @@ class WithdrawalRequestDetail(APIView):
            
             if transaction_type.lower() == 'withdraw':
                    
-                    amount=request.data['amount']
+                    amount=transaction_request.ammount
                     print('total_balance',total_amt)
                     print('amount',amount)
                     if total_amt > int(amount):
@@ -456,7 +503,6 @@ class BeneficiaryDetailsList(APIView,View):
             account_q =Account.objects.filter(client=client)
             
             
-
             for acc in account_q:
 
                 if acc.account_bene == None:
@@ -606,13 +652,15 @@ class WalletListView(View):
             
             if account:
                     acc=   account.last()
-                
+                    
                     print("account",account)
                     print("account=",acc.id)
                     client_data['id'] = acc.id
                     client_data['ammount'] = acc.ammount
+                   
                     client_data['total_balnce'] = acc.total_balnce
                     
+
                     
                     context.append(client_data)
             
