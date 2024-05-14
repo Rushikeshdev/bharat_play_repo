@@ -16,6 +16,7 @@ from django.shortcuts import render
 from django.contrib.auth.hashers import check_password
 
 
+
 class UserList(APIView):
 
     
@@ -77,7 +78,38 @@ class AdminDashboard(APIView, TemplateView):
        
         withdrawal_requests = Account.objects.filter(ammount__gt=0)
         serializer = AccountSerializer(withdrawal_requests, many=True)
-        context = {'withdrawal_requests': serializer.data}
+        print('withdrawal_requests=====,',serializer.data)
+
+        
+
+        account_statement = []
+
+        for account in withdrawal_requests:
+
+            acc_ste_dict  ={}
+            acc_ste = AccountStatement.objects.filter(account=account)
+
+            for acc_s in acc_ste:
+
+                print(acc_s.withdraw)
+
+                if acc_s.withdraw !=0:
+                    acc_ste_dict['tnx'] = 'withdraw'
+                else:
+                    acc_ste_dict['tnx'] = 'deposit'
+
+            account_statement.append(acc_ste_dict)
+
+
+
+        account_and_statement = []
+        withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
+        
+        for zip_obj in withdraw_request_with_txn:
+
+            account_and_statement.append(zip_obj)
+        print(account_and_statement)
+        context = {'withdrawal_requests': account_and_statement,'txn':account_and_statement}
         return self.render_to_response(context)
 
 class ClientDashboard(APIView, TemplateView):
@@ -103,12 +135,12 @@ class ClientDashboard(APIView, TemplateView):
         acc_ste={}
         balance = 0
         for acc in account_statements:
-
-            if acc:
-
+            print("acc",acc)
+            if acc and acc.account.client==request.user :
+                print("hello")
                 balance=acc.account.total_balnce
-            else:
-              balance = 0
+            # else:
+            #   balance = 0
 
 
             
@@ -179,12 +211,14 @@ class WithdrawalRequestList(APIView, TemplateView):
         context = {'withdrawal_requests': serializer.data}
         return self.render_to_response(context)
        
-
+    
     def post(self, request):
         try:
             print("USER=",request.user)
-
+            print("USERSESSION=",request.session.get('email'))
             print("USER=",type(request.user.id))
+
+            print("REQUESTED_DATA=",request.data)
 
             if request.user.is_admin:
 
@@ -199,8 +233,14 @@ class WithdrawalRequestList(APIView, TemplateView):
                         deposit_ste =  int(request.data['amount'])
                    
                         client = request.data['client']
+
+                        print("client",client)
+
+                       
                         
                         client_id=User.objects.get(email=client)
+
+                        print("client_id",client_id)
 
                         
 
@@ -228,10 +268,10 @@ class WithdrawalRequestList(APIView, TemplateView):
                         deposit_ste = 0
 
                         client = request.data['client']
-                        
+                        print("client",client)
                         client_id=User.objects.get(email=client)
 
-                        
+                        print("client_id",client_id)
 
                         account_data = Account.objects.filter(client=client_id.id)
 
@@ -312,18 +352,24 @@ class WithdrawalRequestList(APIView, TemplateView):
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                     
 
-            else:
+            else:   
 
+                 
                     bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
+                   
                     check_acc=Account.objects.all()
 
+                   
+                    check_acc = check_acc.filter(client=request.user)
                     
 
                     if len(check_acc) ==1:
                         check_acc.update(account_bene = bene)
 
                     account=check_acc.filter(account_bene=bene)
+                   
+                    
 
                 
                     def dict_compare(d1, d2):
@@ -336,7 +382,9 @@ class WithdrawalRequestList(APIView, TemplateView):
                     if len(account)>0:
 
                         total_bal_ = account[-1].total_balnce
-                
+                    print('account',account)
+
+                    print('total_bal',total_bal_)
                     
                     if  account and total_bal_ >= int(request.data['amount']):
                         data = {
@@ -516,7 +564,7 @@ class BeneficiaryDetailsList(APIView,View):
                 if acc.account_bene == None:
 
                     account_q.update(account_bene=serializer.data['id'])
-
+                    
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors.values())
         return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -547,7 +595,7 @@ class BeneficiaryDetailsDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class ClientWalletList(APIView,TemplateView):
+
 
     
 
@@ -572,10 +620,13 @@ class UserLogin(APIView):
             
             if user.is_admin:
                 login(request,user)
-                print('is_admin')
+                request.session['user_id'] = user.id
+                request.session['email'] = user.email
                 return Response({'message': 'Login successful','user':'is_admin'}, status=status.HTTP_200_OK)
             elif user.is_client:
                 login(request,user)
+                request.session['user_id'] = user.id
+                request.session['email'] = user.email
                 return Response({'message': 'Login successful','user':'is_client'}, status=status.HTTP_200_OK)
 
 
@@ -618,22 +669,25 @@ class WalletListView(View):
                     'created_at':client.created
             }
 
+            print('client',client)
            
             # Retrieve account data for the current client
             account = Account.objects.filter(client__email=client.email)
-
+            
+            check_bene = BeneficiaryDetails.objects.all()  
            
             if  not account:
-                bene_account = BeneficiaryDetails.objects.all()
+                if check_bene:
+                    bene_account = BeneficiaryDetails.objects.get(client=client)
 
-                if bene_account:
-                    print("bene_account")
-                    first_account=Account.objects.create(client=client,account_bene=bene_account[0],
-                    ammount=0,ref_number=0)
-                    print('with bene')
-                    client_data['id'] = first_account.id
-                    client_data['ammount'] = first_account.ammount
-                    client_data['total_balnce'] = first_account.total_balnce
+                    if bene_account:
+                        print("bene_account")
+                        first_account=Account.objects.create(client=client,account_bene=bene_account,
+                        ammount=0,ref_number=0)
+                        print('with bene')
+                        client_data['id'] = first_account.id
+                        client_data['ammount'] = first_account.ammount
+                        client_data['total_balnce'] = first_account.total_balnce
 
                     
                     

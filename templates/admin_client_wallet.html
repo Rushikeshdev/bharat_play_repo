@@ -117,12 +117,18 @@
                       </tr>
                       {% for wallet in wallet %}
                       
-                      <tr>
+                      <!-- <tr>
                         <td data-th="Serial No">{{forloop.counter}}</td>
                         <td id="client_for_wallet" data-th="client_id">{{wallet.client}}</td>
                         <td data-th="Created Date">{{wallet.created_at}}</td>
                         <td id="{{ wallet.id }}" data-th="Amount">{{wallet.total_balnce}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
-                      </tr>
+                      </tr> -->
+                      <tr>
+                        <td data-th="Serial No">{{ forloop.counter }}</td>
+                        <td id="client_for_wallet_{{ wallet.id }}" data-th="client_id">{{ wallet.client }}</td>
+                        <td data-th="Created Date">{{ wallet.created_at }}</td>
+                        <td id="amount_for_wallet_{{ wallet.id }}" data-th="Amount">{{ wallet.total_balnce }} &nbsp <i class="uil uil-eye client1"></i></td>
+                      </tr>    
                       {% endfor %}
                 </tbody>
                 

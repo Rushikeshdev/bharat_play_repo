@@ -5,8 +5,12 @@
     $(document).ready(function() {
 
         var tdId;
+        var clientId;
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         $(".client1, .client2, .client3, .client4").on("click", function() {
+
+            clientId = $(this).closest('tr').find('[data-th="client_id"]').text();
+            
             
             tdId = $(this).parent().attr("id");
             console.log("ID of clicked td:", tdId);
@@ -102,7 +106,7 @@
                 var cell1Value = $("#account_id").text();
                 var amount = inputBox.val();
                 var transactionType = reason;
-                var client_id = $("#client_for_wallet").text();
+                var client_id = clientId;
                 
 
                 console.log("client_id",client_id);
