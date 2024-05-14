@@ -388,7 +388,7 @@ class WithdrawalRequestList(APIView, TemplateView):
                             account_statement_from_client_withdr = AccountStatement.objects.create(account=ste_acc,
                             deposit=0,withdraw=int(request.data['amount']),trn_date=datetime.now()
                             )
-                            print("AccSte",account_statement_from_client_withdr)
+                            
                             return Response(serializer.data, status=status.HTTP_201_CREATED)
                         print(serializer.errors)
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -441,7 +441,15 @@ class WithdrawalRequestDetail(APIView):
 
                         transaction_request.total_balnce = ammount
 
-                        AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
+                        client_with_request=AccountStatement.objects.all().last()
+                        print("client_with_request",client_with_request)
+                        client_with_request.account=transaction_request
+                        client_with_request.deposit=0
+                        client_with_request.withdraw=amount
+                        client_with_request.trn_date=datetime.now()
+                        client_with_request.save()
+
+                        # AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
                     else:
                         return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
             elif transaction_type.lower() == 'deposit':

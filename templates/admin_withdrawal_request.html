@@ -182,18 +182,20 @@
                   <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
 
                   <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
-                  <td data-th="Action">
-                    <select class="status-dropdown" data-request-id="{{ withdrawal_request.id }}">
-                      <option value="Pending">Pending</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Rejected">Rejected</option>
-                    </select>
-                    <div class="extra-fields" style="display: none;">
-                      <input type="text" placeholder="Enter Reason" class="extra-textbox">
-                      <button type="button" class="submit-button">Submit</button>
-                    </div>
-                  </td>
-
+                  
+                  {% if withdrawal_request.req_status != 'Approved' %}
+                    <td data-th="Action">
+                      <select class="status-dropdown" data-request-id="{{ withdrawal_request.id }}">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                      </select>
+                      <div class="extra-fields" style="display: none;">
+                        <input type="text" placeholder="Enter Reason" class="extra-textbox">
+                        <button type="button" class="submit-button">Submit</button>
+                      </div>
+                    </td>
+                  {% endif %}
 
                 </tr>
                 {% endfor %}
