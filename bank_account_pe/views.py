@@ -75,7 +75,7 @@ class AdminDashboard(APIView, TemplateView):
 
     def get(self, request):
        
-        withdrawal_requests = Account.objects.all()
+        withdrawal_requests = Account.objects.filter(ammount__gt=0)
         serializer = AccountSerializer(withdrawal_requests, many=True)
         context = {'withdrawal_requests': serializer.data}
         return self.render_to_response(context)
