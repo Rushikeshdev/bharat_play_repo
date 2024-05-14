@@ -176,7 +176,7 @@
                         <th>Transaction</th>
                         <th>Status</th>
                         <th>Reason</th>
-                        <th>UTR Number</th>
+                        
                       </tr>
                       {% for withdrawal_request,ac_ste in withdrawal_requests %}
                       <tr>
@@ -190,8 +190,12 @@
                         {% endif %}
 
                         <td data-th="Status">{{withdrawal_request.req_status}}</td>
-                        <td data-th="Reason">{{withdrawal_request.reasons}}</td>
-                        <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
+                        
+                        {% if withdrawal_request.req_status == 'Approved' %} 
+                           <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
+                        {% else %}
+                            <td data-th="Reason">{{withdrawal_request.reasons}}</td>
+                        {% endif %}
                       </tr>
                       {% endfor %}
                     </tbody>

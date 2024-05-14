@@ -170,7 +170,6 @@
                   <th>Created Date</th>
                   <th>Amount</th>
                   <th>Reasons</th>
-                  <th>UTR Number</th>
                   <th>Current Status</th>
                   <th>Request Status</th>
                 </tr>
@@ -180,8 +179,18 @@
                   <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
                   <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
                   <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                  <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
-                  <td data-th="UTR Number" id="utr_number_id">{{withdrawal_request.ref_number}}</td>
+
+                  {% if withdrawal_request.req_status == 'Approved' %}
+
+                      <td data-th="UTR Number" id="utr_number">{{withdrawal_request.ref_number}}</td>
+                  {% else %}
+
+                      <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
+
+
+                  {% endif %}
+                  
+                 
                   <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
                   
                   {% if withdrawal_request.req_status != 'Approved' %}
