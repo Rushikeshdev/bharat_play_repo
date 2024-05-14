@@ -106,7 +106,7 @@ class Account(models.Model):
     ammount = models.IntegerField()
     req_status = models.CharField(max_length=255,default='pending')
     reasons = models.CharField(max_length=255,default='')
-    ref_number = models.BigIntegerField()
+    ref_number = models.CharField(max_length=255)
     total_balnce = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now=True)
     withdraw_request_client = models.BooleanField(default=False)
