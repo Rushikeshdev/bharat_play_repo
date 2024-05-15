@@ -193,7 +193,7 @@
                  
                   <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
                   
-                  {% if withdrawal_request.req_status != 'Approved' %}
+                  {% if withdrawal_request.req_status != 'Approved' or if withdrawal_request.req_status != 'Rejected' %}
                     <td data-th="Action">
                       <select class="status-dropdown" data-request-id="{{ withdrawal_request.id }}">
                         <option value="Pending">Pending</option>
