@@ -363,13 +363,13 @@ class WithdrawalRequestList(APIView, TemplateView):
                    
                     check_acc = check_acc.filter(client=request.user)
                     
-
+                    print("account----------check",check_acc)
                     if len(check_acc) ==1:
                         check_acc.update(account_bene = bene)
 
                     account=check_acc.filter(account_bene=bene)
                    
-                    
+                    print("account----------",account)
 
                 
                     def dict_compare(d1, d2):
@@ -379,9 +379,12 @@ class WithdrawalRequestList(APIView, TemplateView):
                     # Use a list comprehension to filter out duplicate dictionaries
                     account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
+
                     if len(account)>0:
 
                         total_bal_ = account[-1].total_balnce
+
+                    
                     print('account',account)
 
                     print('total_bal',total_bal_)
@@ -548,7 +551,7 @@ class BeneficiaryDetailsList(APIView,View):
         }
 
         serializer = BeneficiaryDetailsSerializer(data=data)
-
+        total_bal =0
         if serializer.is_valid():
             serializer.save()
 
@@ -564,7 +567,17 @@ class BeneficiaryDetailsList(APIView,View):
                 if acc.account_bene == None:
 
                     account_q.update(account_bene=serializer.data['id'])
+                elif acc and acc.account_bene != serializer.data:
+                     total_bal=acc.total_balnce 
                     
+            
+            new_bene_bal=account_q.filter(account_bene=serializer.data['id'])
+
+            print("======",new_bene_bal)
+            if not new_bene_bal:
+                bene_instance = BeneficiaryDetails.objects.get(id=serializer.data['id'])
+                Account.objects.create(client=client,account_bene=bene_instance,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=total_bal)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors.values())
         return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
