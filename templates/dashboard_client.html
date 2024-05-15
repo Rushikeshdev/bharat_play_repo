@@ -184,7 +184,7 @@
                         <td data-th="Created Date">{{ac_ste.trn_date}}</td>
                         <td data-th="Amount">{{withdrawal_request.ammount}}</td>
                         {% if withdrawal_request.req_status == 'Approved'  %}
-                          <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
+                          <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at_formatted }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
                         {% else %}
                         <td id=""  data-th="Txn">{{ac_ste.txn}}</td>
                         {% endif %}
