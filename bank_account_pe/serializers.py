@@ -36,12 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class AccountSerializer(serializers.ModelSerializer):
     client_email = serializers.SerializerMethodField()
+    created_at_formatted = serializers.SerializerMethodField()
     class Meta:
         model = Account
         fields = '__all__'
     def get_client_email(self, obj):
         # Access the email of the related client User
         return obj.client.email
+
+    def get_created_at_formatted(self, obj):
+        return obj.created_at.strftime("%b %d, %Y, %I:%M %p")
 
 
 

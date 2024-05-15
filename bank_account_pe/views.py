@@ -208,6 +208,7 @@ class WithdrawalRequestList(APIView, TemplateView):
        
         withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
         serializer = AccountSerializer(withdrawal_requests, many=True)
+        print("SER",serializer.data)
         context = {'withdrawal_requests': serializer.data}
         return self.render_to_response(context)
        
