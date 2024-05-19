@@ -89,7 +89,19 @@
         display: flex;
       }
     </style>
+     <style>
+      #exportBtnClient {
+          padding: 10px 20px;
+          background-color: #4CAF50;
+          color: white;
+          border: none;
+          cursor: pointer;
+      }
 
+      #exportBtnClient:hover {
+          background-color: #45a049;
+      }
+    </style>
     <title>Dashboard Panel</title>
   </head>
   <body>
@@ -150,9 +162,12 @@
             >Logout
             <span style="font-weight: 600; font-size: 16px">↪️</span></span
           ></a>
+         
         </div>
-
-        <!--<img src="images/profile.jpg" alt="">-->
+        <div>
+        <button id="exportBtnClient">Export</button>
+        <input type="text" id="searchBarClient" placeholder="Search">
+        </div>
       </div>
 
       <div class="dash-content">
@@ -166,7 +181,7 @@
         <div class="activity">
           <div class="activity-data">
             <div class="container">
-                <table class="rwd-table">
+                <table class="rwd-table" id="client_dashboard_table">
 
                     <tbody>
                       <tr>
@@ -290,9 +305,10 @@
 
 
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-
-
+{% include 'js/client_dashboard_export_js.html' %}
 
     
   </body>

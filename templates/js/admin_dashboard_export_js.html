@@ -15,12 +15,28 @@
             XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
         });
 
-        $('#searchBarAdmin').on('keyup', function() {
-                var value = $(this).val().toLowerCase();
-                $('#admin_dashboard_table tbody tr').filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
+       
+        $('#searchBarAdmin').on('input', function() {
+            var value = $(this).val().toLowerCase();
+            var found = false;
+
+            $('#admin_dashboard_table tbody tr').each(function(index) {
+                if (index === 0) return; // Skip the header row
+
+                var rowText = $(this).text().toLowerCase();
+
+                if (rowText.includes(value)) {
+                    $(this).show();
+                    found = true;
+                } else {
+                    $(this).hide();
+                }
             });
+
+            // if (found) {
+            //     $('#searchBarAdmin').val('');
+            // }
+        });
 
 
     });

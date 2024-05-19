@@ -1,0 +1,44 @@
+<script>
+    $(document).ready(function() {
+        $('#exportBtnClient').click(function() {
+            // Reference to the table
+            var table = $('#client_dashboard_table')[0];
+            
+            // Convert the table to a worksheet
+            var worksheet = XLSX.utils.table_to_sheet(table);
+            
+            // Create a new workbook and append the worksheet
+            var workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+            
+            // Export the workbook to an Excel file
+            XLSX.writeFile(workbook, 'client_dashboard_data.xlsx');
+        });
+
+       
+
+        $('#searchBarClient').on('input', function() {
+                var value = $(this).val().toLowerCase();
+                var found = false;
+
+                $('#client_dashboard_table tbody tr').each(function(index) {
+                    if (index === 0) return; // Skip the header row
+
+                    var rowText = $(this).text().toLowerCase();
+
+                    if (rowText.includes(value)) {
+                        $(this).show();
+                        found = true;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // if (found) {
+                //     $('#searchBarClient').val('');
+                // }
+            });
+
+
+    });
+</script>
