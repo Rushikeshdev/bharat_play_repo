@@ -463,14 +463,13 @@ class WithdrawalRequestDetail(APIView):
     def put(self, request, pk):
         transaction_request = self.get_object(pk)
        
-        print(transaction_request.ammount)
-        print(request.data)
-
-        if request.data['req_status']=='approved':
-
+       
+        if request.data['req_status']=='Approved':
+            print("HI HELOO HI",request.data)
+            transaction_request.admin_remark = request.data['admin_remark']
             transaction_request.ref_number = request.data['ref_number']
             transaction_request.reasons = request.data['reasons']
-        elif request.data['req_status']=='rejected':
+        elif request.data['req_status']=='Rejected':
             transaction_request.reasons = request.data['reasons']
 
 

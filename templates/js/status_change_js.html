@@ -24,10 +24,12 @@
         // Add event listener to submit button
         $('.submit-button').click(function() {
             var parentTd = $(this).parent();
+            var adminremarkValue = parentTd.find('.extra-textbox1').val();
             var textboxValue = parentTd.find('.extra-textbox').val();
             
             console.log('Submitted value:', textboxValue);
             console.log('selectedOption:', selectedOption);
+            console.log('adminremarkValue', adminremarkValue);
             var data
             if (selectedOption === 'Approved') {
 
@@ -37,6 +39,7 @@
                     'ref_number':textboxValue,
                     'reasons':'NA',
                     'transaction_type':'withdraw',
+                    'admin_remark':adminremarkValue,
                     'req_status':selectedOption
 
                 }

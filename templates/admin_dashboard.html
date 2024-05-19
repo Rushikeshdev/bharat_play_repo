@@ -18,6 +18,20 @@
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
 
+      <style>
+        #exportBtn {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #exportBtn:hover {
+            background-color: #45a049;
+        }
+    </style>
+
     <title>Admin Dashboard Panel</title>
   </head>
   <body>
@@ -67,6 +81,16 @@
                 style="font-weight: 600; font-size: 16px">↪️</span></span></a>
         </div>
 
+        <div class="search-box">
+          <button id="exportBtn">Export</button>
+          
+        </div>
+
+        <div>
+          <input type="text" id="searchBarAdmin" placeholder="Search">
+
+        </div>
+
         <!--<img src="images/profile.jpg" alt="">-->
       </div>
 
@@ -82,7 +106,7 @@
           <div class="activity-data">
             <div class="container">
                 
-              <table class="rwd-table">
+              <table class="rwd-table" id="admin_dashboard_table">
 
                 <tbody>
                   <tr>
@@ -92,7 +116,8 @@
                     <th>Amount</th>
                     <th>Transaction</th>
                     <th>Status</th>
-                    <th>Reason</th>
+                    <th>Remark</th>
+                    <th>Admin</th>
                   </tr>
                   {% for withdrawal_request,txn in withdrawal_requests %}
                   <tr>
@@ -108,6 +133,7 @@
                         <td data-th="Reason">{{withdrawal_request.reasons}}</td>
 
                     {% endif %}
+                    <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
                     
                   </tr>
                   {% endfor %}
@@ -120,6 +146,9 @@
     </section>
     <!-- End Dashboard Section -->
 
-    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    {% include 'js/admin_dashboard_export_js.html' %}
   </body>
 </html>
