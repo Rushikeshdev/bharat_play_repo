@@ -19,18 +19,54 @@
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
 
       <style>
-        #exportBtn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
+        .export_style{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  }
 
-        #exportBtn:hover {
-            background-color: #45a049;
-        }
-    </style>
+
+.export-btn {
+  background-color: #1c003b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-btn:hover {
+  background-color: #1c004b;
+}
+
+
+.search-bar {
+  width: 250px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.search-bar:focus {
+  border-color: #1c004b;
+  outline: none;
+}
+.overview
+{
+display:flex;
+justify-content:space-between;
+}
+</style>
 
     <title>Admin Dashboard Panel</title>
   </head>
@@ -81,7 +117,7 @@
                 style="font-weight: 600; font-size: 16px">↪️</span></span></a>
         </div>
 
-        <div class="search-box">
+        <!-- <div class="search-box">
           <button id="exportBtn">Export</button>
           
         </div>
@@ -89,9 +125,9 @@
         <div>
           <input type="text" id="searchBarAdmin" placeholder="Search">
 
-        </div>
+        </div> -->
 
-        <!--<img src="images/profile.jpg" alt="">-->
+        
       </div>
 
       <div class="dash-content">
@@ -100,7 +136,16 @@
             <i class="uil uil-tachometer-fast-alt"></i>
             <span class="text">Dashboard</span>
           </div>
+          <div class="search-box export_style">
+          
+            <button  class="export-btn" id="exportBtn">Export</button>
+                      
+            <input type="text"   class="search-bar"  id="searchBarAdmin" placeholder="Search">
+            
+            </div>
         </div>
+        <br>
+        <br>
 
         <div class="activity">
           <div class="activity-data">

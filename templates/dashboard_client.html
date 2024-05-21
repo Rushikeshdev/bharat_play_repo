@@ -90,17 +90,55 @@
       }
     </style>
      <style>
-      #exportBtnClient {
-          padding: 10px 20px;
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          cursor: pointer;
-      }
+      
 
-      #exportBtnClient:hover {
-          background-color: #45a049;
-      }
+     
+      .overview
+      {
+      display:flex;
+      justify-content:space-between;
+      }.export_style{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  }
+
+
+.export-btn {
+  background-color: #1c003b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.export-btn:hover {
+  background-color: #1c004b;
+}
+
+
+.search-bar {
+  width: 250px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.search-bar:focus {
+  border-color: #1c004b;
+  outline: none;
+}
     </style>
     <title>Dashboard Panel</title>
   </head>
@@ -164,10 +202,11 @@
           ></a>
          
         </div>
-        <div>
+        <!-- <div>
         <button id="exportBtnClient">Export</button>
         <input type="text" id="searchBarClient" placeholder="Search">
-        </div>
+        </div> -->
+        
       </div>
 
       <div class="dash-content">
@@ -176,8 +215,14 @@
             <i class="uil uil-tachometer-fast-alt"></i>
             <span class="text">Submitted Form</span>
           </div>
+          <div class="export_style">
+            <button class="export-btn" id="exportBtnClient" >Export</button>
+        
+            <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
+          </div>
         </div>
-
+        <br>
+        <br>
         <div class="activity">
           <div class="activity-data">
             <div class="container">
