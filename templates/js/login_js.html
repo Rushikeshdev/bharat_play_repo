@@ -41,8 +41,40 @@ $(document).ready(function() {
                         
                         });
 
+                        
+
                             
                             
+
+
+                        }
+                        if (response.user == 'is_superadmin'){
+
+                            $.confirm({
+                            title: ``,
+                            content:"SuperAdmin Login Successfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.href = "/admin_dashboard/template/"; 
+                                }
+                            
+                                
+                            },
+                            },
+
+
+                            });
+
+
+
+
+
 
 
                         }

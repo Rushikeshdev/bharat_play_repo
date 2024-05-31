@@ -1,0 +1,80 @@
+<script>
+    $(document).ready(function() {
+        $('#superadminexportBtn').click(function() {
+            // Reference to the table
+            var table = $('#superadmin_withdraw_table')[0];
+            
+            // Convert the table to a worksheet
+            var worksheet = XLSX.utils.table_to_sheet(table);
+            
+            // Create a new workbook and append the worksheet
+            var workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+            
+            // Export the workbook to an Excel file
+            XLSX.writeFile(workbook, 'superadmin_withdraw_data.xlsx');
+        });
+
+       
+        $('#searchBarSuperAdmin').on('input', function() {
+            var value = $(this).val().toLowerCase();
+            var found = false;
+
+            $('#superadmin_withdraw_table tbody tr').each(function(index) {
+                if (index === 0) return; // Skip the header row
+
+                var rowText = $(this).text().toLowerCase();
+
+                if (rowText.includes(value)) {
+                    $(this).show();
+                    found = true;
+                } else {
+                    $(this).hide();
+                }
+            });
+
+            // if (found) {
+            //     $('#searchBarAdmin').val('');
+            // }
+        });
+
+    var startDatePicker = flatpickr("#start-date", {
+      dateFormat: "Y-m-d",
+      onChange: filterTable
+    });
+
+    var endDatePicker = flatpickr("#end-date", {
+      dateFormat: "Y-m-d",
+      onChange: filterTable
+    });
+
+    // Initial call to filter table based on default dates
+    filterTable();
+
+    $("#filter-button").click(function() {
+      filterTable();
+    });
+
+    function filterTable(selectedDates, dateStr, instance) {
+      var startDate = startDatePicker.selectedDates[0];
+      var endDate = endDatePicker.selectedDates[0];
+
+      var rows = $("#superadmin_withdraw_table tbody tr");
+
+      rows.each(function() {
+        var createdDate = new Date($(this).find("td[data-th='Created Date']").text());
+
+        if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
+          $(this).show();
+        } else {
+          // $(this).hide();
+        }
+      });
+}
+
+
+
+
+
+    });
+</script>

@@ -21,13 +21,29 @@ class UserList(APIView):
 
     
     def get(self, request):
-        users = User.objects.filter(is_client=True)
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+
+        try:
+            if request.user.is_superadmin and request.query_params.get('user_type')== "admin":
+                users = User.objects.filter(is_superadmin=False ,is_admin=True)
+                serializer = UserSerializer(users, many=True)
+            elif request.user.is_superadmin or request.user.is_admin:
+                users = User.objects.filter(is_client=True)
+                serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+             return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         try:
-            data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
+            if request.user.is_superadmin and request.data.get('creating_admin'):
+
+                data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': False, 'is_admin': True,'raw_password':request.data.get('password')}
+
+            elif request.user.is_superadmin and not request.data.get('creating_admin'):
+                 data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
+
+            elif request.user.is_admin and not request.user.is_superadmin:
+                data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
             
             serializer = UserSerializer(data=data_to_update)
             
@@ -72,9 +88,19 @@ class UserDetail(APIView):
 class AdminDashboard(APIView, TemplateView):
     
 
-    template_name = 'admin_dashboard.html'
+    template_name_admin = 'admin_dashboard.html'
+
+    template_name_superadmin = 'superadmin_dashboard.html'
 
     def get(self, request):
+
+        if request.user.is_superadmin:
+
+            self.template_name = self.template_name_superadmin
+
+        elif request.user.is_admin and not request.user.is_superadmin :
+
+            self.template_name = self.template_name
        
         withdrawal_requests = Account.objects.filter(ammount__gt=0)
         serializer = AccountSerializer(withdrawal_requests, many=True)
@@ -119,14 +145,14 @@ class ClientDashboard(APIView, TemplateView):
 
     def get(self, request):
         
-        print('request-user',request.user)
+        
         withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)
         serializer = AccountSerializer(withdrawal_requests, many=True)
         
 
         
 
-        account_statements = AccountStatement.objects.select_related('account').all()
+        account_statements = AccountStatement.objects.select_related('account').all().order_by('id')
 
         
 
@@ -134,11 +160,14 @@ class ClientDashboard(APIView, TemplateView):
         account_access = []
         acc_ste={}
         balance = 0
+        withdrawal_today = 0
         for acc in account_statements:
-            print("acc",acc)
+            
             if acc and acc.account.client==request.user :
-                print("hello")
                 balance=acc.account.total_balnce
+                print(acc.account.withdrawal_day)
+                if acc.account.withdrawal_day == datetime.now().date() and acc.account.req_status=="Approved":
+                    withdrawal_today = acc.account.withdrawal_today
             # else:
             #   balance = 0
 
@@ -160,17 +189,16 @@ class ClientDashboard(APIView, TemplateView):
 
                 acc_ste_list.append(acc_ste)
         
-        print('acc_ste_list=',acc_ste_list)
-
+      
         zip_acc_ste=zip(serializer.data,acc_ste_list)
 
         for zip_obj in zip_acc_ste:
 
             account_access.append(zip_obj)
 
-        print("HELLO",account_access)
+      
 
-        context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list}
+        context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrawal_today}
         return self.render_to_response(context)
 
 
@@ -180,6 +208,8 @@ class ClientDashboard(APIView, TemplateView):
 
     
 class WithdrawalRequestList(APIView, TemplateView):
+
+    html_template_superadmin = 'superadmin_withdraw_request.html'
 
     html_template_client = 'client_main_dashboard.html'
 
@@ -193,33 +223,47 @@ class WithdrawalRequestList(APIView, TemplateView):
     
     def get(self, request):
         # Check if the user is authenticated
+        try:
+            if request.user.is_authenticated:
+                print('REQUEST',request.user)
+
+                if request.user.is_superadmin:
+                    print('is_superadmin...')
+                    self.template_name = self.html_template_superadmin
+
+                elif request.user.is_admin and not request.user.is_superadmin :
+                    print('is_admin...')
+                    self.template_name = self.html_template_admin
+                elif request.user.is_client:
+                    self.template_name = self.html_template_client
+            else:
+                print("not auth...")
+                self.template_name = 'login.html'
+            acc_ste=AccountStatement.objects.select_related('account').filter(deposit=0)
         
-        if request.user.is_authenticated:
-            print('REQUEST',request.user)
-            if request.user.is_admin:
-                print('is_admin...')
-                self.template_name = self.html_template_admin
-            elif request.user.is_client:
-                self.template_name = self.html_template_client
-        else:
-            print("not auth...")
-            self.template_name = 'login.html'
-        acc_ste=AccountStatement.objects.select_related('account').filter(deposit=0)
-       
-        withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
-        serializer = AccountSerializer(withdrawal_requests, many=True)
-        print("SER",serializer.data)
-        context = {'withdrawal_requests': serializer.data}
-        return self.render_to_response(context)
+            withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
+            serializer = AccountSerializer(withdrawal_requests, many=True)
+        
+
+            admin_approved_amount = withdrawal_requests.filter(req_status='Approved',status_change_by=request.user,withdrawal_day=datetime.now().date())
+
+            approved_amount = admin_approved_amount.all().values('ammount')
+
+        
+            admin_withdrwal_amount = sum(item['ammount'] for item in approved_amount)
+
+            print("serializer.data",serializer.data)
+
+            context = {'withdrawal_requests': serializer.data,'withdrawal_today':admin_withdrwal_amount}
+            return self.render_to_response(context)
+        
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
     
     def post(self, request):
         try:
-            print("USER=",request.user)
-            print("USERSESSION=",request.session.get('email'))
-            print("USER=",type(request.user.id))
-
-            print("REQUESTED_DATA=",request.data)
+           
 
             if request.user.is_admin:
 
@@ -311,7 +355,7 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_balance,
-                        
+                            'withdrawal_day':datetime.now().date()
                         
 
                         }
@@ -330,7 +374,7 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_balance,
-                        
+                            'withdrawal_day':datetime.now().date()
                         
 
                         }
@@ -389,6 +433,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                     print('account',account)
 
                     print('total_bal',total_bal_)
+
+                   
                     
                     if  account and total_bal_ >= int(request.data['amount']):
                         data = {
@@ -404,7 +450,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce': total_bal_,
-                            'withdraw_request_client':True
+                            'withdraw_request_client':True,
+                            'withdrawal_day':datetime.now().date()
 
                         }
                         
@@ -417,6 +464,11 @@ class WithdrawalRequestList(APIView, TemplateView):
                         acc = account.last()
 
                         total_bal = account.last().total_balnce 
+
+                        current_date = datetime.now().strftime('%Y-%m-%d')
+
+
+
                     
                         if serializer.is_valid():
                         
@@ -431,6 +483,9 @@ class WithdrawalRequestList(APIView, TemplateView):
                             if req_status.req_status == 'Approved': 
                                 total_balance = total_bal-int(request.data['amount'])
                                 account.update(total_balnce=total_balance)
+
+                            
+
 
                                 
 
@@ -448,6 +503,9 @@ class WithdrawalRequestList(APIView, TemplateView):
                     return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as  e:
             return Response(e,status=status.HTTP_400_BAD_REQUEST)
+
+
+
 class WithdrawalRequestDetail(APIView):
     def get_object(self, pk):
         try:
@@ -461,67 +519,96 @@ class WithdrawalRequestDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk):
-        transaction_request = self.get_object(pk)
-       
-       
-        if request.data['req_status']=='Approved':
-            print("HI HELOO HI",request.data)
-            transaction_request.admin_remark = request.data['admin_remark']
-            transaction_request.ref_number = request.data['ref_number']
-            transaction_request.reasons = request.data['reasons']
-        elif request.data['req_status']=='Rejected':
-            transaction_request.reasons = request.data['reasons']
 
+        try:
 
-        total_amt = transaction_request.total_balnce
+                transaction_request = self.get_object(pk)
 
-        if request.data['transaction_type']:
-           
-            transaction_type = request.data['transaction_type']
-           
-            if transaction_type.lower() == 'withdraw':
-                   
-                    amount=transaction_request.ammount
-                    print('total_balance',total_amt)
-                    print('amount',amount)
-                    if total_amt > int(amount):
-                        
-                        ammount = total_amt- int(amount)
+                
+            
+                secound_last_acc=Account.objects.filter(req_status="Approved", withdraw_request_client=True).order_by('-id')
+                print("len",len(secound_last_acc))
 
-                        transaction_request.ammount = int(amount)
+                if len(secound_last_acc) == 0 or len(secound_last_acc) == 1:
 
-                        transaction_request.total_balnce = ammount
+                    pre_pk = pk
 
-                        client_with_request=AccountStatement.objects.all().last()
-                        print("client_with_request",client_with_request)
-                        client_with_request.account=transaction_request
-                        client_with_request.deposit=0
-                        client_with_request.withdraw=amount
-                        client_with_request.trn_date=datetime.now()
-                        client_with_request.save()
+                else:
 
-                        # AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
+                    pre_pk = secound_last_acc[1].id
+                
+
+                transaction_request_pre = self.get_object(pre_pk)
+
+                if request.data['req_status']=='Approved':
+                    print("HI HELOO HI",request.data)
+                    transaction_request.admin_remark = request.data['admin_remark']
+                    transaction_request.ref_number = request.data['ref_number']
+                    transaction_request.reasons = request.data['reasons']
+
+                    if transaction_request.withdrawal_day == datetime.now().date() and transaction_request_pre.req_status == 'Approved':
+
+                        transaction_request.withdrawal_today = transaction_request_pre.withdrawal_today + int(request.data['amount'])
                     else:
-                        return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
-            elif transaction_type.lower() == 'deposit':
+                        transaction_request.withdrawal_today = 0
 
-                    amount=request.data['amount']
 
-                    ammount = total_amt+ int(amount)
+                elif request.data['req_status']=='Rejected':
+                    transaction_request.reasons = request.data['reasons']
 
-                    transaction_request.ammount =int(amount)
-                    transaction_request.total_balnce = ammount
-                    AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
-                    
 
-        print("Request_data",request.data)            
+                total_amt = transaction_request.total_balnce
+                transaction_request.status_change_by = request.user.email
 
-        serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
-        if serializer.is_valid():
-           
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                if request.data['transaction_type']:
+                
+                    transaction_type = request.data['transaction_type']
+                
+                    if transaction_type.lower() == 'withdraw':
+                        
+                            amount=transaction_request.ammount
+                            print('total_balance',total_amt)
+                            print('amount',amount)
+                            if total_amt > int(amount):
+                                
+                                ammount = total_amt- int(amount)
+
+                                transaction_request.ammount = int(amount)
+
+                                transaction_request.total_balnce = ammount
+
+                                client_with_request=AccountStatement.objects.all().last()
+                                print("client_with_request",client_with_request)
+                                client_with_request.account=transaction_request
+                                client_with_request.deposit=0
+                                client_with_request.withdraw=amount
+                                client_with_request.trn_date=datetime.now()
+                                client_with_request.save()
+
+                                # AccountStatement.objects.create(account=transaction_request,deposit=0,withdraw=amount,trn_date=datetime.now())
+                            else:
+                                return Response(data={"Message":"Insufficent Balance"},status=status.HTTP_400_BAD_REQUEST)
+                    elif transaction_type.lower() == 'deposit':
+
+                            amount=request.data['amount']
+
+                            ammount = total_amt+ int(amount)
+
+                            transaction_request.ammount =int(amount)
+                            transaction_request.total_balnce = ammount
+                            AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
+                            
+
+                print("Request_data",request.data)            
+
+                serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
+                if serializer.is_valid():
+                
+                    serializer.save()
+                    return Response(serializer.data)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, pk):
         withdrawal_request = self.get_object(pk)
@@ -631,7 +718,14 @@ class UserLogin(APIView):
         if user is not None:
             # User is authenticated, return success response
             
-            if user.is_admin:
+            if user.is_superadmin:
+
+                login(request,user)
+                request.session['user_id'] = user.id
+                request.session['email'] = user.email
+                return Response({'message': 'Login successful','user':'is_superadmin'}, status=status.HTTP_200_OK)
+
+            elif user.is_admin and not user.is_superadmin:
                 login(request,user)
                 request.session['user_id'] = user.id
                 request.session['email'] = user.email
@@ -687,7 +781,9 @@ class WalletListView(View):
             # Retrieve account data for the current client
             account = Account.objects.filter(client__email=client.email)
             
-            check_bene = BeneficiaryDetails.objects.all()  
+            check_bene = BeneficiaryDetails.objects.filter(client=client)  
+
+            print('check_bene',check_bene)
            
             if  not account:
                 if check_bene:
@@ -696,7 +792,7 @@ class WalletListView(View):
                     if bene_account:
                         print("bene_account")
                         first_account=Account.objects.create(client=client,account_bene=bene_account,
-                        ammount=0,ref_number=0)
+                        ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
                         print('with bene')
                         client_data['id'] = first_account.id
                         client_data['ammount'] = first_account.ammount
@@ -709,7 +805,7 @@ class WalletListView(View):
                 else:
                     print('without bene')
                     first_account=Account.objects.create(client=client,account_bene=None,
-                    ammount=0,ref_number=0)
+                    ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
                     client_data['id'] = first_account.id
                     client_data['ammount'] = first_account.ammount
                     client_data['total_balnce'] = first_account.total_balnce
@@ -806,7 +902,7 @@ class AccountStatementView(View):
                 client_new    = [client_new[i] for i in range(len(client_new)) if all(not dict_compare(client_new[i], client_new[j]) for j in range(i+1, len(client_new)))]
 
                
-
+                
                 if  client_new:
 
                     if client_new[0]['client__email']==str(request.user):
@@ -814,10 +910,14 @@ class AccountStatementView(View):
                 
                        
                         balance=acc.total_balnce
+                        if acc.withdrawal_day == datetime.now().date() and acc.req_status == "Approved":
+                            withdrawal_today = acc.withdrawal_today
                     else:
                         balance =0
+                        withdrawal_today =0
                 else:
                     balance =0
+                    withdrawal_today =0
                 
 
                 print(context)
@@ -825,7 +925,7 @@ class AccountStatementView(View):
                 
 
 
-                return render(request,self.template_name,context={"account_statement":context,'balance':balance})
+                return render(request,self.template_name,context={"account_statement":context,'balance':balance,'withdrwal_today':withdrawal_today})
         
             return render(request,'login.html')
     

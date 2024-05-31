@@ -32,7 +32,7 @@ class UserManager(BaseUserManager):
         )
         user.is_admin     = True
         user.is_active    = True
-        user.is_superuser = True
+        user.is_superadmin = True
         user.save(using=self._db)
         return user
 
@@ -52,6 +52,7 @@ class User(AbstractBaseUser):
         default=False,
         help_text=("Designates whether the user can log into this admin site."),
     )
+    is_superadmin      = models.BooleanField(default=False)
     is_admin           = models.BooleanField(default=False)
     is_client           = models.BooleanField(default=False)
 
@@ -111,6 +112,10 @@ class Account(models.Model):
     total_balnce = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now=True)
     withdraw_request_client = models.BooleanField(default=False)
+    status_change_by = models.CharField(max_length=255,default='')
+    withdrawal_today = models.IntegerField(default=0)
+    withdrawal_day = models.DateField()
+
 
 
 

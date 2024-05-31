@@ -8,15 +8,31 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+
+
 
   <!----======== CSS ======== -->
   <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
   <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
 
   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+
+  
+  
   <!----===== Iconscout CSS ===== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+  
+  
+  
+ 
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <title>Withdraw Request</title>
   <style>
     .popup {
@@ -102,17 +118,82 @@
   background-color: #0e0e37 !important;
       color: white;
 }
-.top_main
+  </style>
+<style>
+  .export_style{
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px;
+background-color: #f9f9f9;
+border: 1px solid #e0e0e0;
+border-radius: 8px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+max-width: 500px;
+}
+
+
+.export-btn {
+background-color: #1c003b;
+color: white;
+border: none;
+padding: 10px 20px;
+font-size: 16px;
+border-radius: 4px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.export-btn:hover {
+background-color: #1c004b;
+}
+
+
+.search-bar {
+width: 250px;
+padding: 10px;
+font-size: 16px;
+border: 1px solid #e0e0e0;
+border-radius: 4px;
+transition: border-color 0.3s ease;
+}
+
+.search-bar:focus {
+border-color: #1c004b;
+outline: none;
+}
+.overview
 {
 display:flex;
 justify-content:space-between;
 }
-.client_balance
+.date_design
 {
-display:flex;
+padding:10px 20px;
+margin-right: 20px;
+border:1px solid gray;
 }
-
-  </style>
+.date-container {
+            position: relative;
+            display: inline-block;
+        }
+        .date-container input {
+            width: 100%;
+            padding: 10px;
+            padding-left: 35px;
+            box-sizing: border-box;
+        }
+        .date-container .fa-calendar-alt {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .date-container input.date_design {
+            padding-left: 35px;
+        }
+</style>  
 </head>
 
 <body>
@@ -138,6 +219,12 @@ display:flex;
           </a>
         </li>
         <li>
+            <a href="{% url 'admin-list-template' %}">
+              <i class="uil uil-user-plus"></i>
+              <span class="link-name">Admin List</span>
+            </a>
+          </li>
+        <li>
           <a href="{% url 'withdrawal-request-list' %}">
             <i class="uil uil-money-withdraw"></i>
             <span class="link-name">Withdrawal Request List</span>
@@ -157,25 +244,14 @@ display:flex;
   </nav>
   <!-- Withdrawal Request Section -->
   <section id="dashboard_section" class="dashboard" active>
-  
-      <div class="top_main">
-      <div class="client_balance">
-          
-        <p style="margin-right:5px;">Withdrawal Today :</p>
-        
-        <p>{{withdrawal_today}}</p>
-    
-        
-      </div>
-
-
+    <div class="top">
       <div class="search-box">
         <a href="{% url 'logout' %}"><span class="link-name">Logout
             <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
       </div>
-      </div>
+
       <!--<img src="images/profile.jpg" alt="">-->
-   
+    </div>
 
     <div class="dash-content">
       <div class="overview">
@@ -183,13 +259,40 @@ display:flex;
           <i class="uil uil-money-withdraw"></i>
           <span class="text">Withdraw Request List</span>
         </div>
+
+        <div class="search-box export_style">
+          
+          <button  class="export-btn" id="superadminexportBtn">Export</button>
+                    
+          <input type="text"   class="search-bar"  id="searchBarSuperAdmin" placeholder="Search">
+          
+        </div>
+
+        
       </div>
+
+      <div>
+        <div class="date-container">
+            <label for="start-date">Start Date:</label>
+            <i class="fas fa-calendar-alt"></i>
+            <input type="date" class="date_design" id="start-date">
+        </div>
+        <div class="date-container">
+            <label for="end-date">End Date:</label>
+            <i class="fas fa-calendar-alt"></i>
+            <input type="date" class="date_design" id="end-date">
+        </div><div>
+       
+    </div>
+    </div>
+      <br>
+      <br>
 
       <div class="activity">
         <div class="activity-data">
           <div class="container">
 
-            <table class="rwd-table">
+            <table class="rwd-table" id="superadmin_withdraw_table">
               <tbody>
                 <tr>
                   <th>Serial No</th>
@@ -197,15 +300,18 @@ display:flex;
                   <th>Created Date</th>
                   <th>Amount</th>
                   <th>Reasons</th>
-                  <th>Current Status</th>
+                  <th>Current Status</th>   
+                  <th>Status Changed By</th>
                   <th>Request Status</th>
+
+
                 </tr>
                 {% for withdrawal_request in withdrawal_requests %}
                 <tr>
                   <td data-th="Serial No">{{forloop.counter}}</td>
                   <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
                   <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
-                  <td data-th="Amount" class="withdraw_amount">{{withdrawal_request.ammount}}</td>
+                  <td data-th="Amount">{{withdrawal_request.ammount}}</td>
 
                   {% if withdrawal_request.req_status == 'Approved' %}
 
@@ -219,7 +325,7 @@ display:flex;
                   
                  
                   <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
-                  
+                  <td data-th="status_change_by">{{withdrawal_request.status_change_by}}</td>
                   {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
                    
                     <td data-th="Action">
@@ -237,6 +343,9 @@ display:flex;
                     
                   {% endif %}
 
+                 
+                 
+                  
                 </tr>
                 {% endfor %}
 
@@ -248,11 +357,12 @@ display:flex;
     </div>
   </section>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   
-
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
+  {% include 'js/superadmin_withdraw_export_js.html' %}
   <script>
     $(document).ready(function() {
       $('.status-dropdown').change(function() {
@@ -266,8 +376,13 @@ display:flex;
         }
       });
     });
-  
+    
+   
     </script>
+
+
+
+
 </body>
 
 </html>

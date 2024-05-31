@@ -18,6 +18,8 @@ urlpatterns = [
     # Admin
     path('users/template/', TemplateView.as_view(template_name='client.html'), name='client-list-template'),
 
+    path('users/admintemplate/', TemplateView.as_view(template_name='admin.html'), name='admin-list-template'),
+
     path('admin_dashboard/template/', AdminDashboard.as_view(template_name='admin_dashboard.html'), name='admin_dashboard'),
     
     #Client

@@ -88,6 +88,10 @@
       {
         display: flex;
       }
+      .withdrwal_today{
+
+        display: flex;
+      }
     </style>
      <style>
       
@@ -139,6 +143,13 @@
   border-color: #1c004b;
   outline: none;
 }
+.balance_style{
+
+  display: flex;
+}
+.top{
+  font-size: 18px;
+}
     </style>
     <title>Dashboard Panel</title>
   </head>
@@ -186,129 +197,147 @@
     <!-- Dashboard Section -->
     <section id="dashboard_section" class="dashboard" active>
       <div class="top">
-        <div class="client_balance">
-          
-          <p style="margin-right:15px;">Balance :</p>
-          
-          <p>{{balance}}</p>
-          
-           
-          
-      </div>
-        <div class="search-box">
-          <a href="{% url 'logout' %}"><span class="link-name"
-            >Logout
-            <span style="font-weight: 600; font-size: 16px">↪️</span></span
-          ></a>
-         
-        </div>
-        <!-- <div>
+          <div>
+              <div class="client_balance">
+                  <div class="balance_style">
+                      <p style="margin-right:5px;">Balance :</p>
+
+                      <p>{{balance}}</p>
+                  </div>
+
+
+
+
+              </div>
+              <div class="withdrwal_today">
+
+                  <p style="margin-right:5px;">Withdrwal Today :</p>
+
+                  <p>{{withdrwal_today}}</p>
+
+
+              </div>
+
+          </div>
+
+
+
+
+
+          <div class="search-box">
+              <a href="{% url 'logout' %}"><span class="link-name">Logout
+                      <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+
+          </div>
+          <!-- <div>
         <button id="exportBtnClient">Export</button>
         <input type="text" id="searchBarClient" placeholder="Search">
         </div> -->
-        
+
       </div>
 
       <div class="dash-content">
-        <div class="overview">
-          <div class="title">
-            <i class="uil uil-tachometer-fast-alt"></i>
-            <span class="text">Submitted Form</span>
-          </div>
-          <div class="export_style">
-            <button class="export-btn" id="exportBtnClient" >Export</button>
-        
-            <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
-          </div>
-        </div>
-        <br>
-        <br>
-        <div class="activity">
-          <div class="activity-data">
-            <div class="container">
-                <table class="rwd-table" id="client_dashboard_table">
+          <div class="overview">
+              <div class="title">
+                  <i class="uil uil-tachometer-fast-alt"></i>
+                  <span class="text">Submitted Form</span>
+              </div>
+              <div class="export_style">
+                  <button class="export-btn" id="exportBtnClient">Export</button>
 
-                    <tbody>
-                      <tr>
-                        <th>Serial No</th>
-                        <th>Created Date</th>
-                        <th>Amount</th>
-                        <th>Transaction</th>
-                        <th>Status</th>
-                        <th>Reason</th>
-                        
-                      </tr>
-                      {% for withdrawal_request,ac_ste in withdrawal_requests %}
-                      <tr>
-                        <td data-th="Serial No">{{forloop.counter}}</td>
-                        <td data-th="Created Date">{{ac_ste.trn_date}}</td>
-                        <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                        {% if withdrawal_request.req_status == 'Approved'  %}
-                          <td id="" onclick="showForm('debitForm1', '{{ withdrawal_request.created_at_formatted }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)" data-th="Txn">{{ac_ste.txn}}  &nbsp  <i class="uil uil-eye client1" ></i></td>
-                        {% else %}
-                        <td id=""  data-th="Txn">{{ac_ste.txn}}</td>
-                        {% endif %}
+                  <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
+              </div>
+          </div>
+          <br>
+          <br>
+          <div class="activity">
+              <div class="activity-data">
+                  <div class="container">
+                      <table class="rwd-table" id="client_dashboard_table">
 
-                        <td data-th="Status">{{withdrawal_request.req_status}}</td>
-                        
-                        {% if withdrawal_request.req_status == 'Approved' %} 
-                           <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
-                        {% else %}
-                            <td data-th="Reason">{{withdrawal_request.reasons}}</td>
-                        {% endif %}
-                      </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                  <div id="debitForm1" class="popup-form">
-                    <span class="close-icon" onclick="closeForm('debitForm1')">X</span>
-                    <section class="statement_form_main">
-                      <div class="content_center">
-                          <div>
-                              <img src="" />
-                              <h2>Transfer Successful</h2>
-                              <p>Amount</p>
-                              <p id="model_amount"><span>₹ &nbsp</span></p>
-                          </div>
-                      </div>
-                      
-                      <hr>
-                      <div class="statement_info">
-                          <div>
-                              <p>Paid To</p>
-                          </div>
-                          <div id='paid_to_id' class="font_bold"></div>
-                      </div>
-                      <div class="statement_info">
-                          <div>
-                              <p>To Account</p>
-                          </div>
-                          <div id='model_account' class="font_bold"></div>
-                      </div>
-                      <div class="statement_info">
-                          <div>
-                              <p>Date</p>
-                          </div>
-                          <div id='model_created_at' class="font_bold"></div>
-                      </div>
-                      <div class="statement_info">
-                          <div>
-                              <p>Reference number</p>
-                          </div>
-                          <div id='ref_number_id'class="font_bold"></div>
-                      </div>
-                  <div class="frm_btn">
-                      <div>
-                          <button id="id_done">Done</button>
+                          <tbody>
+                              <tr>
+                                  <th>Serial No</th>
+                                  <th>Created Date</th>
+                                  <th>Amount</th>
+                                  <th>Transaction</th>
+                                  <th>Status</th>
+                                  <th>Reason</th>
+
+                              </tr>
+                              {% for withdrawal_request,ac_ste in withdrawal_requests %}
+                              <tr>
+                                  <td data-th="Serial No">{{forloop.counter}}</td>
+                                  <td data-th="Created Date">{{ac_ste.trn_date}}</td>
+                                  <td data-th="Amount">{{withdrawal_request.ammount}}</td>
+                                  {% if withdrawal_request.req_status == 'Approved' %}
+                                  <td id=""
+                                      onclick="showForm('debitForm1', '{{ withdrawal_request.created_at_formatted }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)"
+                                      data-th="Txn">{{ac_ste.txn}} &nbsp <i class="uil uil-eye client1"></i></td>
+                                  {% else %}
+                                  <td id="" data-th="Txn">{{ac_ste.txn}}</td>
+                                  {% endif %}
+
+                                  <td data-th="Status">{{withdrawal_request.req_status}}</td>
+
+                                  {% if withdrawal_request.req_status == 'Approved' %}
+                                  <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
+                                  {% else %}
+                                  <td data-th="Reason">{{withdrawal_request.reasons}}</td>
+                                  {% endif %}
+                              </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                      <div id="debitForm1" class="popup-form">
+                          <span class="close-icon" onclick="closeForm('debitForm1')">X</span>
+                          <section class="statement_form_main">
+                              <div class="content_center">
+                                  <div>
+                                      <img src="" />
+                                      <h2>Transfer Successful</h2>
+                                      <p>Amount</p>
+                                      <p id="model_amount"><span>₹ &nbsp</span></p>
+                                  </div>
+                              </div>
+
+                              <hr>
+                              <div class="statement_info">
+                                  <div>
+                                      <p>Paid To</p>
+                                  </div>
+                                  <div id='paid_to_id' class="font_bold"></div>
+                              </div>
+                              <div class="statement_info">
+                                  <div>
+                                      <p>To Account</p>
+                                  </div>
+                                  <div id='model_account' class="font_bold"></div>
+                              </div>
+                              <div class="statement_info">
+                                  <div>
+                                      <p>Date</p>
+                                  </div>
+                                  <div id='model_created_at' class="font_bold"></div>
+                              </div>
+                              <div class="statement_info">
+                                  <div>
+                                      <p>Reference number</p>
+                                  </div>
+                                  <div id='ref_number_id' class="font_bold"></div>
+                              </div>
+                              <div class="frm_btn">
+                                  <div>
+                                      <button id="id_done">Done</button>
+                                  </div>
+                              </div>
+
+                          </section>
                       </div>
                   </div>
-              
-                  </section>
-            </div>
+              </div>
           </div>
-        </div>
-      </div>
-    </section>
+  </section>
     <!-- End Dashboard Section -->
     
 

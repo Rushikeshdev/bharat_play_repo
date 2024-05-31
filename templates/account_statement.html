@@ -25,8 +25,15 @@
         display: flex !important;
     justify-content: space-between !important;
       }
-      .client_balance
-      {
+      
+      .balance_style{
+
+      display: flex;
+      }
+      .top{
+      font-size: 18px;
+      }
+      .withdrawal_today{
         display: flex;
       }
     </style>
@@ -74,28 +81,41 @@
     </nav>
      <!-- Dashboard Section -->
      <section id="dashboard_section" class="dashboard" active>
-        <div class="top">
-          <div class="client_balance">
-          
-              <p style="margin-right:15px;">Balance :</p>
-              
+        
+      <div class="top">
+        <div class="client_balance">
+            <div class="balance_style">
+                <p style="margin-right:5px;">Balance :</p>
 
 
-              
+
+
                 <p>{{balance}}</p>
-              
-               
-              
-          </div>
-          <div class="search-box">
-            <a href="{% url 'logout' %}"><span class="link-name">Logout
-                <span
-                  style="font-weight: 600; font-size: 16px">↪️</span></span></a>
-          </div>
-  
-          <!--<img src="images/profile.jpg" alt="">-->
+
+            </div>
+            
+            <div class="withdrawal_today">
+
+                <p style="margin-right:5px;">Withdraw Today :</p>
+    
+    
+    
+    
+                <p>{{withdrwal_today}}</p>
+    
+    
+    
+            </div>
         </div>
-  
+      
+        <div class="search-box">
+            <a href="{% url 'logout' %}"><span class="link-name">Logout
+                    <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+        </div>
+
+        <!--<img src="images/profile.jpg" alt="">-->
+    </div>
+ 
         <div class="dash-content">
           <div class="overview">
             <div class="title">

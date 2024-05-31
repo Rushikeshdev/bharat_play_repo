@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
   <title>Admin Client List</title>
   <style>
-    #clientTable {
+    #adminTable {
       margin: auto;
       width: 100%;
       max-width: 100%;
@@ -31,37 +31,37 @@
       text-align: center;
     }
 
-    #clientTable tr:first-child {
+    #adminTable tr:first-child {
       border-top: none;
       background: #0e0e37;
       color: black;
     }
 
-    #clientTable tr {
+    #adminTable tr {
       border-top: 1px solid #ddd;
       border-bottom: 1px solid #ddd;
       text-align: center;
     }
 
-    #clientTable tr:nth-child(even) {
+    #adminTable tr:nth-child(even) {
       background-color: #ebf3f9;
     }
 
-    #clientTable tr:nth-child(odd) {
+    #adminTable tr:nth-child(odd) {
       background-color: #f5f9fc;
     }
 
-    #clientTable th {
+    #adminTable th {
       display: none;
     }
 
-    #clientTable td {
+    #adminTable td {
       display: block;
       padding: 0.5em 1em;
       text-align: center;
     }
 
-    #clientTable td:before {
+    #adminTable td:before {
       content: attr(data-th) ": ";
       font-weight: bold;
       width: 120px;
@@ -71,49 +71,49 @@
 
 
 
-    #clientTable {
+    #adminTable {
       color: #333;
       border-radius: 0.4em;
       overflow: hidden;
     }
 
-    #clientTable tr {
+    #adminTable tr {
       border-color: #bfbfbf;
     }
 
     @media screen and (max-width: 601px) {
-      #clientTable tr:nth-child(2) {
+      #adminTable tr:nth-child(2) {
         border-top: none;
       }
     }
 
     @media screen and (min-width: 600px) {
-      #clientTable tr:hover:not(:first-child) {
+      #adminTable tr:hover:not(:first-child) {
         background-color: #d8e7f3;
       }
 
-      #clientTable td:before {
+      #adminTable td:before {
         display: none;
       }
 
-      #clientTable th,
-      #clientTable td {
+      #adminTable th,
+      #adminTable td {
         display: table-cell;
         padding: 0.25em 0.5em;
       }
 
-      #clientTable th:first-child,
-      #clientTable td:first-child {
+      #adminTable th:first-child,
+      #adminTable td:first-child {
         padding-left: 0;
       }
 
-      #clientTable th:last-child,
-      #clientTable td:last-child {
+      #adminTable th:last-child,
+      #adminTable td:last-child {
         padding-right: 0;
       }
 
-      #clientTable th,
-      #clientTable td {
+      #adminTable th,
+      #adminTable td {
         padding: 1em 1em !important;
       }
     }
@@ -173,14 +173,12 @@
             <span class="link-name">Client List</span>
           </a>
         </li>
-        {% if request.user.is_superadmin %}
-          <li>
+        <li>
             <a href="{% url 'admin-list-template' %}">
               <i class="uil uil-user-plus"></i>
               <span class="link-name">Admin List</span>
             </a>
           </li>
-        {% endif %}
         <li>
           <a href="{% url 'withdrawal-request-list' %}">
             <i class="uil uil-money-withdraw"></i>
@@ -214,18 +212,18 @@
       <div class="overview">
         <div class="title">
           <i class="uil  uil-wheelchair"></i>
-          <span class="text">Client</span>
+          <span class="text">Admin</span>
         </div>
       </div>
 
       <div class="activity-data">
         <div class="activity">
           <div class="activity-data">
-            <button id="createClientBtn" class="btn-design">Create Client</button>
+            <button id="createAdminBtn" class="btn-design">Create Admin</button>
           </div>
         </div>
         <div style="display: flex; justify-content: center;     margin-bottom: 50px;">
-          <form id="clientForm" style="display: none;">
+          <form id="adminForm" style="display: none;">
 
             <input type="text" placeholder="Username" style="     background-color: #f2f2f2;
               border: none;
@@ -255,20 +253,20 @@
 
         <div class="activity">
           <div class="activity-data">
-            <button id="viewClientListBtn" class="btn-design">View Client List</button>
+            <button id="viewAdminListBtn" class="btn-design">View Admin List</button>
           </div>
         </div>
       </div>
 
 
 
-      <div id="clientList" style="display: none;">
-        <table id="clientTable">
+      <div id="adminList" style="display: none;">
+        <table id="adminTable">
           <thead>
             <tr class="main_th">
               <th>Serial Number</th>
-              <th>Client Username</th>
-              <th>Client Password</th>
+              <th>Admin Username</th>
+              <th>Admin Password</th>
             </tr>
           </thead>
           <tbody>
@@ -287,7 +285,7 @@
   </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-  {% include 'js/client_js.html' %}
+  {% include 'js/admin_create_js.html' %}
 
 </body>
 

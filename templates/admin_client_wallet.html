@@ -65,6 +65,14 @@
               <span class="link-name">Client List</span>
             </a>
           </li>
+          {% if request.user.is_superadmin %}
+          <li>
+            <a href="{% url 'admin-list-template' %}">
+              <i class="uil uil-user-plus"></i>
+              <span class="link-name">Admin List</span>
+            </a>
+          </li>
+          {% endif %}
           <li>
             <a href="{% url 'withdrawal-request-list' %}">
               <i class="uil uil-money-withdraw"></i>
@@ -127,8 +135,12 @@
                         <td data-th="Serial No">{{ forloop.counter }}</td>
                         <td id="client_for_wallet_{{ wallet.id }}" data-th="client_id">{{ wallet.client }}</td>
                         <td data-th="Created Date">{{ wallet.created_at }}</td>
-                        <td id="amount_for_wallet_{{ wallet.id }}" data-th="Amount">{{ wallet.total_balnce }} &nbsp <i class="uil uil-eye client1"></i></td>
-                      </tr>    
+                      
+                        <td id="amount_for_wallet_{{ wallet.id }}" data-th="Amount">{{ wallet.total_balnce }} 
+                          {% if request.user.is_superadmin %}
+                            &nbsp <i class="uil uil-eye client1"></i></td>
+                          {% endif %}
+                        </tr>    
                       {% endfor %}
                 </tbody>
                 

@@ -7,11 +7,15 @@
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         var requestId 
         var selectedOption
+      
         $('.status-dropdown').change(function() {
+
+            console.log("HELOO");
             requestId = $(this).data('request-id');
             selectedOption = $(this).val();
             var parentTd = $(this).parent();
             var extraFieldsDiv = parentTd.find('.extra-fields');
+           
 
             // Show extra fields if "approved" option is selected, hide otherwise
             if (selectedOption === 'approved') {
@@ -26,10 +30,13 @@
             var parentTd = $(this).parent();
             var adminremarkValue = parentTd.find('.extra-textbox1').val();
             var textboxValue = parentTd.find('.extra-textbox').val();
+
+            var currentRow = $(this).closest('tr');
+
+            var amount= currentRow.find('.withdraw_amount').text().trim();
             
-            console.log('Submitted value:', textboxValue);
-            console.log('selectedOption:', selectedOption);
-            console.log('adminremarkValue', adminremarkValue);
+            console.log('amount', amount);
+           
             var data
             if (selectedOption === 'Approved') {
 
@@ -40,7 +47,8 @@
                     'reasons':'NA',
                     'transaction_type':'withdraw',
                     'admin_remark':adminremarkValue,
-                    'req_status':selectedOption
+                    'req_status':selectedOption,
+                    'amount':amount
 
                 }
                 
@@ -51,7 +59,7 @@
                     'id': requestId,
                     'reasons':textboxValue,
                     'transaction_type':'NA',
-                    'req_status':selectedOption
+                    'req_status':selectedOption,
                 }
                 $('#reason_status').text(textboxValue);
             }
