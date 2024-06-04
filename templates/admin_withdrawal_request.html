@@ -17,6 +17,9 @@
   <!----===== Iconscout CSS ===== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
+  
   <title>Withdraw Request</title>
   <style>
     .popup {
@@ -111,6 +114,34 @@ justify-content:space-between;
 {
 display:flex;
 }
+.popup {
+            display: none;
+            position: fixed;
+            padding: 10px;
+            width: 280px;
+            left: 10%;
+            margin-left: -140px; 
+            height: 180px;
+            top: 50%;
+            margin-top: -90px; 
+            border: 1px solid #f2f2f2;
+            background-color: white;
+            z-index: 20;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+.a_style{
+  text-decoration:none;
+  margin-bottom:25px;
+  float:right;
+}
+.button_popup{
+  border:none;
+  background:none;
+}
+.pop_info
+{
+  display:flex;
+}
 
   </style>
 </head>
@@ -198,7 +229,9 @@ display:flex;
                   <th>Amount</th>
                   <th>Reasons</th>
                   <th>Current Status</th>
+                  <th>Bene Account </th>
                   <th>Request Status</th>
+                 
                 </tr>
                 {% for withdrawal_request in withdrawal_requests %}
                 <tr>
@@ -220,6 +253,38 @@ display:flex;
                  
                   <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
                   
+                  <td data-th="Account-Info">
+
+                    <button class="button_popup open-popup-btn">
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+                   
+                    <div class="popup" id="popup-{{ withdrawal_request.id }}">
+                      <a class="a_style close-popup-btn" href="#">❌</a>
+                      <div class="pop_info">
+                          <p>Name :</p>
+                          <p>{{ withdrawal_request.account_bene.bene_account_name }}</p>
+                      </div>
+                      <div class="pop_info">
+                          <p>Account Number :</p>
+                          <p>{{ withdrawal_request.account_bene.bene_account_number }}</p>
+                      </div>
+                      <div class="pop_info">
+                          <p>Bank Name :</p>
+                          <p>{{ withdrawal_request.account_bene.bene_bank_name }}</p>
+                      </div>
+                      <div class="pop_info">
+                          <p>IFSC Code :</p>
+                          <p>{{ withdrawal_request.account_bene.bene_branch_ifsc }}</p>
+                      </div>
+                    </div>
+
+
+
+                  </td>
+
+
+
                   {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
                    
                     <td data-th="Action">
@@ -236,7 +301,7 @@ display:flex;
                     </td>
                     
                   {% endif %}
-
+                  
                 </tr>
                 {% endfor %}
 
@@ -253,6 +318,8 @@ display:flex;
 
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
+  
+  
   <script>
     $(document).ready(function() {
       $('.status-dropdown').change(function() {
@@ -265,9 +332,28 @@ display:flex;
           $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Reason');
         }
       });
+
+      $('.open-popup-btn').click(function() {
+    // Get the ID of the corresponding popup based on the button's parent row
+      var popupId = $(this).closest('tr').find('.popup').attr('id');
+      // Show the popup with the matching ID
+      $('#' + popupId).css('display', 'block');
     });
+
+  // Click event listener for all buttons with class "close-popup-btn"
+  $('.close-popup-btn').click(function() {
+    // Hide the popup that the button belongs to (using closest parent)
+    $(this).closest('.popup').css('display', 'none');
+  });
+     
+
+});
   
     </script>
+
+
+
+
 </body>
 
 </html>

@@ -37,43 +37,54 @@
             //     $('#searchBarAdmin').val('');
             // }
         });
+        
 
-    var startDatePicker = flatpickr("#start-date", {
-      dateFormat: "Y-m-d",
-      onChange: filterTable
-    });
+        var startDatePicker = flatpickr("#start-date", {
+    dateFormat: "Y-m-d",
+    onChange: filterTable
+});
 
-    var endDatePicker = flatpickr("#end-date", {
-      dateFormat: "Y-m-d",
-      onChange: filterTable
-    });
+var endDatePicker = flatpickr("#end-date", {
+    dateFormat: "Y-m-d",
+    onChange: filterTable
+});
 
-    // Initial call to filter table based on default dates
+// Filter button event listener
+$("#filter-button").click(function() {
     filterTable();
+});
 
-    $("#filter-button").click(function() {
-      filterTable();
-    });
+// Function to filter the table based on selected dates
+function filterTable() {
+    var startDate = startDatePicker.selectedDates[0];
+    var endDate = endDatePicker.selectedDates[0];
 
-    function filterTable(selectedDates, dateStr, instance) {
-      var startDate = startDatePicker.selectedDates[0];
-      var endDate = endDatePicker.selectedDates[0];
+    if (endDate) {
+        endDate.setHours(23, 59, 59, 999);
+    }
 
-      var rows = $("#superadmin_withdraw_table tbody tr");
+    var rows = $("#superadmin_withdraw_table tbody tr");
 
-      rows.each(function() {
-        var createdDate = new Date($(this).find("td[data-th='Created Date']").text());
+    rows.each(function(index) {
+        if (index === 0) return; // skip header row
 
+        var createdDateStr = $(this).find("td[data-th='Created Date']").text().trim();
+        console.log("createdDateStr",createdDateStr);
+        
+        var createdDate = new Date(createdDateStr);
+        console.log("created_date",createdDate);
+        console.log("start_date",startDate);
+        console.log("end_date",endDate);
+        // Check if the created date is within the range
         if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
-          $(this).show();
+            $(this).show();
         } else {
-          // $(this).hide();
+            $(this).hide();
         }
-      });
+        
+
+    });
 }
-
-
-
 
 
     });

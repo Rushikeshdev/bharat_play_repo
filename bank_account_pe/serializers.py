@@ -40,6 +40,7 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = '__all__'
+        depth = 1 # Include one level of related objects (account_bene in this case)
     def get_client_email(self, obj):
         # Access the email of the related client User
         return obj.client.email

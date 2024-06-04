@@ -40,5 +40,105 @@
             });
 
 
+              
+        function formatDate(dateString) {
+    // Regular expression to parse the input date string
+    var regex = /(\w+)\s(\d+),\s(\d+),\s(\d+):(\d+)\s(\w+)./;
+    var match = dateString.match(regex);
+
+    if (!match) {
+        return 'Invalid Date';
+    }
+
+    var monthName = match[1];
+    var day = match[2];
+    var year = match[3];
+    var hours = parseInt(match[4]);
+    var minutes = match[5];
+    var period = match[6];
+
+    // Convert month name to abbreviated form
+    var monthAbbr = {
+        January: 'Jan', February: 'Feb', March: 'Mar', April: 'Apr', May: 'May', June: 'Jun',
+        July: 'Jul', August: 'Aug', September: 'Sep', October: 'Oct', November: 'Nov', December: 'Dec'
+    };
+    var month = monthAbbr[monthName];
+
+    // Adjust hours for AM/PM
+    if (period === 'p.m.' && hours < 12) {
+        hours += 12;
+    } else if (period === 'a.m.' && hours === 12) {
+        hours = 0;
+    }
+
+    // Format hours and minutes
+    hours = hours % 12 || 12; // Convert to 12-hour format
+    var formattedHours = hours < 10 ? '0' + hours : hours;
+    var formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    var formattedPeriod = period.toUpperCase().replace('A.M.', 'AM').replace('P.M.', 'PM');
+    console.log("formattedPeriod",formattedPeriod);
+    // Construct the formatted date string
+    var formattedDate = `${month} ${day < 10 ? '0' + day : day}, ${year}, ${formattedHours}:${formattedMinutes} ${formattedPeriod+"M"}`;
+    return formattedDate;
+}
+
+
+
+
+        var startDatePicker = flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            onChange: filterTable
+        });
+
+        var endDatePicker = flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            onChange: filterTable
+        });
+
+        // Filter button event listener
+        $("#filter-button").click(function() {
+            filterTable();
+        });
+
+// Function to filter the table based on selected dates
+function filterTable() {
+    var startDate = startDatePicker.selectedDates[0];
+    var endDate = endDatePicker.selectedDates[0];
+
+    if (endDate) {
+        endDate.setHours(23, 59, 59, 999);
+    }
+
+    var rows = $("#client_dashboard_table tbody tr");
+
+    rows.each(function(index) {
+        if (index === 0) return; // skip header row
+
+        var createdDateStr = $(this).find("td[data-th='Created Date']").text().trim();
+        console.log("createdDateStr",createdDateStr);
+
+        var formattedDate = formatDate(createdDateStr);
+
+        console.log("formattedDate",formattedDate);
+
+
+
+
+        var createdDate = new Date(formattedDate);
+        console.log("created_date",createdDate);
+        console.log("start_date",startDate);
+        console.log("end_date",endDate);
+        // Check if the created date is within the range
+        if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+        
+
+    });
+}
+
+
     });
 </script>

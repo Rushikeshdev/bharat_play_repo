@@ -872,7 +872,7 @@ class AccountStatementView(View):
 
 
                 context = []
-
+                withdrawal_today =0
                 for acc_s in acc_ste:
 
                     
