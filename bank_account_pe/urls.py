@@ -16,11 +16,13 @@ urlpatterns = [
     path('users/<int:pk>/', UserDetail.as_view(), name='user-detail'),
 
     # Admin
-    path('users/template/', TemplateView.as_view(template_name='client.html'), name='client-list-template'),
+    path('users/template/', UserList.as_view(), name='client-list-template'),
 
-    path('users/admintemplate/', TemplateView.as_view(template_name='admin.html'), name='admin-list-template'),
+    path('users/admintemplate/', UserList.as_view(), name='admin-list-template'),
 
-    path('admin_dashboard/template/', AdminDashboard.as_view(template_name='admin_dashboard.html'), name='admin_dashboard'),
+    path('admin_dashboard/template/', AdminDashboard.as_view(), name='admin_dashboard'),
+
+    path('superadmin_dashboard/template/', SuperAdminDashboard.as_view(), name='superadmin_dashboard'),
     
     #Client
 
@@ -41,6 +43,11 @@ urlpatterns = [
 
     path('client_wallet_list/template/', WalletListView.as_view(),name='client_wallet_list'),
     path('account_statement/template/',AccountStatementView.as_view(),name='account_statement_list'),
+
+
+    #update user status
+
+    path('update-user-status',update_user_status,name='updateuser')
 
     # path('bene_table/template/',BeneView.as_view(),name='bene-table-list'),
 

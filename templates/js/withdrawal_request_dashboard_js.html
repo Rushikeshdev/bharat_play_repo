@@ -1,18 +1,55 @@
 
 {% csrf_token %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script>
 
 $(document).ready(function () {
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
         // Add change event listener to all status dropdowns
-        $('.status-dropdown').change(function () {
-            // Get the selected option value and the withdrawal request primary key
+        // $('.status-dropdown').change(function () {
+        //     // Get the selected option value and the withdrawal request primary key
            
-            var selectedStatus = $(this).val();
-            var requestId = $(this).data('request-id');
-            console.log('----',requestId);
-            // Send an AJAX request to update the status
+        //     var selectedStatus = $(this).val();
+        //     var requestId = $(this).data('request-id');
+        //     console.log('----',requestId);
+        //     // Send an AJAX request to update the status
             
+        //     $.ajax({
+        //         url: '/withdrawal-requests/'+ requestId + '/',
+        //         type: 'PUT',
+        //         beforeSend: function(xhr, settings) {
+        //                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        //             },
+        //         contentType: 'application/json',
+        //         data: JSON.stringify({
+        //             'id': requestId,
+        //             'ref_number':0,
+        //             'reasons':'NA',
+        //             'req_status': selectedStatus,
+        //             'transaction_type':'NA',
+        //             'admin_remark':'NA',
+        //             'amount':0
+        //         }),
+        //         success: function (data) {
+        //             // Update the status cell text with the new status
+        //             $('#status' + requestId).text(selectedStatus);
+        //         },
+        //         error: function (error) {
+        //             console.error('Error:', error);
+        //         }
+        //     });
+        // });
+
+        $("#approve_id").click(function(e) {
+
+            
+
+            var selectedStatus = $(this).text();
+
+            
+            var requestId = $(this).data('request-id');
+
             $.ajax({
                 url: '/withdrawal-requests/'+ requestId + '/',
                 type: 'PUT',
@@ -30,14 +67,183 @@ $(document).ready(function () {
                     'amount':0
                 }),
                 success: function (data) {
+                    $.confirm({
+                            title: ``,
+                            content:"Withdrwal Request Approved Successfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
+                },
+                error: function (error) {
+
+                    $.confirm({
+                            title:'',
+                            content:error,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Try again',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
+
+                    console.error('Error:', error);
+                }
+                    
+              
+            });
+
+
+            
+
+            
+
+
+
+        });
+
+        $("#rejected_id").click(function(e) {
+
+            
+
+                var selectedStatus = $(this).text();
+
+
+                var requestId = $(this).data('request-id');
+
+                $.ajax({
+                    url: '/withdrawal-requests/'+ requestId + '/',
+                    type: 'PUT',
+                    beforeSend: function(xhr, settings) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        },
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        'id': requestId,
+                        'ref_number':0,
+                        'reasons':'NA',
+                        'req_status': selectedStatus,
+                        'transaction_type':'NA',
+                        'admin_remark':'NA',
+                        'amount':0
+                    }),
+                    success: function (data) {
+                        $.confirm({
+                                title: ``,
+                                content:"Withdrwal Request Rejected!",
+                                type: "green",
+                                typeAnimated: true,
+                                columnClass: 'medium',
+                                buttons: {
+                                OK: {
+                                    text: "Close",
+                                    btnClass: "btn-blue",
+                                    action: function () {
+                                        window.location.reload(); // Reload the page
+                                    }
+                                
+                                    
+                                },
+                                },
+                                
+                            
+                            });
+                    },
+                    error: function (error) {
+
+                        $.confirm({
+                                title:'',
+                                content:error,
+                                type:'red',
+                                typeAnimated:true,
+                                buttons:{
+                                            tryAgain: {
+                                                text: 'Try again',
+                                                btnClass: 'btn-red',
+                                                action: function () {
+                                                    window.location.reload(); // Reload the page
+                                                }
+                                                
+                                            },
+                                                        
+                                        }
+
+                            });
+
+                        console.error('Error:', error);
+                    }
+                        
+                
+                });
+
+        });
+        
+
+
+        // For request accepted by admin
+        $('.status-dropdown-request').change(function () {
+            // Get the selected option value and the withdrawal request primary key
+           
+            var selectedStatus = $(this).val();
+            var requestId = $(this).data('requested-id');
+            console.log('----',requestId);
+            // Send an AJAX request to update the status
+            
+            $.ajax({
+                url: '/withdrawal-requests/'+ requestId + '/',
+                type: 'PUT',
+                beforeSend: function(xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    },
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'id': requestId,
+                    'ref_number':0,
+                    'reasons':'NA',
+                    'withdrawal_request_accepted_by': selectedStatus,
+                    'transaction_type':'NA',
+                    'admin_remark':'NA',
+                    'amount':0
+                }),
+                success: function (data) {
                     // Update the status cell text with the new status
                     $('#status' + requestId).text(selectedStatus);
+                    window.location.reload();
                 },
                 error: function (error) {
                     console.error('Error:', error);
                 }
             });
         });
+
+
+        
+
+
+
+
     });
 
     

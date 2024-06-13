@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Example</title>
+    <style>
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 600px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- <button id="createClientBtn">Open Modal</button> -->
+
+<div id="createclient" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="clientForm">
+            <input type="text" placeholder="Username" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
+            <input type="password" placeholder="Password" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
+            <div style="display: flex; justify-content: center;">
+                <button id="id_create_client" type="submit" style="border: none; background: #EF5350; color: white; width: 200px; font-size: 18px; padding: 15px 18px; font-weight: bold;">Create</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
+<script>
+$(document).ready(function() {
+
+    // Get the modal
+    var modal = $("#createclient");
+
+    // Get the button that opens the modal
+    var btn = $("#createClientBtn");
+
+    // Get the <span> element that closes the modal
+    var span = $(".close");
+
+    // When the user clicks the button, open the modal 
+    btn.on('click', function() {
+        modal.css("display", "flex");
+    });
+
+    // When the user clicks on <span> (x), close the modal
+    span.on('click', function() {
+        modal.css("display", "none");
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    $(window).on('click', function(event) {
+        if ($(event.target).is(modal)) {
+            modal.css("display", "none");
+        }
+    });
+
+    $("#createClientBtn").click(function(e) {
+        e.preventDefault()
+        var clientForm = $("#clientForm");
+        var clientList = $("#clientList");
+        console.log("hello....");
+        
+        
+    });
+
+
+
+    // Move form submission event binding outside the click event handler
+    $("#clientForm").submit(function(event) {
+        console.log("BTN");
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        event.preventDefault(); // Prevent form submission
+        
+
+        var clientTableBody = document.querySelector("#clientTable tbody");
+        var username = this.querySelector("input[type='text']").value;
+        var password = this.querySelector("input[type='password']").value;
+
+        console.log(username);
+
+        var data = {
+
+            'username':username,
+            'password':password
+        }
+
+        var formData =$(this).serialize();
+        console.log(formData);
+
+        $.ajax({
+            type: "POST",
+            url: "/users/",
+            data: data,
+            beforeSend: function(xhr, settings) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            },
+            success: function(response) {
+                // If login is successful, display success message
+                console.log("success");
+                $.confirm({
+                            title: ``,
+                            content:"Client Added Successfully!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                action: function () {
+                                    window.location.reload(); // Reload the page
+                                }
+                               
+                                
+                            },
+                            },
+                            
+                        
+                        });
+                
+                
+                // You might want to reload the client list here or update it with the new client data
+            },
+            error: function(xhr, status, error) {
+                // If login fails, display error message
+                console.log("fail");
+
+                $.confirm({
+                            title:'',
+                            content:'Email is already register!',
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Try again',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
+
+
+                
+                console.log("fail",error);
+               
+            }
+        });
+    });
+
+
+    $('input[type="checkbox"]').change(function() {
+            var userId = $(this).closest('tr').find('td[data-th="client_id"]').text().trim();
+            var isActive = $(this).is(':checked');
+
+            $.ajax({
+                url: '{% url "updateuser" %}', // Update this URL to your actual endpoint
+                method: 'POST',
+                data: {
+                    'user_id': userId,
+                    'is_active': isActive,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    $.confirm({
+                            title: ``,
+                            content:"User Status Changed!",
+                            type: "green",
+                            typeAnimated: true,
+                            columnClass: 'medium',
+                            buttons: {
+                            OK: {
+                                text: "Close",
+                                btnClass: "btn-blue",
+                                
+                                
+                            },
+                            },
+                            
+                        
+                        });
+                },
+                error: function(error) {
+                    alert('Error updating user status');
+                }
+            });
+        });
+
+
+
+
+
+
+        
+});
+
+
+
+
+</script>
+
+
+</body>
+</html>

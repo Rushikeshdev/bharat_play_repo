@@ -14,27 +14,147 @@ from django.contrib.auth import logout,login
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
-class UserList(APIView):
+class UserList(APIView,TemplateView):
 
-    
+    client_template = 'client.html'
+
+    admin_template  = 'admin.html'
+
+
     def get(self, request):
 
+  
         try:
-            if request.user.is_superadmin and request.query_params.get('user_type')== "admin":
+            
+        
+            if request.user.is_superadmin and "admintemplate" in request.build_absolute_uri():
+                self.template_name = self.admin_template
                 users = User.objects.filter(is_superadmin=False ,is_admin=True)
-                serializer = UserSerializer(users, many=True)
+                serializer = UserSerializer(users, many=True,context={'request':request})
+                context_wallet_user={'users':serializer.data}
+                
             elif request.user.is_superadmin or request.user.is_admin:
+                
+                self.template_name = self.client_template
+
                 users = User.objects.filter(is_client=True)
-                serializer = UserSerializer(users, many=True)
-            return Response(serializer.data)
+                serializer = UserSerializer(users, many=True,context={'request': request})
+
+                #Client Wallet
+
+
+                client =User.objects.filter(is_client=True).order_by('-created')
+
+                context =[]
+
+                for client in client:
+
+                    client_data = {
+                            'client': client.email,
+                            'created_at':client.created
+                    }
+
+                    # Retrieve account data for the current client
+                    account = Account.objects.filter(client__email=client.email)
+                    
+                    check_bene = BeneficiaryDetails.objects.filter(client=client)  
+
+                
+                    if  not account:
+                        if check_bene:
+                            bene_account = BeneficiaryDetails.objects.get(client=client)
+
+                            if bene_account:
+                                print("bene_account")
+                                first_account=Account.objects.create(client=client,account_bene=bene_account,
+                                ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
+                                print('with bene')
+                                client_data['id'] = first_account.id
+                                client_data['ammount'] = first_account.ammount
+                                client_data['total_balnce'] = first_account.total_balnce
+
+                            
+                            
+                            context.append(client_data)
+
+                        else:
+                           
+                            first_account=Account.objects.create(client=client,account_bene=None,
+                            ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
+                            client_data['id'] = first_account.id
+                            client_data['ammount'] = first_account.ammount
+                            client_data['total_balnce'] = first_account.total_balnce
+
+                            
+
+                            context.append(client_data)
+
+
+                    
+                    if account:
+                            acc=   account.last()
+                            
+                            print("account",account)
+                            print("account=",acc.id)
+                            client_data['id'] = acc.id
+                            client_data['ammount'] = acc.ammount
+                        
+                            client_data['total_balnce'] = acc.total_balnce
+                            
+
+                            
+                            context.append(client_data)
+                    
+
+
+                
+
+            
+
+                def dict_compare(d1, d2):
+                    # Compare relevant keys
+                    return d1['client'] == d2['client'] and d1['ammount'] == d2['ammount']
+
+                # Use a list comprehension to filter out duplicate dictionaries
+                context = [context[i] for i in range(len(context)) if all(not dict_compare(context[i], context[j]) for j in range(i+1, len(context)))]
+
+                user_data_with_wallet = []
+                for user in serializer.data:
+                   
+                    account = Account.objects.filter(client__email=user['username']).last()
+
+                    wallet_data = {
+                        'id': account.id if account else None,
+                        'total_balance': account.total_balnce if account else 0,
+                    }
+
+                    # Combine user data with wallet data
+                    user_with_wallet = {
+                        **user,
+                        'wallet': wallet_data
+                    }
+                    user_data_with_wallet.append(user_with_wallet)
+
+                
+                context_wallet_user={'users':user_data_with_wallet}
+
+        
+    
+            return self.render_to_response(context_wallet_user)
         except Exception as e:
              return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         try:
+            print("superadmin......",request.data)
             if request.user.is_superadmin and request.data.get('creating_admin'):
 
                 data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': False, 'is_admin': True,'raw_password':request.data.get('password')}
@@ -43,6 +163,7 @@ class UserList(APIView):
                  data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
 
             elif request.user.is_admin and not request.user.is_superadmin:
+                
                 data_to_update = {'username':request.data.get('username') , 'password': request.data.get('password'), 'is_active': True, 'is_client': True, 'is_admin': False,'raw_password':request.data.get('password')}
             
             serializer = UserSerializer(data=data_to_update)
@@ -85,6 +206,24 @@ class UserDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+
+
+@csrf_exempt
+def update_user_status(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        is_active = request.POST.get('is_active') == 'true'
+        try:
+            user = User.objects.get(email=user_id)
+            user.is_active = is_active
+            user.save()
+            return JsonResponse({'status': 'success'})
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User not found'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
 class AdminDashboard(APIView, TemplateView):
     
 
@@ -94,49 +233,107 @@ class AdminDashboard(APIView, TemplateView):
 
     def get(self, request):
 
-        if request.user.is_superadmin:
+        try:
 
-            self.template_name = self.template_name_superadmin
+                if request.user.is_superadmin:
 
-        elif request.user.is_admin and not request.user.is_superadmin :
+                    self.template_name = self.template_name_superadmin
 
-            self.template_name = self.template_name
-       
-        withdrawal_requests = Account.objects.filter(ammount__gt=0)
-        serializer = AccountSerializer(withdrawal_requests, many=True)
-        print('withdrawal_requests=====,',serializer.data)
+                elif request.user.is_admin and not request.user.is_superadmin :
 
+                    self.template_name = self.template_name_admin
+            
+                withdrawal_requests = Account.objects.filter(ammount__gt=0).order_by('-created_at')
+                serializer = AccountSerializer(withdrawal_requests, many=True)
+            
+
+                
+
+                account_statement = []
+
+                for account in withdrawal_requests:
+
+                    acc_ste_dict  ={}
+                    acc_ste = AccountStatement.objects.filter(account=account)
+
+                    for acc_s in acc_ste:
+
+                    
+
+                        if acc_s.withdraw !=0:
+                            acc_ste_dict['tnx'] = 'withdraw'
+                        else:
+                            acc_ste_dict['tnx'] = 'deposit'
+
+                    account_statement.append(acc_ste_dict)
+
+                
+
+
+                account_and_statement = []
+
+                withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
+                
+                if request.user.is_admin and not request.user.is_superadmin:
+                    withdrawal_requests=withdrawal_requests.filter(status_change_by=request.user.email)
+                    print(withdrawal_requests)
+                    withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
+
+
+               
+                
+                for zip_obj in withdraw_request_with_txn:
+                    print("zip=",zip_obj)
+                    if request.user.is_superadmin:
+                        account_and_statement.append(zip_obj)
+
+                    elif not zip_obj[1]:
+                        account_and_statement.append(zip_obj)
+
+                    elif zip_obj and zip_obj[1]['tnx'] == 'withdraw':
+                        account_and_statement.append(zip_obj)
+
+                print("==",account_and_statement)
+
+                paginator = Paginator(account_and_statement, 10)  # Show 10 items per page
+                page = request.GET.get('page')
+                try:
+                    paginated_account_and_statement = paginator.page(page)
+                except PageNotAnInteger:
+                    paginated_account_and_statement = paginator.page(1)
+                except EmptyPage:
+                    paginated_account_and_statement = paginator.page(paginator.num_pages)
+
+                context = {'withdrawal_requests': paginated_account_and_statement, 'txn': paginated_account_and_statement,
+                            'page': paginated_account_and_statement.number,
+                            'per_page': paginator.per_page}
+                print("context",context)          
+                # context = {'withdrawal_requests': account_and_statement,'txn':account_and_statement}
+                return self.render_to_response(context)
+
+        except Exception as e:
+            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class SuperAdminDashboard(APIView, TemplateView):
+
+    def get(self, request):
         
+        try:  
+            
+            return render(request,template_name='superadmin_dashboard_under_process.html',context={})
+        except Exception as e:
 
-        account_statement = []
-
-        for account in withdrawal_requests:
-
-            acc_ste_dict  ={}
-            acc_ste = AccountStatement.objects.filter(account=account)
-
-            for acc_s in acc_ste:
-
-                print(acc_s.withdraw)
-
-                if acc_s.withdraw !=0:
-                    acc_ste_dict['tnx'] = 'withdraw'
-                else:
-                    acc_ste_dict['tnx'] = 'deposit'
-
-            account_statement.append(acc_ste_dict)
+            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
-        account_and_statement = []
-        withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
-        
-        for zip_obj in withdraw_request_with_txn:
 
-            account_and_statement.append(zip_obj)
-        print(account_and_statement)
-        context = {'withdrawal_requests': account_and_statement,'txn':account_and_statement}
-        return self.render_to_response(context)
+
+
+
+
 
 class ClientDashboard(APIView, TemplateView):
     
@@ -145,62 +342,69 @@ class ClientDashboard(APIView, TemplateView):
 
     def get(self, request):
         
-        
-        withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)
-        serializer = AccountSerializer(withdrawal_requests, many=True)
-        
-
-        
-
-        account_statements = AccountStatement.objects.select_related('account').all().order_by('id')
-
-        
-
-        acc_ste_list=[]
-        account_access = []
-        acc_ste={}
-        balance = 0
-        withdrawal_today = 0
-        for acc in account_statements:
+        try:  
+            withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True).order_by('-created_at')
+            serializer = AccountSerializer(withdrawal_requests, many=True)
             
-            if acc and acc.account.client==request.user :
-                balance=acc.account.total_balnce
-                print(acc.account.withdrawal_day)
-                if acc.account.withdrawal_day == datetime.now().date() and acc.account.req_status=="Approved":
-                    withdrawal_today = acc.account.withdrawal_today
-            # else:
-            #   balance = 0
-
 
             
+
+            account_statements = AccountStatement.objects.select_related('account').all().order_by('id')
+
             
-            if acc.account.account_bene is not None:
-                if acc.withdraw != 0:
-                    
-                    acc_ste['txn'] = 'withdraw'
-                    acc_ste['trn_date'] = acc.trn_date
-                    acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
-                    acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
-                elif acc.deposit !=0:
-                    acc_ste['txn'] = 'deposit'
-                    acc_ste['trn_date'] = acc.trn_date
-                    acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
-                    acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
 
-                acc_ste_list.append(acc_ste)
+            acc_ste_list=[]
+            account_access = []
+            acc_ste={}
+            balance = 0
+            withdrawal_today = 0
+            for acc in account_statements:
+                
+                if acc and acc.account.client==request.user :
+                    balance=acc.account.total_balnce
+                    print(acc.account.withdrawal_today)
+                    if acc.account.withdrawal_day == datetime.now().date() and acc.account.req_status=="Approved":
+                        withdrawal_today = acc.account.withdrawal_today
+                # else:
+                #   balance = 0
+
+
+                
+                
+                if acc.account.account_bene is not None:
+                    if acc.withdraw != 0:
+                        
+                        acc_ste['txn'] = 'withdraw'
+                        acc_ste['trn_date'] = acc.trn_date
+                        acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                        acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+                    elif acc.deposit !=0:
+                        acc_ste['txn'] = 'deposit'
+                        acc_ste['trn_date'] = acc.trn_date
+                        acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
+                        acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+
+                    acc_ste_list.append(acc_ste)
+            
         
-      
-        zip_acc_ste=zip(serializer.data,acc_ste_list)
+            zip_acc_ste=zip(serializer.data,acc_ste_list)
 
-        for zip_obj in zip_acc_ste:
+            for zip_obj in zip_acc_ste:
 
-            account_access.append(zip_obj)
+                account_access.append(zip_obj)
 
-      
 
-        context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrawal_today}
-        return self.render_to_response(context)
+            with_today = withdrawal_requests.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
 
+            withdrwal_amount = sum(item['ammount'] for item in with_today)
+
+        
+
+            context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrwal_amount}
+            return self.render_to_response(context)
+        except Exception as e:
+
+            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
  
@@ -241,8 +445,18 @@ class WithdrawalRequestList(APIView, TemplateView):
                 self.template_name = 'login.html'
             acc_ste=AccountStatement.objects.select_related('account').filter(deposit=0)
         
-            withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
-            serializer = AccountSerializer(withdrawal_requests, many=True)
+            # withdrawal_requests = Account.objects.filter(withdraw_request_client=True)
+            
+            current_user_email = request.user.email
+
+            withdrawal_requests = Account.objects.filter(
+                Q(withdrawal_request_accepted_by=current_user_email) | Q(withdrawal_request_accepted_by='Pending'),
+                withdraw_request_client=True
+            ).select_related('account_bene').order_by('-created_at')
+            
+           
+
+            serializer = AccountSerializer(withdrawal_requests, many=True,context={'request': request})
         
 
             admin_approved_amount = withdrawal_requests.filter(req_status='Approved',status_change_by=request.user,withdrawal_day=datetime.now().date())
@@ -262,9 +476,9 @@ class WithdrawalRequestList(APIView, TemplateView):
        
     
     def post(self, request):
-        try:
+        
            
-
+        try:
             if request.user.is_admin:
 
                     
@@ -278,6 +492,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                         deposit_ste =  int(request.data['amount'])
                    
                         client = request.data['client']
+
+                        print("===",request.data)
 
                         print("client",client)
 
@@ -355,7 +571,9 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_balance,
-                            'withdrawal_day':datetime.now().date()
+                            'withdrawal_day':datetime.now().date(),
+                           
+                            
                         
 
                         }
@@ -374,7 +592,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_balance,
-                            'withdrawal_day':datetime.now().date()
+                            'withdrawal_day':datetime.now().date(),
+                           
                         
 
                         }
@@ -434,8 +653,11 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                     print('total_bal',total_bal_)
 
-                   
+                    print("REQUESTED",type(request.user.id))
+
+                    client_id=User.objects.get(email=request.user.email)
                     
+                    # client_id = request.user.id
                     if  account and total_bal_ >= int(request.data['amount']):
                         data = {
 
@@ -451,12 +673,18 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'ref_number':0,
                             'total_balnce': total_bal_,
                             'withdraw_request_client':True,
-                            'withdrawal_day':datetime.now().date()
+                            'withdrawal_day':datetime.now().date(),
+                            'withdrawal_request_accepted_by':'Pending'
+                            
 
                         }
+
+                        print("data=",data)
                         
 
                         serializer = AccountSerializer(data=data)
+
+                        print("serializer=",serializer)
 
                         account=Account.objects.filter(client__email=request.user)
                             
@@ -468,9 +696,10 @@ class WithdrawalRequestList(APIView, TemplateView):
                         current_date = datetime.now().strftime('%Y-%m-%d')
 
 
-
+                        
                     
                         if serializer.is_valid():
+                           
                         
                             serializer.save()
                             
@@ -502,7 +731,7 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                     return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
         except Exception as  e:
-            return Response(e,status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -523,6 +752,18 @@ class WithdrawalRequestDetail(APIView):
         try:
 
                 transaction_request = self.get_object(pk)
+                print("=",request.data)
+
+                if request.data.get('withdrawal_request_accepted_by')=='Accepted':
+
+                    request.data['withdrawal_request_accepted_by'] = request.user.email
+                    serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
+                    if serializer.is_valid():
+                
+                        serializer.save()
+                        return Response(serializer.data)
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
                 
             
@@ -620,54 +861,61 @@ class WithdrawalRequestDetail(APIView):
 
 class BeneficiaryDetailsList(APIView,View):
     def get(self, request):
-        beneficiaries = BeneficiaryDetails.objects.all()
-        serializer = BeneficiaryDetailsSerializer(beneficiaries, many=True)
-        return Response(serializer.data)
+        try:
+            beneficiaries = BeneficiaryDetails.objects.all()
+            serializer = BeneficiaryDetailsSerializer(beneficiaries, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
-        print('data=',request.data)
+       
+        try:
         
-        data = {
-            'client':request.user.id,
-            'bene_account_name':request.data['name'],
-            'bene_account_number': int(request.data['accountnumber']),
-            'bene_bank_name': request.data['bankname'],
-            'bene_branch_ifsc':request.data['bankifsc'],
-            'created_at':datetime.now()
+                data = {
+                    'client':request.user.id,
+                    'bene_account_name':request.data['name'],
+                    'bene_account_number': int(request.data['accountnumber']),
+                    'bene_bank_name': request.data['bankname'],
+                    'bene_branch_ifsc':request.data['bankifsc'],
+                    'created_at':datetime.now()
 
-        }
+                }
 
-        serializer = BeneficiaryDetailsSerializer(data=data)
-        total_bal =0
-        if serializer.is_valid():
-            serializer.save()
+                serializer = BeneficiaryDetailsSerializer(data=data)
+                total_bal =0
+                if serializer.is_valid():
+                    serializer.save()
 
-            client_for = serializer.data['client']
-            
-            client = User.objects.get(id=client_for)
-
-            account_q =Account.objects.filter(client=client)
-            
-            
-            for acc in account_q:
-
-                if acc.account_bene == None:
-
-                    account_q.update(account_bene=serializer.data['id'])
-                elif acc and acc.account_bene != serializer.data:
-                     total_bal=acc.total_balnce 
+                    client_for = serializer.data['client']
                     
-            
-            new_bene_bal=account_q.filter(account_bene=serializer.data['id'])
+                    client = User.objects.get(id=client_for)
 
-            print("======",new_bene_bal)
-            if not new_bene_bal:
-                bene_instance = BeneficiaryDetails.objects.get(id=serializer.data['id'])
-                Account.objects.create(client=client,account_bene=bene_instance,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=total_bal)
+                    account_q =Account.objects.filter(client=client)
+                    
+                    
+                    for acc in account_q:
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors.values())
-        return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+                        if acc.account_bene == None:
+
+                            account_q.update(account_bene=serializer.data['id'])
+                        elif acc and acc.account_bene != serializer.data:
+                            total_bal=acc.total_balnce 
+                            
+                    
+                    new_bene_bal=account_q.filter(account_bene=serializer.data['id'])
+
+                    print("======",new_bene_bal)
+                    if not new_bene_bal:
+                        bene_instance = BeneficiaryDetails.objects.get(id=serializer.data['id'])
+                        Account.objects.create(client=client,account_bene=bene_instance,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=total_bal,withdrawal_day=datetime.now().date())
+
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                print(serializer.errors.values())
+                return Response({'errors':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+                
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class BeneficiaryDetailsDetail(APIView):
     def get_object(self, pk):
@@ -866,68 +1114,75 @@ class AccountStatementView(View):
 
         def get(self, request):
 
+            try:
+                    if request.user.is_client:
+                        acc_ste=AccountStatement.objects.all().order_by('-trn_date')
 
-            if request.user.is_client:
-                acc_ste=AccountStatement.objects.all()
 
+                        context = []
+                        withdrawal_today =0
+                        for acc_s in acc_ste:
 
-                context = []
-                withdrawal_today =0
-                for acc_s in acc_ste:
+                            
+
+                            if request.user == acc_s.account.client and acc_s.account.req_status=='Approved':
+                                    print("hello")
+                                    account_statement = {
+                                        'txn_date': acc_s.trn_date,
+                                        'deposit': acc_s.deposit,
+                                        'withdraw': acc_s.withdraw,
+                                        'balance': acc_s.account.ammount
+                                    }
+                                    context.append(account_statement)
+
+                        
+
+                        # client_new = acc_ste.select_related('account').values('account__client').filter(account__client=request.user)
+
+                        client_new = Account.objects.select_related('client').values('client__email').filter(client__email=request.user)
+                        
+                        
+                        def dict_compare(d1, d2):
+                
+                                return d1['client__email'] == d2['client__email'] 
+
+                            # Use a list comprehension to filter out duplicate dictionaries
+                        client_new    = [client_new[i] for i in range(len(client_new)) if all(not dict_compare(client_new[i], client_new[j]) for j in range(i+1, len(client_new)))]
 
                     
+                        
+                        if  client_new:
 
-                    if request.user == acc_s.account.client and acc_s.account.req_status=='Approved':
-                            print("hello")
-                            account_statement = {
-                                'txn_date': acc_s.trn_date,
-                                'deposit': acc_s.deposit,
-                                'withdraw': acc_s.withdraw,
-                                'balance': acc_s.account.ammount
-                            }
-                            context.append(account_statement)
+                            if client_new[0]['client__email']==str(request.user):
+                                acc=Account.objects.filter(client=request.user).last()
+                        
+                            
+                                balance=acc.total_balnce
+                                if acc.withdrawal_day == datetime.now().date() and acc.req_status == "Approved":
+                                    withdrawal_today = acc.withdrawal_today
+                            else:
+                                balance =0
+                                withdrawal_today =0
+                        else:
+                            balance =0
+                            withdrawal_today =0
+                        
 
+                        print(context)
+
+                        
+                        withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)
+
+                        with_today = withdrawal_requests.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount')
+
+                        withdrwal_amount = sum(item['ammount'] for item in with_today)
+
+                        return render(request,self.template_name,context={"account_statement":context,'balance':balance,'withdrwal_today':withdrwal_amount})
                 
+                    return render(request,'login.html')
+            except Exception as e:
 
-                # client_new = acc_ste.select_related('account').values('account__client').filter(account__client=request.user)
-
-                client_new = Account.objects.select_related('client').values('client__email').filter(client__email=request.user)
-                
-                
-                def dict_compare(d1, d2):
-           
-                        return d1['client__email'] == d2['client__email'] 
-
-                    # Use a list comprehension to filter out duplicate dictionaries
-                client_new    = [client_new[i] for i in range(len(client_new)) if all(not dict_compare(client_new[i], client_new[j]) for j in range(i+1, len(client_new)))]
-
-               
-                
-                if  client_new:
-
-                    if client_new[0]['client__email']==str(request.user):
-                        acc=Account.objects.filter(client=request.user).last()
-                
-                       
-                        balance=acc.total_balnce
-                        if acc.withdrawal_day == datetime.now().date() and acc.req_status == "Approved":
-                            withdrawal_today = acc.withdrawal_today
-                    else:
-                        balance =0
-                        withdrawal_today =0
-                else:
-                    balance =0
-                    withdrawal_today =0
-                
-
-                print(context)
-
-                
-
-
-                return render(request,self.template_name,context={"account_statement":context,'balance':balance,'withdrwal_today':withdrawal_today})
-        
-            return render(request,'login.html')
+                return Response(e,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 

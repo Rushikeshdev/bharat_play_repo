@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bene Account</title>
+    <style>
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal1 {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .modal1 th  {
+            border: 1px solid black;
+        }
+        .modal1 td  {
+            border: 1px solid black;
+        }
+        .modal1,
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .modal1 th {
+            background-color: #f2f2f2;
+        }
+        .action-btns button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .approve-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .decline-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .admin_remark_ui{
+            border: none;
+        }
+        .admin_remark_ui:focus {
+            outline: none;
+        }
+        .utr_number_ui{
+            border: none;
+
+        }
+        .utr_number_ui:focus{
+            outline: none;
+
+        }
+
+    </style>
+</head>
+<body>
+
+<h2>Bene Account</h2>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Bene Account</h2>
+    <table class="bene-account-details modal1">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td id="modal-bene-name"></td>
+            </tr>
+            <tr>
+                <th>Account Number</th>
+                <td id="modal-bene-account-number"></td>
+            </tr>
+            <tr>
+                <th>Bank Name</th>
+                <td id="modal-bene-bank-name"></td>
+            </tr>
+            <tr>
+                <th>IFSC Code</th>
+                <td id="modal-bene-ifsc-code"></td>
+            </tr>
+            <tr>
+                <th>Mode</th>
+                <td id="modal-bene-mode"></td>
+            </tr>
+            <tr>
+                <th>Withdraw Amount</th>
+                <td id="modal-bene-withdraw-amount"></td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td id="modal-bene-status"></td>
+            </tr>
+            <tr>
+                <th>Admin Remarks</th>
+                <!-- <td id="modal-bene-remarks">  -->
+                <td>
+                    <input type="text" class="admin_remark_ui" placeholder="Enter the Reasons"> 
+                </td>
+            </tr>
+            <tr>
+                <th>UTR/Transaction ID</th>
+                <!-- <td id="modal-bene-utr"></td> -->
+
+                <td>
+                    <input type="text" class="utr_number_ui" placeholder="Enter the UTR Number"> 
+                </td>
+            </tr>
+            <tr>
+                <th>Action</th>
+                <td class="action-btns">
+                    <button class="approve-btn" id="approve_id"  data-request-id="">Approved</button>
+                    <button class="decline-btn" id="rejected_id" data-request-id="">Rejected</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Get the modal
+        var modal = $("#myModal");
+
+        // Get the button that opens the modal
+        var openPopupBtn = $(".open-popup-btn");
+
+        // Get the <span> element that closes the modal
+        var span = $(".close");
+
+        // When the user clicks the button with class open-popup-btn, open the modal
+        openPopupBtn.on("click", function() {
+            var button = $(this);
+            $("#approve_id").attr("data-request-id",button.data("bene-id"));
+            $("#rejected_id").attr("data-request-id",button.data("bene-id"));
+            $("#modal-bene-name").text(button.data("bene-name"));
+            $("#modal-bene-account-number").text(button.data("bene-account-number"));
+            $("#modal-bene-bank-name").text(button.data("bene-bank-name"));
+            $("#modal-bene-ifsc-code").text(button.data("bene-ifsc-code"));
+            $("#modal-bene-mode").text(button.data("bene-mode"));
+            $("#modal-bene-withdraw-amount").text(button.data("bene-withdraw-amount"));
+            $("#modal-bene-status").text(button.data("bene-status"));
+            $("#modal-bene-remarks").text(button.data("bene-remarks"));
+            $("#modal-bene-utr").text(button.data("bene-utr"));
+            modal.show();
+        });
+
+        // When the user clicks on <span> (x), close the modal
+        span.on("click", function() {
+            modal.hide();
+        });
+
+        // When the user clicks anywhere outside of the modal, close it
+        $(window).on("click", function(event) {
+            if ($(event.target).is(modal)) {
+                modal.hide();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

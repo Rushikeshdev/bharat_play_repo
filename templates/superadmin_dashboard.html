@@ -1,4 +1,8 @@
+
+{% load custom_filters %}
 {% load static %}
+
+
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
@@ -125,36 +129,38 @@ font-size:18px;
       <div class="menu-items">
         <ul class="nav-links">
           <li>
-            <a href="">
+            <a href="{% url 'superadmin_dashboard' %}">
               <i class="uil uil-chart-pie"></i>
               <span class="link-name">Dashboard</span>
             </a>
           </li>
+  
+  
+          <li>
+            <a href="{% url 'admin_dashboard' %}">
+              <i class="uil uil-chart-pie"></i>
+              <span class="link-name">Statement</span>
+            </a>
+          </li>
           <li>
             <a href="{% url 'client-list-template' %}">
-              <i class="uil uil-user-plus"></i>
+              <i class="uil uil-money-withdraw"></i>
               <span class="link-name">Client List</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'admin-list-template' %}">
-              <i class="uil uil-user-plus"></i>
-              <span class="link-name">Admin List</span>
-            </a>
-          </li>
+              <a href="{% url 'admin-list-template' %}">
+                <i class="uil uil-user-plus"></i>
+                <span class="link-name">Admin List</span>
+              </a>
+            </li>
           <li>
             <a href="{% url 'withdrawal-request-list' %}">
               <i class="uil uil-money-withdraw"></i>
               <span class="link-name">Withdrawal Request List</span>
             </a>
           </li>
-          <li>
-            <a href="{% url 'client_wallet_list' %}">
-              <i class="uil uil-money-withdraw"></i>
-              
-              <span class="link-name">Client Wallet</span>
-            </a>
-          </li>
+          
         </ul>
       </div>
     </nav>
@@ -175,7 +181,7 @@ font-size:18px;
         <div class="overview">
           <div class="title">
             <i class="uil uil-tachometer-fast-alt"></i>
-            <span class="text">Dashboard</span>
+            <span class="text">Statement</span>
           </div>
           <div class="search-box export_style">
           
@@ -218,10 +224,12 @@ font-size:18px;
                     <th>Status</th>
                     <th>Remark</th>
                     <th>Admin</th>
+                    <th>Status Changed By</th>
                   </tr>
                   {% for withdrawal_request,txn in withdrawal_requests %}
+                  {{page}}
                   <tr>
-                    <td data-th="Serial No">{{forloop.counter}}</td>
+                    <td data-th="Serial No">{{ forloop.counter }}</td>
                     <td data-th="Client">{{withdrawal_request.client.email}}</td>
                     <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
                     <td data-th="Amount">{{withdrawal_request.ammount}}</td>
@@ -234,11 +242,31 @@ font-size:18px;
 
                     {% endif %}
                     <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
+                    <td data-th="Status Changed By">{{withdrawal_request.status_change_by}}</td>
                     
                   </tr>
                   {% endfor %}
                 </tbody>
               </table>
+              <br>
+              <br>
+              <div class="pagination">
+                <span class="step-links">
+                    {% if withdrawal_requests.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ withdrawal_requests.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ withdrawal_requests.number }} of {{ withdrawal_requests.paginator.num_pages }}.
+                    </span>
+
+                    {% if withdrawal_requests.has_next %}
+                        <a href="?page={{ withdrawal_requests.next_page_number }}">next</a>
+                        <a href="?page={{ withdrawal_requests.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,45 @@
+<script>
+
+
+$(document).ready(function() {
+
+    
+
+
+            $('#id_dwonload').on('click', function () {
+
+                console.log("hello......");
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                
+
+                // Add title and other content
+                doc.setFontSize(18);
+                doc.text("Successful Transaction", 105, 20, null, null, 'center');
+
+                // Add date
+                doc.setFontSize(12);
+                doc.text("Date: " + $('#model_created_at').text(), 20, 30);
+
+                // Add paid to info
+                doc.text("Paid to: " + $('#paid_to_id').text(), 20, 40);
+
+                // Add amount
+                doc.text("Amount: " + $('#model_amount').text(), 20, 50);
+
+                // Add UTR/Transaction ID
+                doc.text("UTR/Transaction ID: " + $('#ref_number_id').text(), 20, 60);
+
+                // Add account info
+                doc.text("To Account: " + $('#model_account').text(), 20, 70);
+
+                // Save the PDF
+                doc.save('form.pdf');
+            });
+});
+
+
+
+
+</script>

@@ -52,6 +52,11 @@
       background: transparent;
       font-size: 16px;
     }
+    .status-dropdown-request {
+      border: none;
+      background: transparent;
+      font-size: 16px;
+    }
 
     select:focus-visible {
       outline: none !important;
@@ -120,28 +125,28 @@ display:flex;
             padding: 10px;
             width: 280px;
             left: 10%;
-            margin-left: -140px; 
+            margin-left: -280px; 
+            margin-top: 20px;
             height: 180px;
             top: 50%;
-            margin-top: -90px; 
             border: 1px solid #f2f2f2;
             background-color: white;
             z-index: 20;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
-.a_style{
-  text-decoration:none;
-  margin-bottom:25px;
-  float:right;
-}
-.button_popup{
-  border:none;
-  background:none;
-}
-.pop_info
-{
-  display:flex;
-}
+        .a_style{
+          text-decoration:none;
+          margin-bottom:25px;
+          float:right;
+        }
+        .button_popup{
+          border:none;
+          background:none;
+        }
+        .pop_info
+        {
+          display:flex;
+        }
 
   </style>
 </head>
@@ -156,32 +161,29 @@ display:flex;
 
     <div class="menu-items">
       <ul class="nav-links">
-        <li>
-          <a href="{% url 'admin_dashboard' %}">
-            <i class="uil uil-chart-pie"></i>
-            <span class="link-name">Dashboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'client-list-template' %}">
-            <i class="uil uil-money-withdraw"></i>
-            <span class="link-name">Client List</span>
-          </a>
-        </li>
+
         <li>
           <a href="{% url 'withdrawal-request-list' %}">
             <i class="uil uil-money-withdraw"></i>
             <span class="link-name">Withdrawal Request List</span>
           </a>
         </li>
-
+        
         <li>
-          <a href="{% url 'client_wallet_list' %}">
+          <a href="{% url 'client-list-template' %}">
             <i class="uil uil-money-withdraw"></i>
-
-            <span class="link-name">Client Wallet</span>
+            <span class="link-name">Client List</span>
           </a>
         </li>
+        
+        <li>
+          <a href="{% url 'admin_dashboard' %}">
+            <i class="uil uil-chart-pie"></i>
+            <span class="link-name">Withdrawal Statement</span>
+          </a>
+        </li>
+
+       
 
       </ul>
     </div>
@@ -229,80 +231,75 @@ display:flex;
                   <th>Amount</th>
                   <th>Reasons</th>
                   <th>Current Status</th>
+                  <th>Request By Client </th>
                   <th>Bene Account </th>
-                  <th>Request Status</th>
+                  <!-- <th>Request Status</th> -->
                  
                 </tr>
                 {% for withdrawal_request in withdrawal_requests %}
                 <tr>
-                  <td data-th="Serial No">{{forloop.counter}}</td>
-                  <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
-                  <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
-                  <td data-th="Amount" class="withdraw_amount">{{withdrawal_request.ammount}}</td>
-
-                  {% if withdrawal_request.req_status == 'Approved' %}
-
-                      <td data-th="UTR Number" id="utr_number">{{withdrawal_request.ref_number}}</td>
-                  {% else %}
-
-                      <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
-
-
-                  {% endif %}
-                  
-                 
-                  <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
-                  
-                  <td data-th="Account-Info">
-
-                    <button class="button_popup open-popup-btn">
-                      <i class="fa fa-eye" aria-hidden="true"></i>
-                    </button>
-                   
-                    <div class="popup" id="popup-{{ withdrawal_request.id }}">
-                      <a class="a_style close-popup-btn" href="#">❌</a>
-                      <div class="pop_info">
-                          <p>Name :</p>
-                          <p>{{ withdrawal_request.account_bene.bene_account_name }}</p>
-                      </div>
-                      <div class="pop_info">
-                          <p>Account Number :</p>
-                          <p>{{ withdrawal_request.account_bene.bene_account_number }}</p>
-                      </div>
-                      <div class="pop_info">
-                          <p>Bank Name :</p>
-                          <p>{{ withdrawal_request.account_bene.bene_bank_name }}</p>
-                      </div>
-                      <div class="pop_info">
-                          <p>IFSC Code :</p>
-                          <p>{{ withdrawal_request.account_bene.bene_branch_ifsc }}</p>
-                      </div>
-                    </div>
-
-
-
-                  </td>
-
-
 
                   {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
-                   
-                    <td data-th="Action">
-                      <select class="status-dropdown" data-request-id="{{ withdrawal_request.id }}">
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
-                      <div class="extra-fields" style="display: none;">
-                        <input type="text" placeholder="Enter Admin Remark" class="extra-textbox1">
-                        <input type="text" placeholder="Enter Reason" class="extra-textbox">
-                        <button type="button" class="submit-button">Submit</button>
-                      </div>
-                    </td>
-                    
-                  {% endif %}
-                  
-                </tr>
+                        <td data-th="Serial No">{{forloop.counter}}</td>
+                        <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
+                        <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
+                        <td data-th="Amount" class="withdraw_amount">{{withdrawal_request.ammount}}</td>
+
+                        <!-- {% if withdrawal_request.req_status == 'Approved' %} -->
+
+                            <td data-th="UTR Number" id="utr_number">{{withdrawal_request.ref_number}}</td>
+                        <!-- {% else %} -->
+
+                            <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
+
+
+                        <!-- {% endif %} -->
+                        
+                      
+                        <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
+                        
+                       
+                        <!-- {% if withdrawal_request.withdrawal_request_accepted_by == 'Pending' %} -->
+                        
+                          <td data-th="Action">
+                            <select class="status-dropdown-request" data-requested-id="{{ withdrawal_request.id }}">
+                              <option value="Pending">Pending</option>
+                              <option value="Accepted">Accepted</option>
+                            </select>
+                          </td>
+                        <!-- {% else %} -->
+
+
+                            <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.withdrawal_request_accepted_by }}</td>
+                          
+                        <!-- {% endif %} -->
+
+
+                       
+
+                        {% if withdrawal_request.withdrawal_request_accepted_by == request.user.email %}
+                            <td data-th="Account-Info">
+                              <button class="button_popup open-popup-btn" id="openModalBtn"
+                                                data-bene-id="{{withdrawal_request.id}}"
+                                                data-bene-name="{{ withdrawal_request.account_bene_details.bene_account_name }}"
+                                                data-bene-account-number="{{ withdrawal_request.account_bene_details.bene_account_number }}"
+                                                data-bene-bank-name="{{ withdrawal_request.account_bene_details.bene_bank_name }}"
+                                                data-bene-ifsc-code="{{ withdrawal_request.account_bene_details.bene_branch_ifsc }}"
+                                                data-bene-mode="{{ withdrawal_request.mode }}"
+                                                data-bene-withdraw-amount="{{ withdrawal_request.ammount }}"
+                                                data-bene-status="{{ withdrawal_request.req_status }}"
+                                                data-bene-remarks="{{ withdrawal_request.remarks }}"
+                                                data-bene-utr="{{ withdrawal_request.ref_number }}">
+                                                <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                           
+                            </td>
+                        {% endif %}
+
+
+
+                      {% endif %}
+                      </tr>
                 {% endfor %}
 
               </tbody>
@@ -318,6 +315,7 @@ display:flex;
 
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
+  {% include 'modal/bene_account_modal.html' %}
   
   
   <script>

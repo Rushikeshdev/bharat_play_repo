@@ -148,7 +148,68 @@
 {
     background-color: #EF5350;
 }
+.overview
+{
+display:flex;
+justify-content:space-between;
+}
+.activity
+{
+margin:30px 0 30px 0;
+}
+
+
   </style>
+
+<style>
+  /* Add your existing styles here */
+
+  /* Toggle switch styles */
+  .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+  }
+
+  .toggle-switch input {
+      display: none;
+  }
+
+  .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+  }
+
+  .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+  }
+
+  input:checked + .slider {
+      background-color: #1c004b;
+  }
+
+  input:checked + .slider:before {
+      transform: translateX(26px);
+  }
+</style>
+
+
 </head>
 
 <body>
@@ -161,10 +222,18 @@
 
     <div class="menu-items">
       <ul class="nav-links">
+
+        <li>
+          <a href="{% url 'superadmin_dashboard' %}">
+            <i class="uil uil-chart-pie"></i>
+            <span class="link-name">Dashboard</span>
+          </a>
+        </li>
+
         <li>
           <a href="{% url 'admin_dashboard' %}">
             <i class="uil uil-chart-pie"></i>
-            <span class="link-name">Dashboard</span>
+            <span class="link-name">Statement</span>
           </a>
         </li>
         <li>
@@ -185,13 +254,7 @@
             <span class="link-name">Withdrawal Request List</span>
           </a>
         </li>
-        <li>
-          <a href="{% url 'client_wallet_list' %}">
-            <i class="uil uil-money-withdraw"></i>
-            
-            <span class="link-name">Client Wallet</span>
-          </a>
-        </li>
+       
       </ul>
     </div>
   </nav>
@@ -208,68 +271,62 @@
       <!--<img src="images/profile.jpg" alt="">-->
     </div>
 
-    <div class="dash-content">
-      <div class="overview">
-        <div class="title">
-          <i class="uil  uil-wheelchair"></i>
-          <span class="text">Admin</span>
-        </div>
-      </div>
+    
 
-      <div class="activity-data">
-        <div class="activity">
-          <div class="activity-data">
-            <button id="createAdminBtn" class="btn-design">Create Admin</button>
+      <div class="dash-content">
+        <div class="overview">
+          <div class="title">
+            <i class="uil  uil-wheelchair"></i>
+            <span class="text">Admin</span>
           </div>
-        </div>
-        <div style="display: flex; justify-content: center;     margin-bottom: 50px;">
-          <form id="adminForm" style="display: none;">
-
-            <input type="text" placeholder="Username" style="     background-color: #f2f2f2;
-              border: none;
-              padding: 15px 18px;
-              width: 500px;
-              margin-bottom: 20px;
-              border-bottom: 1px solid #0e0e37;" required /> <br><br>
-            <input type="password" placeholder="Password" style="        background-color: #f2f2f2;
-              border: none;
-              padding: 15px 18px;
-              width: 500px;
-              margin-bottom: 20px;
-              border-bottom: 1px solid #0e0e37;" required /><br>
-            <br>
-            <div style="display: flex; justify-content: center;">
-              <button id="id_create_client" type="submit" style="    border: none;
-                background: #EF5350;
-                color: white;
-                width: 200px;
-                font-size: 18px;
-                padding: 15px 18px;
-                font-weight: bold;">Create</button>
+          <div class="activity-data">
+            <div class="activity">
+              <div class="activity-data">
+                <button id="createAdminBtn" class="btn-design">Create Admin</button>
+              </div>
             </div>
-
-          </form>
-        </div>
-
-        <div class="activity">
-          <div class="activity-data">
-            <button id="viewAdminListBtn" class="btn-design">View Admin List</button>
+            
+    
+            
           </div>
+  
         </div>
-      </div>
 
 
-
-      <div id="adminList" style="display: none;">
+      <div id="adminList">
         <table id="adminTable">
-          <thead>
+          <tbody>
             <tr class="main_th">
               <th>Serial Number</th>
+              <th>Created Date</th>
               <th>Admin Username</th>
               <th>Admin Password</th>
+              <th>Admin Status</th>
+              <th> </th>
             </tr>
-          </thead>
-          <tbody>
+
+            {% for user in users %}
+                  <tr>
+                    <td data-th="Serial No">{{forloop.counter}}</td>
+                   
+                    <td data-th="Created Date">{{user.created}}</td>
+                    <td data-th="admin_id">{{user.username}}</td>
+                    <td data-th="Password">{{user.password}}</td>
+                    <td data-th="Client_Status">
+
+                      <label class="toggle-switch">
+                        <input type="checkbox" {% if user.is_active %} checked {% endif %}>
+                        <span class="slider"></span>
+                    </label>
+
+
+
+                    </td>
+
+
+                    
+            {% endfor %}
+            
             <!-- Client data will be dynamically inserted here -->
           </tbody>
         </table>
@@ -283,9 +340,11 @@
 
 
   </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-  {% include 'js/admin_create_js.html' %}
+  
+  {% include 'modal/create_admin_modal.html' %}
 
 </body>
 

@@ -18,8 +18,8 @@
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
       <style>
+      
         .export_style{
   display: flex;
   justify-content: space-between;
@@ -112,7 +112,7 @@ font-size:18px;
 
 </style>
 
-    <title>Admin Dashboard Panel</title>
+    <title>SuperAdmin Dashboard Under Process</title>
   </head>
   <body>
     <nav>
@@ -125,26 +125,37 @@ font-size:18px;
       <div class="menu-items">
         <ul class="nav-links">
           <li>
-            <a href="{% url 'withdrawal-request-list' %}">
-              <i class="uil uil-money-withdraw"></i>
-              <span class="link-name">Withdrawal Request</span>
+            <a href="{% url 'superadmin_dashboard' %}">
+              <i class="uil uil-chart-pie"></i>
+              <span class="link-name">Dashboard</span>
             </a>
           </li>
-          
+  
+  
+          <li>
+            <a href="{% url 'admin_dashboard' %}">
+              <i class="uil uil-chart-pie"></i>
+              <span class="link-name">Statement</span>
+            </a>
+          </li>
           <li>
             <a href="{% url 'client-list-template' %}">
-              <i class="uil uil-user-plus"></i>
+              <i class="uil uil-money-withdraw"></i>
               <span class="link-name">Client List</span>
             </a>
           </li>
-          
           <li>
-            <a href="">
-              <i class="uil uil-chart-pie"></i>
-              <span class="link-name">Withdrawal Statement</span>
+              <a href="{% url 'admin-list-template' %}">
+                <i class="uil uil-user-plus"></i>
+                <span class="link-name">Admin List</span>
+              </a>
+            </li>
+          <li>
+            <a href="{% url 'withdrawal-request-list' %}">
+              <i class="uil uil-money-withdraw"></i>
+              <span class="link-name">Withdrawal Request List</span>
             </a>
           </li>
-          
         </ul>
       </div>
     </nav>
@@ -157,90 +168,26 @@ font-size:18px;
                 style="font-weight: 600; font-size: 16px">↪️</span></span></a>
         </div>
 
-        <!-- <div class="search-box">
-          <button id="exportBtn">Export</button>
-          
-        </div>
-
-        <div>
-          <input type="text" id="searchBarAdmin" placeholder="Search">
-
-        </div> -->
-
+       
         
       </div>
 
       <div class="dash-content">
-        <div class="overview">
-          <div class="title">
-            <i class="uil uil-tachometer-fast-alt"></i>
-            <span class="text">Withdrawal Statement</span>
-          </div>
-          <div class="search-box export_style">
-          
-            <button  class="export-btn" id="exportBtn">Export</button>
-                      
-            <input type="text"   class="search-bar"  id="searchBarAdmin" placeholder="Search">
-            
-            </div>
+        
         </div>
         <br>
         <br>
 
         <div class="main_date_style">
-          <div class="date-container">
-              <label class="label_Date" for="start-date">Start Date:</label>
-              <i class="fas fa-calendar-alt start_date" ></i>
-              <input type="text" class="date_design" id="start-date">
-          </div>
-          <div class="date-container">
-              <label class="label_Date" for="end-date">End Date:</label>
-              <i class="fas fa-calendar-alt end_date"></i>
-              <input type="text" class="date_design" id="end-date">
-          </div>
+          
         </div>
-      
-        
+
 
         <div class="activity">
           <div class="activity-data">
             <div class="container">
                 
-              <table class="rwd-table" id="admin_dashboard_table">
-
-                <tbody>
-                  <tr>
-                    <th>Sr.No</th>
-                    <th>Client Name</th>
-                    <th>UTR/Remark</th>
-                    <th>Amount</th>
-                    <th>Mode</th>
-                    <th>Status</th>
-                    <th>Admin</th>
-                    <th>Created Date</th>
-                  </tr>
-                  {% for withdrawal_request,txn in withdrawal_requests %}
-                  <tr>
-                    <td data-th="Serial No">{{forloop.counter}}</td>
-                    <td data-th="Client">{{withdrawal_request.client.email}}</td>
-                    {% if withdrawal_request.req_status == 'Approved' %}     
-                        <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
-                    {% else %} 
-                        <td data-th="Reason">{{withdrawal_request.reasons}}</td>
-
-                    {% endif %}
-                    
-                    <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                    <td data-th="Txn">{{txn.tnx}}</td>
-                    <td data-th="Status">{{withdrawal_request.req_status}}</td>
-                    
-                    <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
-                    <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
-                    
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+              
             </div>
           </div>
         </div>
@@ -248,9 +195,6 @@ font-size:18px;
     </section>
     <!-- End Dashboard Section -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    {% include 'js/admin_dashboard_export_js.html' %}
+    
   </body>
 </html>

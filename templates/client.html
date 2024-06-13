@@ -16,7 +16,7 @@
   <!----===== Iconscout CSS ===== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-  <title>Admin Client List</title>
+  <title>SuperAdmin Client List</title>
   <style>
     #clientTable {
       margin: auto;
@@ -148,7 +148,115 @@
 {
     background-color: #EF5350;
 }
+.overview
+{
+display:flex;
+justify-content:space-between;
+}
+.activity
+{
+margin:30px 0 30px 0;
+}
+
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4); 
+}
+
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; 
+}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
   </style>
+
+<style>
+  /* Add your existing styles here */
+
+  /* Toggle switch styles */
+  .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+  }
+
+  .toggle-switch input {
+      display: none;
+  }
+
+  .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+  }
+
+  .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+  }
+
+  input:checked + .slider {
+      background-color: #1c004b;
+  }
+
+  input:checked + .slider:before {
+      transform: translateX(26px);
+  }
+</style>
+
+<style>
+  .status-active {
+      color: green;
+      font-weight: bold;
+  }
+
+  .status-block {
+      color: red;
+      font-weight: bold;
+  }
+</style>
+
+
 </head>
 
 <body>
@@ -161,39 +269,70 @@
 
     <div class="menu-items">
       <ul class="nav-links">
-        <li>
-          <a href="{% url 'admin_dashboard' %}">
-            <i class="uil uil-chart-pie"></i>
-            <span class="link-name">Dashboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'client-list-template' %}">
-            <i class="uil uil-user-plus"></i>
-            <span class="link-name">Client List</span>
-          </a>
-        </li>
+
+
+
+        
         {% if request.user.is_superadmin %}
-          <li>
-            <a href="{% url 'admin-list-template' %}">
-              <i class="uil uil-user-plus"></i>
-              <span class="link-name">Admin List</span>
-            </a>
-          </li>
+            <li>
+              <a href="{% url 'superadmin_dashboard' %}">
+                <i class="uil uil-chart-pie"></i>
+                <span class="link-name">Dashboard</span>
+              </a>
+            </li>
+
+
+            <li>
+              <a href="{% url 'admin_dashboard' %}">
+                <i class="uil uil-chart-pie"></i>
+                <span class="link-name">Statement</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'client-list-template' %}">
+                <i class="uil uil-money-withdraw"></i>
+                <span class="link-name">Client List</span>
+              </a>
+            </li>
+            <li>
+                <a href="{% url 'admin-list-template' %}">
+                  <i class="uil uil-user-plus"></i>
+                  <span class="link-name">Admin List</span>
+                </a>
+              </li>
+            <li>
+              <a href="{% url 'withdrawal-request-list' %}">
+                <i class="uil uil-money-withdraw"></i>
+                <span class="link-name">Withdrawal Request List</span>
+              </a>
+            </li>
+
         {% endif %}
-        <li>
-          <a href="{% url 'withdrawal-request-list' %}">
-            <i class="uil uil-money-withdraw"></i>
-            <span class="link-name">Withdrawal Request List</span>
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'client_wallet_list' %}">
-            <i class="uil uil-money-withdraw"></i>
+        
+        {% if request.user.is_admin and not request.user.is_superadmin %}
+        
+            <li>
+              <a href="{% url 'withdrawal-request-list' %}">
+                <i class="uil uil-money-withdraw"></i>
+                <span class="link-name">Withdrawal Request List</span>
+              </a>
+            </li>
             
-            <span class="link-name">Client Wallet</span>
-          </a>
-        </li>
+            <li>
+              <a href="{% url 'client-list-template' %}">
+                <i class="uil uil-user-plus"></i>
+                <span class="link-name">Client List</span>
+              </a>
+            </li>
+
+            <li>
+              <a href="{% url 'admin_dashboard' %}">
+                <i class="uil uil-chart-pie"></i>
+                <span class="link-name">Withdrawal Statement</span>
+              </a>
+            </li>
+        {% endif %}
+        
       </ul>
     </div>
   </nav>
@@ -216,62 +355,81 @@
           <i class="uil  uil-wheelchair"></i>
           <span class="text">Client</span>
         </div>
-      </div>
-
-      <div class="activity-data">
-        <div class="activity">
-          <div class="activity-data">
-            <button id="createClientBtn" class="btn-design">Create Client</button>
-          </div>
-        </div>
-        <div style="display: flex; justify-content: center;     margin-bottom: 50px;">
-          <form id="clientForm" style="display: none;">
-
-            <input type="text" placeholder="Username" style="     background-color: #f2f2f2;
-              border: none;
-              padding: 15px 18px;
-              width: 500px;
-              margin-bottom: 20px;
-              border-bottom: 1px solid #0e0e37;" required /> <br><br>
-            <input type="password" placeholder="Password" style="        background-color: #f2f2f2;
-              border: none;
-              padding: 15px 18px;
-              width: 500px;
-              margin-bottom: 20px;
-              border-bottom: 1px solid #0e0e37;" required /><br>
-            <br>
-            <div style="display: flex; justify-content: center;">
-              <button id="id_create_client" type="submit" style="    border: none;
-                background: #EF5350;
-                color: white;
-                width: 200px;
-                font-size: 18px;
-                padding: 15px 18px;
-                font-weight: bold;">Create</button>
+        <div class="activity-data">
+          <div class="activity">
+            <div class="activity-data">
+              <button id="createClientBtn" class="btn-design">Create Client</button>
             </div>
-
-          </form>
-        </div>
-
-        <div class="activity">
-          <div class="activity-data">
-            <button id="viewClientListBtn" class="btn-design">View Client List</button>
           </div>
+          
+  
+          <!-- <div class="activity">
+            <div class="activity-data">
+              <button id="viewClientListBtn" class="btn-design">View Client List</button>
+            </div>
+          </div> -->
         </div>
+
       </div>
 
+     
 
 
-      <div id="clientList" style="display: none;">
+
+      <div id="clientList">
         <table id="clientTable">
-          <thead>
+          <tbody>
             <tr class="main_th">
               <th>Serial Number</th>
+              <th>Created Date</th>
               <th>Client Username</th>
               <th>Client Password</th>
+              <th>Client Status</th>
+              <th>Client Wallet</th>
+              <th> </th>
             </tr>
-          </thead>
-          <tbody>
+
+            {% for user in users %}
+                  <tr>
+                    <td data-th="Serial No">{{forloop.counter}}</td>
+                   
+                    <td data-th="Created Date">{{user.created}}</td>
+                    <td data-th="client_id">{{user.username}}</td>
+                    <td data-th="Password">{{user.password}}</td>
+
+                    {% if request.user.is_superadmin %}
+                    <td data-th="Client_Status">
+                      <label class="toggle-switch">
+                        <input type="checkbox" {% if user.is_active %} checked {% endif %}>
+                        <span class="slider"></span>
+                    </label>
+                    </td>
+                    {% else %}
+
+                      {% if user.is_active %}
+                        <td data-th="Client_Status" class="status-active">Active</td>
+                      {% else %}
+                        <td data-th="Client_Status" class="status-block">Block</td>
+                      {% endif %}
+
+
+
+
+
+
+
+                    {% endif %}
+
+
+
+
+
+                    <td id="amount_for_wallet_{{ wallet.id }}" data-th="Amount">{{ user.wallet.total_balance }} 
+                      {% if request.user.is_superadmin %}
+                        &nbsp <i class="uil uil-eye client1"></i></td>
+                      {% endif %}
+                  </tr>
+            {% endfor %}
             <!-- Client data will be dynamically inserted here -->
           </tbody>
         </table>
@@ -285,9 +443,12 @@
 
 
   </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-  {% include 'js/client_js.html' %}
+  <!-- {% include 'js/client_js.html' %} -->
+  {% include 'modal/create_client_modal.html' %}
+  {% include 'js/admin_wallet_js.html' %}
 
 </body>
 

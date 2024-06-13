@@ -115,7 +115,7 @@ class Account(models.Model):
     status_change_by = models.CharField(max_length=255,default='')
     withdrawal_today = models.IntegerField(default=0)
     withdrawal_day = models.DateField()
-
+    withdrawal_request_accepted_by = models.CharField(max_length=255,default='Pending')
 
 
 

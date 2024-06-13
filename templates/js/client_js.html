@@ -5,111 +5,8 @@
     
 $(document).ready(function() {
 
-    $("#createClientBtn").click(function(e) {
-        e.preventDefault()
-        var clientForm = $("#clientForm");
-        var clientList = $("#clientList");
-
-        // Hide the client list when creating a new client
-        clientList.hide();
-
-        // Toggle the visibility of the client form
-        clientForm.toggle();
-    });
-
-
-
-    // Move form submission event binding outside the click event handler
-    $("#clientForm").submit(function(event) {
-        console.log("BTN");
-        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        event.preventDefault(); // Prevent form submission
-        
-
-        var clientTableBody = document.querySelector("#clientTable tbody");
-        var username = this.querySelector("input[type='text']").value;
-        var password = this.querySelector("input[type='password']").value;
-
-        console.log(username);
-
-        var data = {
-
-            'username':username,
-            'password':password
-        }
-
-        var formData =$(this).serialize();
-        console.log(formData);
-
-        $.ajax({
-            type: "POST",
-            url: "/users/",
-            data: data,
-            beforeSend: function(xhr, settings) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            },
-            success: function(response) {
-                // If login is successful, display success message
-                console.log("success");
-                $.confirm({
-                            title: ``,
-                            content:"Client Added Successfully!",
-                            type: "green",
-                            typeAnimated: true,
-                            columnClass: 'medium',
-                            buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.reload(); // Reload the page
-                                }
-                               
-                                
-                            },
-                            },
-                            
-                        
-                        });
-                
-                
-                // You might want to reload the client list here or update it with the new client data
-            },
-            error: function(xhr, status, error) {
-                // If login fails, display error message
-                console.log("fail");
-
-                $.confirm({
-                            title:'',
-                            content:'Email is already register!',
-                            type:'red',
-                            typeAnimated:true,
-                            buttons:{
-                                        tryAgain: {
-                                            text: 'Try again',
-                                            btnClass: 'btn-red',
-                                            action: function () {
-                                                window.location.reload(); // Reload the page
-                                            }
-                                            
-                                        },
-                                                    
-                                    }
-
-                        });
-
-
-                
-                console.log("fail",error);
-               
-            }
-        });
-    });
-
-
     
     
-    $("#viewClientListBtn").click(function() {
         var clientForm = $("#clientForm");
         var clientList = $("#clientList");
 
@@ -144,13 +41,8 @@ $(document).ready(function() {
                 console.log("Error:", error);
             }
         });
-    });
+    
 
-   
-
-
-
-   
     
 });
 

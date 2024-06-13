@@ -62,7 +62,7 @@
 .top
 {
   display: flex !important;
-    justify-content: space-between !important;
+    justify-content: end !important;
     height: 50px;
     line-height: 50px;
 }
@@ -95,6 +95,12 @@
 .jconfirm .jconfirm-box .jconfirm-buttons button.btn-red
 {
     background-color: #EF5350;
+}
+.search_box input
+{
+    border-bottom: 2px solid black;
+    background: #f2f2f2;
+    width: 300px !important;
 }
     </style>
   </head>
@@ -142,9 +148,7 @@
     <!-- Withdrawal Request Section -->
     <section id="add_beneficiary" class="dashboard">
       <div class="top">
-        <div class="search_box">
-          <input type="search" placeholder="Search Beneficiary Name" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
-        </div>
+        
         <div class="search-box">
             <a href="{% url 'logout' %}"><span class="link-name"
                 >Logout
@@ -204,12 +208,20 @@
                 required
               /><br />
               <div class="submit_div">
-                <input class="submit_btn" type="submit" value="ADD" />
+                <input class="submit_btn" type="submit" value="Submit" />
               </div>
             </form>
           </div>
           <br>
           <br>
+
+          <div class="search_box">
+            <input type="search" placeholder="Search" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
+          </div>
+
+          <br>
+
+
           <div class="container">
             <table class="rwd-table">
              
@@ -256,10 +268,13 @@
 
 <script>
 function highlightRows(searchTerm) {
-  const rows = document.querySelectorAll('.container .rwd-table tbody tr');
+  const rows = document.querySelectorAll('.container .rwd-table tbody tr:not(:first-child)');
+  
   rows.forEach(row => {
     const cells = row.querySelectorAll('td[data-th]');
+    
     let found = false;
+
     cells.forEach(cell => {
       if (cell.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
         found = true;
@@ -276,9 +291,8 @@ function highlightRows(searchTerm) {
   });
 }
 
-function refreshPage() {
-  window.location.reload();
-}
+
+
 </script>
 
      

@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    
+
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
@@ -193,7 +195,25 @@
 {
 font-size:18px;
 }
+.recietname{
+
+  text-transform: uppercase;
+  font-size: 18px;
+
+}
+.statement_info1{
+
+  text-align: left;
+}
+.font1{
+  font-size: 16px;
+}
+.font2{
+  font-size: 18px;
+}
     </style>
+
+
     <title>Dashboard Panel</title>
   </head>
   <body>
@@ -355,40 +375,52 @@ font-size:18px;
                               <div class="content_center">
                                   <div>
                                       <img src="" />
-                                      <h2>Transfer Successful</h2>
-                                      <p>Amount</p>
-                                      <p id="model_amount"><span>₹ &nbsp</span></p>
+                                      <h2>Successful Transaction</h2>
+                                      <br>
+                                      <div id='model_created_at' class="font_bold"></div>
+                                      <br>
+                                      
                                   </div>
                               </div>
 
                               <hr>
+                              <br>
                               <div class="statement_info">
-                                  <div>
-                                      <p>Paid To</p>
-                                  </div>
-                                  <div id='paid_to_id' class="font_bold"></div>
+                                  
+                                  <div id='paid_to_id' class="font_bold recietname"></div>
+                                  <div id='model_amount' class="font_bold"></div>
                               </div>
+                              <br>
+                              <hr>
+                              <br>
                               <div class="statement_info">
-                                  <div>
-                                      <p>To Account</p>
-                                  </div>
-                                  <div id='model_account' class="font_bold"></div>
+                                <div>
+                                    <p class="font1">UTR/Transaction ID </p>
+                                </div>
+                                <div id='ref_number_id' class="font_bold font2" ></div>
                               </div>
+                              <br>
+                              <hr>
+                              <br>
                               <div class="statement_info">
+
+                                  <div>
+                                      <p class="font1">To Account</p>
+                                  </div>
+                                  <div id='model_account' class="font_bold font2"></div>
+                              </div>
+                              <br>
+                              <hr>
+                              <!-- <div class="statement_info">
                                   <div>
                                       <p>Date</p>
                                   </div>
                                   <div id='model_created_at' class="font_bold"></div>
-                              </div>
-                              <div class="statement_info">
-                                  <div>
-                                      <p>Reference number</p>
-                                  </div>
-                                  <div id='ref_number_id' class="font_bold"></div>
-                              </div>
+                              </div> -->
+                              
                               <div class="frm_btn">
                                   <div>
-                                      <button id="id_done">Done</button>
+                                      <button id="id_dwonload">Download</button>
                                   </div>
                               </div>
 
@@ -401,9 +433,8 @@ font-size:18px;
     <!-- End Dashboard Section -->
     
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
 <script>
-  // Function to show the pop-up form and populate it with data
   function showForm(formId, createdDate, amount,paid_to ,account_number, reasons,ref_number) {
       var modal = document.getElementById(formId);
       
@@ -430,19 +461,20 @@ font-size:18px;
       var modal = document.getElementById(formId);
       modal.style.display = "none"; // Hide the modal
   }
- 
 
-  $("#id_done").click(function() {
-        // Assuming the form has an ID "myForm", you can close it like this:
-        $("#debitForm1").hide(); // or $("#myForm").fadeOut();
-    });
+  
 
 
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 {% include 'js/client_dashboard_export_js.html' %}
+{% include 'js/recipttnx_js.html' %}
 
     
   </body>
