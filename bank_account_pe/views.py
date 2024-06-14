@@ -621,39 +621,42 @@ class WithdrawalRequestList(APIView, TemplateView):
                  
                     bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
-                   
+                    
                     check_acc=Account.objects.all()
 
                    
                     check_acc = check_acc.filter(client=request.user)
-                    
-                    print("account----------check",check_acc)
+
+                     
+                  
                     if len(check_acc) ==1:
                         check_acc.update(account_bene = bene)
 
-                    account=check_acc.filter(account_bene=bene)
                    
-                    print("account----------",account)
+                    account=check_acc.filter(account_bene=bene)
+
+                    # start from here.
+
+                    if not account:
+
+                        account=Account.objects.create(client=request.user,account_bene=bene,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=check_acc.last().total_balnce,withdrawal_day=datetime.now().date())
+                   
+                   
+                    
+                    # def dict_compare(d1, d2):
+                    #     # Compare relevant keys
+                    #     return d1.client == d2.client 
+
+                    # # Use a list comprehension to filter out duplicate dictionaries
+                    # account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
+
+                   
+                    if account:
+                       
+                        total_bal_ = account.last().total_balnce
+                       
 
                 
-                    def dict_compare(d1, d2):
-                        # Compare relevant keys
-                        return d1.client == d2.client 
-
-                    # Use a list comprehension to filter out duplicate dictionaries
-                    account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
-
-
-                    if len(account)>0:
-
-                        total_bal_ = account[-1].total_balnce
-
-                    
-                    print('account',account)
-
-                    print('total_bal',total_bal_)
-
-                    print("REQUESTED",type(request.user.id))
 
                     client_id=User.objects.get(email=request.user.email)
                     
@@ -752,8 +755,7 @@ class WithdrawalRequestDetail(APIView):
         try:
 
                 transaction_request = self.get_object(pk)
-                print("=",request.data)
-
+               
                 if request.data.get('withdrawal_request_accepted_by')=='Accepted':
 
                     request.data['withdrawal_request_accepted_by'] = request.user.email
@@ -768,7 +770,7 @@ class WithdrawalRequestDetail(APIView):
                 
             
                 secound_last_acc=Account.objects.filter(req_status="Approved", withdraw_request_client=True).order_by('-id')
-                print("len",len(secound_last_acc))
+               
 
                 if len(secound_last_acc) == 0 or len(secound_last_acc) == 1:
 
@@ -782,7 +784,6 @@ class WithdrawalRequestDetail(APIView):
                 transaction_request_pre = self.get_object(pre_pk)
 
                 if request.data['req_status']=='Approved':
-                    print("HI HELOO HI",request.data)
                     transaction_request.admin_remark = request.data['admin_remark']
                     transaction_request.ref_number = request.data['ref_number']
                     transaction_request.reasons = request.data['reasons']
@@ -808,8 +809,7 @@ class WithdrawalRequestDetail(APIView):
                     if transaction_type.lower() == 'withdraw':
                         
                             amount=transaction_request.ammount
-                            print('total_balance',total_amt)
-                            print('amount',amount)
+                           
                             if total_amt > int(amount):
                                 
                                 ammount = total_amt- int(amount)
@@ -819,7 +819,7 @@ class WithdrawalRequestDetail(APIView):
                                 transaction_request.total_balnce = ammount
 
                                 client_with_request=AccountStatement.objects.all().last()
-                                print("client_with_request",client_with_request)
+                                
                                 client_with_request.account=transaction_request
                                 client_with_request.deposit=0
                                 client_with_request.withdraw=amount
@@ -840,7 +840,7 @@ class WithdrawalRequestDetail(APIView):
                             AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
                             
 
-                print("Request_data",request.data)            
+                          
 
                 serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
                 if serializer.is_valid():
@@ -905,7 +905,7 @@ class BeneficiaryDetailsList(APIView,View):
                     
                     new_bene_bal=account_q.filter(account_bene=serializer.data['id'])
 
-                    print("======",new_bene_bal)
+                   
                     if not new_bene_bal:
                         bene_instance = BeneficiaryDetails.objects.get(id=serializer.data['id'])
                         Account.objects.create(client=client,account_bene=bene_instance,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=total_bal,withdrawal_day=datetime.now().date())

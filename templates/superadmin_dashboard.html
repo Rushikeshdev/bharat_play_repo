@@ -227,7 +227,7 @@ font-size:18px;
                     <th>Status Changed By</th>
                   </tr>
                   {% for withdrawal_request,txn in withdrawal_requests %}
-                  {{page}}
+                  
                   <tr>
                     <td data-th="Serial No">{{ forloop.counter }}</td>
                     <td data-th="Client">{{withdrawal_request.client.email}}</td>
