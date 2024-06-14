@@ -1192,9 +1192,23 @@ class BeneView(View):
 
     def get(self, request):
 
-        beneficiaries = BeneficiaryDetails.objects.select_related('client').filter(client=request.user)
-        print('beneficiaries',beneficiaries)
-        return render(request,self.template_name,{'bene':beneficiaries})
+            try:
+                beneficiaries = BeneficiaryDetails.objects.select_related('client').filter(client=request.user)
+                
+                beneficiaries_id = beneficiaries.values_list('id',flat=True)
+
+                accounts = Account.objects.filter(account_bene__in=beneficiaries_id )
+
+                with_today=accounts.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
+                
+                balance = accounts.last().total_balnce
+
+                with_today = sum(item['ammount'] for item in with_today)
+
+                return render(request,self.template_name,{'bene':beneficiaries,'balance':balance,'withdrwal_today':with_today})
+            except Exception as e:
+
+                return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 

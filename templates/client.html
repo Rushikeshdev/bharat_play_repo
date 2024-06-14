@@ -383,7 +383,9 @@ margin:30px 0 30px 0;
               <th>Serial Number</th>
               <th>Created Date</th>
               <th>Client Username</th>
-              <th>Client Password</th>
+              {% if request.user.is_superadmin %}
+                <th>Client Password</th>
+              {% endif %}
               <th>Client Status</th>
               <th>Client Wallet</th>
               <th> </th>
@@ -395,15 +397,16 @@ margin:30px 0 30px 0;
                    
                     <td data-th="Created Date">{{user.created}}</td>
                     <td data-th="client_id">{{user.username}}</td>
-                    <td data-th="Password">{{user.password}}</td>
+                    
 
                     {% if request.user.is_superadmin %}
-                    <td data-th="Client_Status">
-                      <label class="toggle-switch">
-                        <input type="checkbox" {% if user.is_active %} checked {% endif %}>
-                        <span class="slider"></span>
-                    </label>
-                    </td>
+                      <td data-th="Password">{{user.password}}</td>
+                      <td data-th="Client_Status">
+                        <label class="toggle-switch">
+                          <input type="checkbox" {% if user.is_active %} checked {% endif %}>
+                          <span class="slider"></span>
+                      </label>
+                      </td>
                     {% else %}
 
                       {% if user.is_active %}

@@ -8,34 +8,61 @@ $(document).ready(function() {
 
             $('#id_dwonload').on('click', function () {
 
-                console.log("hello......");
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
+                // Ensure jsPDF and jsPDF-AutoTable are loaded
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
 
-                
+                    // const base64Font = '₹'; // Replace with actual Base64 string
+                    // doc.addFileToVFS("Roboto-Regular.ttf", base64Font);
+                    // doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+                    // doc.setFont("Roboto");
 
-                // Add title and other content
-                doc.setFontSize(18);
-                doc.text("Successful Transaction", 105, 20, null, null, 'center');
 
-                // Add date
-                doc.setFontSize(12);
-                doc.text("Date: " + $('#model_created_at').text(), 20, 30);
+                    // Add title and other content
+                    doc.setFontSize(18);
+                    doc.text("Successful Transaction", 105, 20, null, null, 'center');
 
-                // Add paid to info
-                doc.text("Paid to: " + $('#paid_to_id').text(), 20, 40);
+                    // // Add date
+                    // doc.setFontSize(12);
+                    // doc.text("Date: " + $('#model_created_at').text(), 20, 30, 'left');
 
-                // Add amount
-                doc.text("Amount: " + $('#model_amount').text(), 20, 50);
+                    // // Add paid to info
+                    // doc.text("Paid to: " + $('#paid_to_id').text(), 20, 40);
 
-                // Add UTR/Transaction ID
-                doc.text("UTR/Transaction ID: " + $('#ref_number_id').text(), 20, 60);
+                    // // Add amount
+                    // doc.text("Amount: " + $('#model_amount').text(), 20, 50);
 
-                // Add account info
-                doc.text("To Account: " + $('#model_account').text(), 20, 70);
+                    // var amount = $('#model_amount').text()
 
-                // Save the PDF
-                doc.save('form.pdf');
+                    // console.log('amount==>',amount);
+
+                    // // Add UTR/Transaction ID
+                    // doc.text("UTR/Transaction ID: " + $('#ref_number_id').text(), 20, 60);
+
+                    // // Add account info
+                    // doc.text("To Account: " + $('#model_account').text(), 20, 70);
+
+                    // Define the table data
+                    const headers = [["Date", "Paid To", "Amount",'UTR/Transaction ID','To Account']];
+                    const data = [
+                        [$('#model_created_at').text(),$('#paid_to_id').text(),$('#model_amount').text(),$('#ref_number_id').text(),
+                        $('#model_account').text()
+                         ],
+                        
+                        // Add more rows as needed
+                    ];
+
+                    // Add table to PDF
+                    doc.autoTable({
+                        head: headers,
+                        body: data,
+                        startY: 80,  // Adjust the Y position as needed
+                        margin: { top: 80 } // Adjust margin to start table after other text
+                    });
+
+                    // Save the PDF
+                    doc.save('form.pdf');
+
             });
 });
 
