@@ -132,7 +132,9 @@ $(document).ready(function () {
 
         $("#rejected_id").click(function(e) {
 
-            
+
+                var utr_number = $('.utr_number_ui').val()
+                var admin_remark = $('.admin_remark_ui').val()
 
                 var selectedStatus = $(this).text();
 
@@ -148,11 +150,11 @@ $(document).ready(function () {
                     contentType: 'application/json',
                     data: JSON.stringify({
                         'id': requestId,
-                        'ref_number':0,
+                        'ref_number':utr_number,
                         'reasons':'NA',
                         'req_status': selectedStatus,
                         'transaction_type':'NA',
-                        'admin_remark':'NA',
+                        'admin_remark':admin_remark,
                         'amount':0
                     }),
                     success: function (data) {

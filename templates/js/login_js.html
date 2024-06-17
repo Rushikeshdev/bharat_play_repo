@@ -26,17 +26,24 @@ $(document).ready(function() {
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
-                            buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.href = "/withdrawal-requests/"; 
-                                }
+                            // buttons: {
+                            // // OK: {
+                            // //     // text: "Close",
+                            // //     // btnClass: "btn-blue",
+                            // //     action: function () {
+                            // //         window.location.href = "/withdrawal-requests/"; 
+                            // //     }
                                
                                 
-                            },
-                            },
+                            // // },
+
+                            
+                            // },
+
+                            action: function () {
+                                    window.location.href = "/withdrawal-requests/"; 
+                                }
+
                             
                         
                         });
@@ -56,24 +63,28 @@ $(document).ready(function() {
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
+                            autoClose: 'close|0000',
                             buttons: {
                             OK: {
                                 text: "Close",
                                 btnClass: "btn-blue",
+                                close: function () {},
                                 action: function () {
                                     window.location.href = "/admin_dashboard/template/"; 
                                 }
                             
                                 
                             },
+                           
+
                             },
+
+                            
 
 
                             });
 
-
-
-
+                           
 
 
 
@@ -86,17 +97,21 @@ $(document).ready(function() {
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
-                            buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.href = "/dashboard_client/template/"; 
-                                }
+                            // buttons: {
+                            // // OK: {
+                            // //     // text: "Close",
+                            // //     // btnClass: "btn-blue",
+                            // //     action: function () {
+                            // //         window.location.href = "/dashboard_client/template/"; 
+                            // //     }
                                
                                 
-                            },
-                            },
+                            // // },
+                            
+                            // },
+                            action: function () {
+                                    window.location.href = "/admin_dashboard/template/"; 
+                                }
                             
                         
                         });
@@ -112,17 +127,21 @@ $(document).ready(function() {
                             content:'User Is Not Authenticated',
                             type:'red',
                             typeAnimated:true,
-                            buttons:{
-                                        tryAgain: {
-                                            text: 'Try again',
-                                            btnClass: 'btn-red',
-                                            action: function () {
-                                                window.location.reload(); // Reload the page
-                                            }
+                            // buttons:{
+                            //             tryAgain: {
+                            //                 // text: 'Try again',
+                            //                 // btnClass: 'btn-red',
+                            //                 action: function () {
+                            //                     window.location.reload(); // Reload the page
+                            //                 }
                                             
-                                        },
+                            //             },
                                                     
-                                    }
+                            //         }
+
+                            action: function () {
+                                    window.location.href = "/admin_dashboard/template/"; 
+                                }
 
                         });
                     }

@@ -223,12 +223,8 @@ font-size:18px;
                   <tr>
                     <td data-th="Serial No">{{forloop.counter}}</td>
                     <td data-th="Client">{{withdrawal_request.client.email}}</td>
-                    {% if withdrawal_request.req_status == 'Approved' %}     
-                        <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
-                    {% else %} 
-                        <td data-th="Reason">{{withdrawal_request.reasons}}</td>
-
-                    {% endif %}
+                      
+                    <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
                     
                     <td data-th="Amount">{{withdrawal_request.ammount}}</td>
                     <td data-th="Txn">{{txn.tnx}}</td>

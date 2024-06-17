@@ -796,6 +796,7 @@ class WithdrawalRequestDetail(APIView):
 
 
                 elif request.data['req_status']=='Rejected':
+                    transaction_request.ref_number = request.data['ref_number']
                     transaction_request.reasons = request.data['reasons']
 
 
