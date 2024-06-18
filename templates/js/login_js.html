@@ -21,28 +21,26 @@ $(document).ready(function() {
                         if (response.user == 'is_admin'){
 
                             $.confirm({
-                            title: ``,
-                            content:"Admin Login Successfully!",
-                            type: "green",
-                            typeAnimated: true,
-                            columnClass: 'medium',
-                            // buttons: {
-                            // // OK: {
-                            // //     // text: "Close",
-                            // //     // btnClass: "btn-blue",
-                            // //     action: function () {
-                            // //         window.location.href = "/withdrawal-requests/"; 
-                            // //     }
-                               
+                                title: ``,
+                                content:"Admin Login Successfully!",
+                                type: "green",
+                                typeAnimated: true,
+                                columnClass: 'medium',
+                                buttons: {
+                                OK: {
+                                    text: "Close",
+                                    btnClass: "btn-blue",
+                                    action: function () {
+                                        window.location.href = "/withdrawal-requests/"; 
+                                    }
                                 
-                            // // },
+                                    
+                                },
 
                             
-                            // },
+                            },
 
-                            action: function () {
-                                    window.location.href = "/withdrawal-requests/"; 
-                                }
+                            
 
                             
                         
