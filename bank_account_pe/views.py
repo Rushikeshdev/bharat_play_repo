@@ -32,14 +32,36 @@ class UserList(APIView,TemplateView):
     def get(self, request):
 
   
-        try:
+        # try:
             
         
             if request.user.is_superadmin and "admintemplate" in request.build_absolute_uri():
                 self.template_name = self.admin_template
                 users = User.objects.filter(is_superadmin=False ,is_admin=True)
+
+               
+
                 serializer = UserSerializer(users, many=True,context={'request':request})
-                context_wallet_user={'users':serializer.data}
+
+                user_data_with_wallet = []
+                for user in serializer.data:
+                   
+                    account = Account.objects.filter(client__email=user['username']).last()
+                    
+                    wallet_data = {
+                        'id': account.id if account else None,
+                        'total_balance': account.total_balnce if account else 0,
+                        'withdrawal_today': account.withdrawal_today if account else 0
+                    }
+
+                    # Combine user data with wallet data
+                    user_with_wallet = {
+                        **user,
+                        'wallet': wallet_data
+                    }
+                    user_data_with_wallet.append(user_with_wallet)
+
+                context_wallet_user={'users':user_data_with_wallet}
                 
             elif request.user.is_superadmin or request.user.is_admin:
                 
@@ -67,6 +89,7 @@ class UserList(APIView,TemplateView):
                     
                     check_bene = BeneficiaryDetails.objects.filter(client=client)  
 
+                   
                 
                     if  not account:
                         if check_bene:
@@ -109,17 +132,14 @@ class UserList(APIView,TemplateView):
                         
                             client_data['total_balnce'] = acc.total_balnce
                             
-
+                            
                             
                             context.append(client_data)
+                            print("===>>>>>>>>>>>>>") 
                     
-
-
                 
-
-            
-
                 def dict_compare(d1, d2):
+                    
                     # Compare relevant keys
                     return d1['client'] == d2['client'] and d1['ammount'] == d2['ammount']
 
@@ -130,10 +150,11 @@ class UserList(APIView,TemplateView):
                 for user in serializer.data:
                    
                     account = Account.objects.filter(client__email=user['username']).last()
-
+                    
                     wallet_data = {
                         'id': account.id if account else None,
                         'total_balance': account.total_balnce if account else 0,
+                        'withdrawal_today': account.withdrawal_today if account else 0
                     }
 
                     # Combine user data with wallet data
@@ -146,11 +167,11 @@ class UserList(APIView,TemplateView):
                 
                 context_wallet_user={'users':user_data_with_wallet}
 
-        
+                   
     
             return self.render_to_response(context_wallet_user)
-        except Exception as e:
-             return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # except Exception as e:
+        #      return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         try:
@@ -495,31 +516,26 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                         print("===",request.data)
 
-                        print("client",client)
+                        
 
                        
-                        
                         client_id=User.objects.get(email=client)
 
-                        print("client_id",client_id)
-
-                        
-
                         account_data = Account.objects.filter(client=client_id.id)
-
+                        
+                        print("Account Data",account_data)
                         bene_details =  account_data.select_related('account_bene').last()
 
-                        print("Bal=",bene_details)
-
+                        print("bene_details",bene_details)
                        
-
                         account_name = bene_details.account_bene
 
-                        print("account_name=",account_data)
+                        print("Account Name",account_name)
 
                         total_balance = bene_details.total_balnce + deposit_ste
 
-                        print("Total balance=",total_balance)
+                       
+                        
 
                     
                     elif transaction_type.lower() == 'withdraw':
@@ -567,6 +583,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'account_number':account_name.bene_account_number,
                             'branch_ifsc': account_name.bene_branch_ifsc,
                             'bank_name': account_name.bene_bank_name,
+                            'admin_remark': request.data['admin_remark'],
+                            'remark_for_client':request.data['remark_for_client'],
                             'req_status':'Approved',
                             'reasons':'NA',
                             'ref_number':0,
@@ -589,6 +607,8 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'branch_ifsc': '',
                             'bank_name': '',
                             'req_status':'Approved',
+                            'admin_remark': request.data.get('admin_remark'),
+                            'remark_for_client':request.data['remark_for_client'],
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_balance,

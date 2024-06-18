@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal Example</title>
+    <style>
+        .modal-admin {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        .modal-content-admin {
+            background-color: #fefefe;
+            margin: 15% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 600px;
+        }
+
+        .close-admin {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-admin:hover,
+        .close-admin:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<div id="client-wallet" class="modal-admin">
+    <div class="modal-content-admin">
+        <span class="close-admin">&times;</span>
+        <form id="WalletForm">
+
+            <div>
+                <label><input type="radio" name="transactionType" value="withdraw" required> Withdraw</label>
+                <label><input type="radio" name="transactionType" value="deposit" required> Deposit</label>
+            </div>
+
+            <input type="text" placeholder="Amount" id="amount_modal_id" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
+            
+
+            <input type="text" placeholder="Admin Remark" id="admin_remark_id" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
+            <input type="text" placeholder="Remark For Client" id="remark_for_client_id" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
+            
+            <div style="display: flex; justify-content: center;">
+                <button id="id_wallet_tnx" type="submit" style="border: none; background: #EF5350; color: white; width: 200px; font-size: 18px; padding: 15px 18px; font-weight: bold;">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% csrf_token %}
+
+<script>
+    $(document).ready(function() {
+
+        var tdId;
+        var clientId;
+        var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Open the modal when the eye icon is clicked
+        $('.client1').on('click', function() {
+            $('#client-wallet').css('display', 'flex');
+            tdId = $(this).parent().attr("id");
+            clientId = $(this).closest('tr').find('[data-th="client_id"]').text();
+           
+
+           
+        });
+
+        // Close the modal when the close button is clicked
+        $('.close-admin').on('click', function() {
+            $('#client-wallet').css('display', 'none');
+        });
+
+        // Close the modal when clicking outside the modal content
+        $(window).on('click', function(event) {
+            if ($(event.target).is('#client-wallet')) {
+                $('#client-wallet').css('display', 'none');
+            }
+        });
+
+        // Handle form submission
+        $('#WalletForm').on('submit', function(event) {
+            event.preventDefault();
+            // Add your form submission logic here
+
+            // Close the modal after submission
+            $('#client-wallet').css('display', 'none');
+        });
+
+        
+
+        
+        $('#id_wallet_tnx').on('click', function() {
+
+            
+            const selectedTransactionType = $('input[name="transactionType"]:checked').val();
+            
+            var amount = $("#amount_modal_id").val();
+            var admin_remark = $("#admin_remark_id").val();
+            var remark_for_client = $("#remark_for_client_id").val();
+
+            console.log("selectedTransactionType",selectedTransactionType);
+
+            // Perform AJAX request to Django view
+                $.ajax({
+                            url: '/withdrawal-requests/', // Replace with your backend URL
+                            type: 'POST',
+                            beforeSend: function(xhr, settings) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            },
+                            data: {
+                                account_id: tdId,
+                                amount: amount,
+                                client:clientId,
+                                transaction_type: selectedTransactionType,
+                                'admin_remark':admin_remark,
+                                'remark_for_client': remark_for_client,
+                                'req_status':'NA',
+                                'reasons':'NA',
+                                
+                            
+                            },
+                            success: function(response) {
+                                window.location.reload();
+                                console.log("Transaction successful!");
+                                // Handle success response
+                            },
+                            error: function(xhr, errmsg, err) {
+
+                                $.confirm({
+                                    title:'',
+                                    content:JSON.parse(xhr.responseText).Message,
+                                    type:'red',
+                                    typeAnimated:true,
+                                    buttons:{
+                                                tryAgain: {
+                                                    text: 'Close',
+                                                    btnClass: 'btn-red',
+                                                    action: function () {
+                                                        window.location.reload(); // Reload the page
+                                                    }
+                                                    
+                                                },
+                                                            
+                                            }
+
+                                });
+                                console.log("Error occurred while processing transaction!");
+                                // Handle error response
+                            }
+        });
+
+           
+        });
+
+        
+
+
+
+    });
+</script>
+</body>
+</html>

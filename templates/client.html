@@ -380,14 +380,16 @@ margin:30px 0 30px 0;
         <table id="clientTable">
           <tbody>
             <tr class="main_th">
-              <th>Serial Number</th>
-              <th>Created Date</th>
-              <th>Client Username</th>
+              <th>Serial Number</th>              
+              <th>Username</th>
               {% if request.user.is_superadmin %}
-                <th>Client Password</th>
+                <th>Password</th>
               {% endif %}
-              <th>Client Status</th>
-              <th>Client Wallet</th>
+              <th>Status</th>
+              <th>Wallet</th>
+              <th>Today's Withdrawal </th>
+              <th>Action</th>
+              <th>Created Date</th>
               <th> </th>
             </tr>
 
@@ -395,7 +397,7 @@ margin:30px 0 30px 0;
                   <tr>
                     <td data-th="Serial No">{{forloop.counter}}</td>
                    
-                    <td data-th="Created Date">{{user.created}}</td>
+                   
                     <td data-th="client_id">{{user.username}}</td>
                     
 
@@ -415,11 +417,7 @@ margin:30px 0 30px 0;
                         <td data-th="Client_Status" class="status-block">Block</td>
                       {% endif %}
 
-
-
-
-
-
+                      
 
                     {% endif %}
 
@@ -427,10 +425,15 @@ margin:30px 0 30px 0;
 
 
 
-                    <td id="amount_for_wallet_{{ wallet.id }}" data-th="Amount">{{ user.wallet.total_balance }} 
-                      {% if request.user.is_superadmin %}
-                        &nbsp <i class="uil uil-eye client1"></i></td>
-                      {% endif %}
+                    <td id="" data-th="Amount">{{ user.wallet.total_balance }} </td>
+                     
+                    <td id="" data-th="Today's Withdrawal">{{ user.wallet.withdrawal_today }} </td> 
+                     
+                    {% if request.user.is_superadmin %}
+                      <td id="{{ user.wallet.id }}">  &nbsp <i class="uil uil-eye client1"></i></td>
+                    {% endif %}
+
+                    <td data-th="Created Date">{{user.created}}</td>
                   </tr>
             {% endfor %}
             <!-- Client data will be dynamically inserted here -->
@@ -451,7 +454,8 @@ margin:30px 0 30px 0;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <!-- {% include 'js/client_js.html' %} -->
   {% include 'modal/create_client_modal.html' %}
-  {% include 'js/admin_wallet_js.html' %}
+  <!-- {% include 'js/admin_wallet_js.html' %} -->
+  {% include 'modal/client_wallet_modal_js.html' %}
 
 </body>
 

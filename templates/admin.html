@@ -297,11 +297,12 @@ margin:30px 0 30px 0;
         <table id="adminTable">
           <tbody>
             <tr class="main_th">
-              <th>Serial Number</th>
+              <th>Serial Number</th>  
+              <th> Username</th>
+              <th> Password</th>
+              <th> Status</th>
+              <th>Today's Withdrawal </th>
               <th>Created Date</th>
-              <th>Admin Username</th>
-              <th>Admin Password</th>
-              <th>Admin Status</th>
               <th> </th>
             </tr>
 
@@ -309,9 +310,10 @@ margin:30px 0 30px 0;
                   <tr>
                     <td data-th="Serial No">{{forloop.counter}}</td>
                    
-                    <td data-th="Created Date">{{user.created}}</td>
+                    
                     <td data-th="admin_id">{{user.username}}</td>
                     <td data-th="Password">{{user.password}}</td>
+                    
                     <td data-th="Client_Status">
 
                       <label class="toggle-switch">
@@ -322,7 +324,8 @@ margin:30px 0 30px 0;
 
 
                     </td>
-
+                    <td data-th="Today's Withdrawal">{{user.wallet.withdrawal_today}}</td>
+                    <td data-th="Created Date">{{user.created}}</td>
 
                     
             {% endfor %}

@@ -238,16 +238,17 @@ font-size:18px;
                         <td data-th="Reason">{{withdrawal_request.reasons}}</td>
 
                     {% endif %}
-
-                    {% if txn.tnx == 'Deposit'  %}
+                    
+                   
+                    {% if txn.tnx == 'deposit'  %}
                         
-                        <td data-th="Amount">{{withdrawal_request.ammount}}</td> 
-                        <td data-th="Txn">0</td>
+                        <td data-th="Credit">{{withdrawal_request.ammount}}</td> 
+                        <td data-th="Debit">0</td>
                     {% else %}
 
                            
-                          <td data-th="Txn">0</td>
-                          <td data-th="Amount">{{withdrawal_request.ammount}}</td>
+                          <td data-th="Credit">0</td>
+                          <td data-th="Debit">{{withdrawal_request.ammount}}</td>
                   
                     {% endif %}
                     
