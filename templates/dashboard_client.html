@@ -1,161 +1,165 @@
+
 {% load static %}
+
+
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    
+
 
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
-  <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!----===== Iconscout CSS ===== -->
-    <link
-      rel="stylesheet"
-      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
-    />
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-      .popup-form {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-      }
-  
-      /* Style for close icon */
-      .close-icon {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        cursor: pointer;
-      }
-      .statement_info
-          {
-              display: flex;
-              justify-content: space-between;
-          }
-          .statement_form_main
-          {
-              width: 500px;
-              padding:25px 25px;
-          }
-          .content_center
-          {
-              display: flex;
-              justify-content: center;
-              text-align: center;
-          }
-          .amount
-          {
-              font-weight: 900;
-              font-size: 28px;
-          }
-          .font_bold
-          {
-              font-weight: 600;
-          }
-          .frm_btn
-          {
-              display: flex;
-              justify-content: center;
-          }
-          .frm_btn button
-          {
-              border:none;
-              padding: 10px 50px;
-              width: 180px;
-              border-radius: 15px;
-              margin:20px 0px;
-              font-weight: 600;
-              background: blue;
-              color:white;
-              text-align: center;
-          }
-          .top
-      {
-        display: flex !important;
-    justify-content: space-between !important;
-      }
-      .client_balance
-      {
-        display: flex;
-      }
-      .withdrwal_today{
+        .popup-form {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
 
-        display: flex;
-      }
+        .close-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        .statement_info {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .statement_form_main {
+            width: 500px;
+            padding: 25px 25px;
+        }
+
+        .content_center {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .amount {
+            font-weight: 900;
+            font-size: 28px;
+        }
+
+        .font_bold {
+            font-weight: 600;
+        }
+
+        .frm_btn {
+            display: flex;
+            justify-content: center;
+        }
+
+        .frm_btn button {
+            border: none;
+            padding: 10px 50px;
+            width: 180px;
+            border-radius: 15px;
+            margin: 20px 0px;
+            font-weight: 600;
+            background: black;
+            color: white;
+            text-align: center;
+        }
+
+        .top {
+            display: flex !important;
+            justify-content: space-between !important;
+        }
+
+        .client_balance {
+            display: flex;
+        }
+
+        .withdrwal_today {
+
+            display: flex;
+        }
     </style>
-     <style>
-      
+    <style>
+        .overview {
+            display: flex;
+            justify-content: space-between;
+        }
 
-     
-      .overview
-      {
-      display:flex;
-      justify-content:space-between;
-      }.export_style{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  }
+        .export_style {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+        }
 
 
-.export-btn {
-  background-color: #1c003b;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+        .export-btn {
+            background-color: #1c003b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-.export-btn:hover {
-  background-color: #1c004b;
-}
+        .export-btn:hover {
+            background-color: #1c004b;
+        }
 
 
-.search-bar {
-  width: 250px;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
-}
+        .search-bar {
+            width: 250px;
+            padding: 10px;
+            font-size: 16px;
+            height: 50px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
 
-.search-bar:focus {
-  border-color: #1c004b;
-  outline: none;
-}
-.balance_style{
+        .search-bar:focus {
+            border-color: #1c004b;
+            outline: none;
+        }
 
-  display: flex;
-}
-.top{
-  font-size: 18px;
-}
-.main_date_style {
+        .balance_style {
+
+            display: flex;
+        }
+
+        .top {
+            font-size: 18px;
+        }
+
+        .main_date_style {
             display: flex;
             margin-bottom: 20px;
+            justify-content: space-between;
         }
 
         .date-container {
@@ -172,11 +176,13 @@
         }
 
         .date-container input {
-            width: 200px; 
+            width: 250px;
             padding: 10px;
-            padding-left: 35px;
-            box-sizing: border-box;
-            border: 1px solid gray;
+            font-size: 16px;
+            height: 50px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
         }
 
         .date-container .fa-calendar-alt {
@@ -184,301 +190,336 @@
             left: 10px;
             color: #aaa;
         }
-        .start_date{
-          padding-left:120px;
-          
+
+        .start_date {
+            padding-left: 120px;
+
         }
-        .end_date{
-          padding-left:110px;
+
+        .end_date {
+            padding-left: 110px;
         }
-        .label_Date
-{
-font-size:18px;
-}
-.recietname{
 
-  text-transform: uppercase;
-  font-size: 18px;
+        .label_Date {
+            font-size: 18px;
+        }
 
-}
-.statement_info1{
+        .recietname {
 
-  text-align: left;
-}
-.font1{
-  font-size: 16px;
-}
-.font2{
-  font-size: 18px;
-}
+            text-transform: uppercase;
+            font-size: 18px;
+
+        }
+
+        .statement_info1 {
+
+            text-align: left;
+        }
+
+        .font1 {
+            font-size: 16px;
+        }
+
+        .font2 {
+            font-size: 18px;
+        }
+
+        .statement_logo {
+            display: flex;
+            justify-content: center;
+        }
+        .statement_logo img{
+
+            width: 111px;
+            margin-bottom: 25px;
+            margin-top: 25px;
+
+        }
+
+        .popup-form {
+            background-color: #a8b0b1;
+        }
     </style>
 
 
     <title>Dashboard Panel</title>
-  </head>
-  <body>
-    <nav>
-      <div class="logo-name">
-        <div class="logo-image">
-          <img src="{% static 'images/logo.png' %}" alt="" />
-        </div>
-      </div>
+</head>
 
-      <div class="menu-items">
-        <ul class="nav-links">
-          <li>
-            <a href="{% url 'dashboard-client-form' %}" class="active">
-              <i class="uil uil-chart-pie"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'add-bene-template' %}">
-              <i class="uil uil-user-plus"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Add Beneficiary</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'withdrawal-requests-template'  %}">
-              <i class="uil uil-money-withdraw"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Withdrawal Request</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'account_statement_list' %}">
-              <i class="uil uil-wallet"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Account Statement</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+<body>
+    <nav>
+        <div class="logo-name">
+            <div class="logo-image">
+                <img src="{% static 'images/logo.png' %}" alt="" />
+            </div>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li>
+                    <a href="{% url 'dashboard-client-form' %}" class="active">
+                        <i class="uil uil-chart-pie"></i>
+                        <!-- Example icon class -->
+                        <span class="link-name">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'add-bene-template' %}">
+                        <i class="uil uil-user-plus"></i>
+                        <!-- Example icon class -->
+                        <span class="link-name">Add Beneficiary</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'withdrawal-requests-template'  %}">
+                        <i class="uil uil-money-withdraw"></i>
+                        <!-- Example icon class -->
+                        <span class="link-name">Withdrawal Request</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'account_statement_list' %}">
+                        <i class="uil uil-wallet"></i>
+                        <!-- Example icon class -->
+                        <span class="link-name">Account Statement</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </nav>
     <!-- Dashboard Section -->
     <section id="dashboard_section" class="dashboard" active>
-      <div class="top">
-          <div>
-              <div class="client_balance">
-                  <div class="balance_style">
-                      <p style="margin-right:5px;">Balance :</p>
+        <div class="top">
+            <div>
+                <div class="client_balance">
+                    <div class="balance_style">
+                        <p style="margin-right:5px;">Balance :</p>
 
-                      <p>{{balance}}</p>
-                  </div>
-
-
-
-
-              </div>
-              <div class="withdrwal_today">
-
-                  <p style="margin-right:5px;">Withdrwal Today :</p>
-
-                  <p>{{withdrwal_today}}</p>
-
-
-              </div>
-
-          </div>
+                        <p>{{balance}}</p>
+                    </div>
 
 
 
 
+                </div>
+                <div class="withdrwal_today">
 
-          <div class="search-box">
-              <a href="{% url 'logout' %}"><span class="link-name">Logout
-                      <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+                    <p style="margin-right:5px;">Withdrwal Today :</p>
 
-          </div>
-          <!-- <div>
+                    <p>{{withdrwal_today}}</p>
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="search-box">
+                <a href="{% url 'logout' %}"><span class="link-name">Logout
+                        <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+
+            </div>
+            <!-- <div>
         <button id="exportBtnClient">Export</button>
         <input type="text" id="searchBarClient" placeholder="Search">
         </div> -->
 
-      </div>
+        </div>
 
-      <div class="dash-content">
-          <div class="overview">
-              <div class="title">
-                  <i class="uil uil-tachometer-fast-alt"></i>
-                  <span class="text">Submitted Form</span>
-              </div>
-              <div class="export_style">
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-tachometer-fast-alt"></i>
+                    <span class="text">Submitted Form</span>
+                </div>
+                <!-- <div class="export_style">
                   <button class="export-btn" id="exportBtnClient">Export</button>
 
                   <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
-              </div>
-          </div>
-          <br>
-          <br>
-
-          <div class="main_date_style">
-            <div class="date-container">
-                <label class="label_Date" for="start-date">Start Date:</label>
-                <i class="fas fa-calendar-alt start_date" ></i>
-                <input type="text" class="date_design" id="start-date">
+              </div> -->
             </div>
-            <div class="date-container">
-                <label class="label_Date" for="end-date">End Date:</label>
-                <i class="fas fa-calendar-alt end_date"></i>
-                <input type="text" class="date_design" id="end-date">
+            <br>
+            <br>
+
+            <div class="main_date_style">
+                <div>
+                    <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
+                </div>
+                <div class="date-container">
+                    <label class="label_Date" for="start-date">Start Date:</label>
+                    <i class="fas fa-calendar-alt start_date"></i>
+                    <input type="text" class="date_design" id="start-date">
+                </div>
+                <div class="date-container">
+                    <label class="label_Date" for="end-date">End Date:</label>
+                    <i class="fas fa-calendar-alt end_date"></i>
+                    <input type="text" class="date_design" id="end-date">
+                </div>
+                <div>
+                    <button class="export-btn" id="exportBtnClient">Export</button>
+                </div>
             </div>
-          </div>
 
 
 
 
-          <div class="activity">
-              <div class="activity-data">
-                  <div class="container">
-                      <table class="rwd-table" id="client_dashboard_table">
+            <div class="activity">
+                <div class="activity-data">
+                    <div class="container">
+                        <table class="rwd-table" id="client_dashboard_table">
 
-                          <tbody>
-                              <tr>
-                                  <th>Serial No</th>
-                                  <th>Created Date</th>
-                                  <th>Amount</th>
-                                  <th>Transaction</th>
-                                  <th>Status</th>
-                                  <th>Reason</th>
+                            <tbody>
+                                <tr>
+                                    <th>Serial No</th>
+                                    <th>Created Date</th>
+                                    <th>Amount</th>
+                                    <th>Transaction</th>
+                                    <th>Status</th>
+                                    <th>Reason</th>
 
-                              </tr>
-                              {% for withdrawal_request,ac_ste in withdrawal_requests %}
-                              <tr>
-                                  <td data-th="Serial No">{{forloop.counter}}</td>
-                                  <td data-th="Created Date">{{ac_ste.trn_date}}</td>
-                                  <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                                  {% if withdrawal_request.req_status == 'Approved' %}
-                                  <td id=""
-                                      onclick="showForm('debitForm1', '{{ withdrawal_request.created_at_formatted }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)"
-                                      data-th="Txn">{{ac_ste.txn}} &nbsp <i class="uil uil-eye client1"></i></td>
-                                  {% else %}
-                                  <td id="" data-th="Txn">{{ac_ste.txn}}</td>
-                                  {% endif %}
+                                </tr>
+                                {% for withdrawal_request,ac_ste in withdrawal_requests %}
+                                <tr>
+                                    <td data-th="Serial No">{{forloop.counter}}</td>
+                                    <td data-th="Created Date">{{ac_ste.trn_date}}</td>
+                                    <td data-th="Amount">{{withdrawal_request.ammount}}</td>
+                                    {% if withdrawal_request.req_status == 'Approved' %}
+                                    <td id=""
+                                        onclick="showForm('debitForm1', '{{ withdrawal_request.created_at_formatted }}', '{{ withdrawal_request.ammount }}','{{ ac_ste.paid_to }}' ,'{{ ac_ste.acc_number }}', '{{ withdrawal_request.reasons }}','{{ withdrawal_request.ref_number }}',)"
+                                        data-th="Txn">{{ac_ste.txn}} &nbsp <i class="uil uil-eye client1"></i></td>
+                                    {% else %}
+                                    <td id="" data-th="Txn">{{ac_ste.txn}}</td>
+                                    {% endif %}
 
-                                  <td data-th="Status">{{withdrawal_request.req_status}}</td>
+                                    <td data-th="Status">{{withdrawal_request.req_status}}</td>
 
-                                  {% if withdrawal_request.req_status == 'Approved' %}
-                                  <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
-                                  {% else %}
-                                  <td data-th="Reason">{{withdrawal_request.reasons}}</td>
-                                  {% endif %}
-                              </tr>
-                              {% endfor %}
-                          </tbody>
-                      </table>
-                      <div id="debitForm1" class="popup-form">
-                          <span class="close-icon" onclick="closeForm('debitForm1')">X</span>
-                          <section class="statement_form_main">
-                              <div class="content_center">
-                                  <div>
-                                      <img src="" />
-                                      <h2>Successful Transaction</h2>
-                                      <br>
-                                      <div id='model_created_at' class="font_bold"></div>
-                                      <br>
-                                      
-                                  </div>
-                              </div>
+                                    {% if withdrawal_request.req_status == 'Approved' %}
+                                    <td data-th="UTR Number">{{withdrawal_request.ref_number}}</td>
+                                    {% else %}
+                                    <td data-th="Reason">{{withdrawal_request.reasons}}</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div id="debitForm1" class="popup-form">
 
-                              <hr>
-                              <br>
-                              <div class="statement_info">
-                                  
-                                  <div id='paid_to_id' class="font_bold recietname"></div>
-                                  <div id='model_amount' class="font_bold"></div>
-                              </div>
-                              <br>
-                              <hr>
-                              <br>
-                              <div class="statement_info">
-                                <div>
-                                    <p class="font1">UTR/Transaction ID </p>
+                            <span class="close-icon" onclick="closeForm('debitForm1')">X</span>
+                            <section class="statement_form_main">
+                                <div class="content_center">
+                                    <div>
+                                        <div class="statement_logo">
+                                           
+                                            <img src="{% static 'images/trans.png' %}" />
+                                        </div>
+
+                                        <h2>Successful Transaction</h2>
+                                        <br>
+                                        <div id='model_created_at' class="font_bold"></div>
+                                        <br>
+
+                                    </div>
                                 </div>
-                                <div id='ref_number_id' class="font_bold font2" ></div>
-                              </div>
-                              <br>
-                              <hr>
-                              <br>
-                              <div class="statement_info">
 
-                                  <div>
-                                      <p class="font1">To Account</p>
-                                  </div>
-                                  <div id='model_account' class="font_bold font2"></div>
-                              </div>
-                              <br>
-                              <hr>
-                              <!-- <div class="statement_info">
+                                <hr>
+                                <br>
+                                <div class="statement_info">
+
+                                    <div id='paid_to_id' class="font_bold recietname"></div>
+                                    <div id='model_amount' class="font_bold"></div>
+                                </div>
+                                <br>
+                                <hr>
+                                <br>
+                                <div class="statement_info">
+                                    <div>
+                                        <p class="font1">UTR/Transaction ID </p>
+                                    </div>
+                                    <div id='ref_number_id' class="font_bold font2"></div>
+                                </div>
+                                <br>
+                                <hr>
+                                <br>
+                                <div class="statement_info">
+
+                                    <div>
+                                        <p class="font1">To Account</p>
+                                    </div>
+                                    <div id='model_account' class="font_bold font2"></div>
+                                </div>
+                                <br>
+                                <hr>
+                                <!-- <div class="statement_info">
                                   <div>
                                       <p>Date</p>
                                   </div>
                                   <div id='model_created_at' class="font_bold"></div>
                               </div> -->
-                              
-                              <div class="frm_btn">
-                                  <div>
-                                      <button id="id_dwonload">Download</button>
-                                  </div>
-                              </div>
 
-                          </section>
-                      </div>
-                  </div>
-              </div>
-          </div>
-  </section>
+                                <div class="frm_btn">
+                                    <div>
+                                        <button id="id_dwonload">Download</button>
+                                    </div>
+                                </div>
+
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
     <!-- End Dashboard Section -->
-    
-
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
-<script>
-  function showForm(formId, createdDate, amount,paid_to ,account_number, reasons,ref_number) {
-      var modal = document.getElementById(formId);
-      
-      var ammount = document.getElementById("model_amount");
-      ammount.textContent = '₹'+" "+ amount;
-
-      var paid_to_1 = document.getElementById("paid_to_id");
-      paid_to_1.textContent = paid_to;
-
-      var account = document.getElementById("model_account");
-      account.textContent = account_number;
-
-      var created_at = document.getElementById("model_created_at");
-      created_at.textContent = createdDate;
-
-      var ref_number_val = document.getElementById("ref_number_id");
-      ref_number_val.textContent = ref_number; 
-
-      modal.style.display = "block"; // Show the modal
-  }
-
-  // Function to close the pop-up form
-  function closeForm(formId) {
-      var modal = document.getElementById(formId);
-      modal.style.display = "none"; // Hide the modal
-  }
-
-  
 
 
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+    <script>
+        function showForm(formId, createdDate, amount, paid_to, account_number, reasons, ref_number) {
+            var modal = document.getElementById(formId);
+
+            var ammount = document.getElementById("model_amount");
+            ammount.textContent = '₹' + " " + amount;
+
+            var paid_to_1 = document.getElementById("paid_to_id");
+            paid_to_1.textContent = paid_to;
+
+            var account = document.getElementById("model_account");
+            account.textContent = account_number;
+
+            var created_at = document.getElementById("model_created_at");
+            created_at.textContent = createdDate;
+
+            var ref_number_val = document.getElementById("ref_number_id");
+            ref_number_val.textContent = ref_number;
+
+            modal.style.display = "block"; // Show the modal
+        }
+
+        // Function to close the pop-up form
+        function closeForm(formId) {
+            var modal = document.getElementById(formId);
+            modal.style.display = "none"; // Hide the modal
+        }
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
 
 
-{% include 'js/client_dashboard_export_js.html' %}
-{% include 'js/recipttnx_js.html' %}
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    
-  </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+
+
+    {% include 'js/client_dashboard_export_js.html' %}
+    {% include 'js/recipttnx_js.html' %}
+
+
+</body>
+
 </html>

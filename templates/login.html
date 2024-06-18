@@ -1,191 +1,6 @@
-<!-- <!DOCTYPE html>
-
-<html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-        <title>Log In</title>
-        <style>
-        .login_main {
-            height: 100vh;
-            
-            display: flex;
-            justify-content: center;
-           
-            align-items: center;
-            
-        }
-
-        .login {
-            margin: 20px auto;
-            padding: 40px 50px;
-            width: 500px;
-            border-radius: 5px;
-            background: #0e0e37;
-            box-shadow: 1px 1px 1px #666;
-        }
-
-        .login h1 {
-            color: white;
-            text-align: center;
-        }
-
-        .login input {
-            width: 100%;
-            display: block;
-            box-sizing: border-box;
-            margin: 10px 0;
-            padding: 14px 12px;
-            font-size: 16px;
-            border-radius: 2px;
-            font-family: Raleway, sans-serif;
-        }
-
-        .login input[type=text],
-        .login input[type=password] {
-            border: 1px solid #c0c0c0;
-            transition: .2s;
-        }
-
-        .login input[type=text]:hover {
-            border-color: #F44336;
-            outline: none;
-            transition: all .2s ease-in-out;
-        }
-
-        .login input[type=submit] {
-            border: none;
-            background: #EF5350;
-            color: white;
-            width: 200px;
-            font-weight: bold;
-            transition: 0.2s;
-            margin: 20px 0px;
-        }
-
-        .login input[type=submit]:hover {
-            background: #F44336;
-        }
-
-        .login h2 {
-            margin: 20px 0 0;
-            color: #EF5350;
-            font-size: 28px;
-        }
-
-        .submit_button {
-            display: flex;
-            justify-content: center;
-        }
-
-        .login p {
-            margin-bottom: 40px;
-        }
-
-        .links {
-            display: table;
-            width: 100%;
-            box-sizing: border-box;
-            border-top: 1px solid #c0c0c0;
-            margin-bottom: 10px;
-        }
-
-        .links a {
-            display: table-cell;
-            padding-top: 10px;
-        }
-
-        .links a:first-child {
-            text-align: left;
-        }
-
-        .links a:last-child {
-            text-align: right;
-        }
-
-        .login h2,
-        .login p,
-        .login a {
-            text-align: center;
-        }
-
-        .login a {
-            text-decoration: none;
-            font-size: .8em;
-        }
-
-        .login a:visited {
-            color: inherit;
-        }
-
-        .login a:hover {
-            text-decoration: underline;
-        }
-        .jconfirm .jconfirm-box.jconfirm-type-red {
-     border-top: solid 7px #1f0e3b !important;
-    animation-name: type-red;
-    }
-    .jconfirm .jconfirm-holder
-        {
-        width: 500px;
-        }
-        .jconfirm .jconfirm-cell
-        {
-        display: flex !important;
-        justify-content: center;
-        margin-top:15% ;
-        }
-    .jconfirm .jconfirm-box .jconfirm-buttons button.btn-red
-    {
-        background-color: #EF5350;
-    }.jconfirm .jconfirm-box.jconfirm-type-green 
-    {
-        border-top: solid 7px #1f0e3b !important;
-
-    }
-    .btn-blue
-    {
-        background-color:#1f0e3b !important;
-        color: white;
-    }
-    .jconfirm .jconfirm-holder
-    {
-      width: 500px;
-    }
-    
-
-    </style>
-    
-    </head>
-
-    <body>
-        <div class="login_main">
-            <div>
-                <form class="login" id="loginForm">
-
-                    <h1>Log In</h1>
-                    <input type="text" name="username" placeholder="User Name"
-                        required />
-                    <input type="password" name="password" placeholder="Password"
-                        required />
-                    <div class="submit_button">
-                        <input type="submit" value="Log In" id="id_loginbtn" />
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-        {% include 'js/login_js.html' %} 
-
-    </body> -->
 
 
+{% load static %}
     <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
@@ -211,7 +26,7 @@
             padding: 40px 50px;
             width: 500px;
             border-radius: 5px;
-            background: #0e0e37;
+            
 
         }
 
@@ -346,7 +161,7 @@
         }
 
         .main {
-            background-color: #0e0e37;
+            background-color: #a8b0b1;
         }
 
         .login_logo {
@@ -355,7 +170,7 @@
         }
 
         .login_logo img {
-            height: 100px;
+            height: 200px;
         }
     </style>
 
@@ -366,7 +181,7 @@
         <div>
             <form class="login" id="loginForm">
                 <div class="login_logo">
-                    <img src="" />
+                    <img src="{% static 'images/elite-login.png' %}" />
                 </div>
 
                 <h1>Log In</h1>
