@@ -373,6 +373,7 @@
                             <tbody>
                                 <tr>
                                     <th>Serial No</th>
+                                    <th>Name</th>
                                     <th>Created Date</th>
                                     <th>Amount</th>
                                     <th>Transaction</th>
@@ -383,7 +384,8 @@
                                 {% for withdrawal_request,ac_ste in withdrawal_requests %}
                                 <tr>
                                     <td data-th="Serial No">{{forloop.counter}}</td>
-                                    <td data-th="Created Date">{{ac_ste.trn_date}}</td>
+                                    <td data-th="Bane Name">{{ac_ste.account}}</td>
+                                    <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
                                     <td data-th="Amount">{{withdrawal_request.ammount}}</td>
                                     {% if withdrawal_request.req_status == 'Approved' %}
                                     <td id=""
@@ -482,6 +484,7 @@
             ammount.textContent = '₹' + " " + amount;
 
             var paid_to_1 = document.getElementById("paid_to_id");
+            console.log("paid_to",paid_to);
             paid_to_1.textContent = paid_to;
 
             var account = document.getElementById("model_account");

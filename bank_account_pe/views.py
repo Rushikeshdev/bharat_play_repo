@@ -32,7 +32,7 @@ class UserList(APIView,TemplateView):
     def get(self, request):
 
   
-        # try:
+        try:
             
         
             if request.user.is_superadmin and "admintemplate" in request.build_absolute_uri():
@@ -170,8 +170,8 @@ class UserList(APIView,TemplateView):
                    
     
             return self.render_to_response(context_wallet_user)
-        # except Exception as e:
-        #      return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+             return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         try:
@@ -419,8 +419,7 @@ class ClientDashboard(APIView, TemplateView):
 
             withdrwal_amount = sum(item['ammount'] for item in with_today)
 
-        
-
+          
             context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrwal_amount}
             return self.render_to_response(context)
         except Exception as e:
@@ -638,30 +637,31 @@ class WithdrawalRequestList(APIView, TemplateView):
 
             else:   
 
+                   
                  
                     bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
                     
                     check_acc=Account.objects.all()
 
-                   
-                    check_acc = check_acc.filter(client=request.user)
-
                      
-                  
+                    check_acc = check_acc.filter(client=request.user)
+                    
+                    total_bal = check_acc.last().total_balnce
+                
                     if len(check_acc) ==1:
                         check_acc.update(account_bene = bene)
 
                    
                     account=check_acc.filter(account_bene=bene)
-
+                   
                     # start from here.
 
                     if not account:
 
                         account=Account.objects.create(client=request.user,account_bene=bene,ammount=0,req_status='Pending',reasons='NA',ref_number='NA',total_balnce=check_acc.last().total_balnce,withdrawal_day=datetime.now().date())
                    
-                   
+                    
                     
                     # def dict_compare(d1, d2):
                     #     # Compare relevant keys
@@ -671,17 +671,10 @@ class WithdrawalRequestList(APIView, TemplateView):
                     # account = [account[i] for i in range(len(account)) if all(not dict_compare(account[i], account[j]) for j in range(i+1, len(account)))]
 
                    
-                    if account:
-                       
-                        total_bal_ = account.last().total_balnce
-                       
-
-                
-
-                    client_id=User.objects.get(email=request.user.email)
                     
-                    # client_id = request.user.id
-                    if  account and total_bal_ >= int(request.data['amount']):
+                    client_id=User.objects.get(email=request.user.email)
+                   
+                    if  account and total_bal >= int(request.data['amount']):
                         data = {
 
                             'client':request.user.id,
@@ -692,12 +685,15 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'branch_ifsc': request.data['abranch'],
                             'bank_name': request.data['bname'],
                             'req_status':'pending',
+                            'admin_remark': 'NA',
+                            'remark_for_client':'NA',
                             'reasons':'NA',
                             'ref_number':0,
-                            'total_balnce': total_bal_,
+                            'total_balnce':total_bal-int(request.data['amount']),
                             'withdraw_request_client':True,
                             'withdrawal_day':datetime.now().date(),
-                            'withdrawal_request_accepted_by':'Pending'
+                            'withdrawal_request_accepted_by':'Pending',
+                            
                             
 
                         }
@@ -716,8 +712,7 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                         total_bal = account.last().total_balnce 
 
-                        current_date = datetime.now().strftime('%Y-%m-%d')
-
+                     
 
                         
                     
@@ -730,11 +725,13 @@ class WithdrawalRequestList(APIView, TemplateView):
 
                             
 
-                            req_status = Account.objects.get(id=account_id)
+                            current_account = Account.objects.get(id=account_id)
                            
-                            if req_status.req_status == 'Approved': 
+                            if current_account.req_status == 'Approved' or current_account.req_status == 'Pending': 
                                 total_balance = total_bal-int(request.data['amount'])
                                 account.update(total_balnce=total_balance)
+
+                            
 
                             
 
@@ -786,9 +783,6 @@ class WithdrawalRequestDetail(APIView):
                         return Response(serializer.data)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-                
-            
                 secound_last_acc=Account.objects.filter(req_status="Approved", withdraw_request_client=True).order_by('-id')
                
 
@@ -814,11 +808,16 @@ class WithdrawalRequestDetail(APIView):
                     else:
                         transaction_request.withdrawal_today = 0
 
-
+                
                 elif request.data['req_status']=='Rejected':
+                 
                     transaction_request.ref_number = request.data['ref_number']
                     transaction_request.reasons = request.data['reasons']
+                    transaction_request.total_balnce = transaction_request.total_balnce + int(request.data['amount'])
 
+                  
+                   
+                    
 
                 total_amt = transaction_request.total_balnce
                 transaction_request.status_change_by = request.user.email
@@ -859,10 +858,7 @@ class WithdrawalRequestDetail(APIView):
                             transaction_request.ammount =int(amount)
                             transaction_request.total_balnce = ammount
                             AccountStatement.objects.create(account=transaction_request,deposit=amount,withdraw=0,trn_date=datetime.now())
-                            
-
-                          
-
+          
                 serializer = AccountSerializer(transaction_request, data=request.data,partial=True)
                 if serializer.is_valid():
                 

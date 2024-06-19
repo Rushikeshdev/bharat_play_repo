@@ -46,8 +46,9 @@ $(document).ready(function () {
             
 
             var selectedStatus = $(this).text();
-            var utr_number = $('.utr_number_ui').val()
-            var admin_remark = $('.admin_remark_ui').val()
+            var utr_number = $('.utr_number_ui').val();
+            var admin_remark = $('.admin_remark_ui').val();
+            var amount =$("#modal-bene-withdraw-amount").text();
 
             console.log("utr_number",utr_number);
 
@@ -70,7 +71,7 @@ $(document).ready(function () {
                     'req_status': selectedStatus,
                     'transaction_type':'NA',
                     'admin_remark':admin_remark,
-                    'amount':0
+                    'amount':amount
                 }),
                 success: function (data) {
                     $.confirm({
@@ -135,7 +136,7 @@ $(document).ready(function () {
 
                 var utr_number = $('.utr_number_ui').val()
                 var admin_remark = $('.admin_remark_ui').val()
-
+                var amount =$("#modal-bene-withdraw-amount").text();
                 var selectedStatus = $(this).text();
 
 
@@ -155,7 +156,7 @@ $(document).ready(function () {
                         'req_status': selectedStatus,
                         'transaction_type':'NA',
                         'admin_remark':admin_remark,
-                        'amount':0
+                        'amount':amount
                     }),
                     success: function (data) {
                         $.confirm({
