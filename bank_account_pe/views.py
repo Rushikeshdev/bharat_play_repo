@@ -364,19 +364,15 @@ class ClientDashboard(APIView, TemplateView):
     def get(self, request):
         
         try:  
-            withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True).order_by('-created_at')
+            withdrawal_requests = Account.objects.select_related('client','account_bene').filter(client=request.user,withdraw_request_client=True).order_by('-created_at')
+           
             serializer = AccountSerializer(withdrawal_requests, many=True)
-            
-
-            
-
-            account_statements = AccountStatement.objects.select_related('account').all().order_by('id')
-
-            
+          
+            account_statements = AccountStatement.objects.select_related('account').all().order_by('-id')
 
             acc_ste_list=[]
             account_access = []
-            acc_ste={}
+            
             balance = 0
             withdrawal_today = 0
             for acc in account_statements:
@@ -393,21 +389,23 @@ class ClientDashboard(APIView, TemplateView):
                 
                 
                 if acc.account.account_bene is not None:
+                    acc_ste={}
                     if acc.withdraw != 0:
                         
                         acc_ste['txn'] = 'withdraw'
                         acc_ste['trn_date'] = acc.trn_date
                         acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
                         acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
+                        acc_ste_list.append(acc_ste)
+                   
                     elif acc.deposit !=0:
                         acc_ste['txn'] = 'deposit'
                         acc_ste['trn_date'] = acc.trn_date
                         acc_ste['paid_to'] = acc.account.account_bene.bene_account_name
                         acc_ste['acc_number'] = acc.account.account_bene.bene_account_number
-
-                    acc_ste_list.append(acc_ste)
-            
-        
+                   
+                    
+           
             zip_acc_ste=zip(serializer.data,acc_ste_list)
 
             for zip_obj in zip_acc_ste:
@@ -421,6 +419,7 @@ class ClientDashboard(APIView, TemplateView):
 
           
             context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrwal_amount}
+           
             return self.render_to_response(context)
         except Exception as e:
 
