@@ -46,12 +46,19 @@ class UserList(APIView,TemplateView):
                 user_data_with_wallet = []
                 for user in serializer.data:
                    
-                    account = Account.objects.filter(client__email=user['username']).last()
+                    account = Account.objects.filter(withdrawal_request_accepted_by=user['username']).last()
+
+                    with_today = Account.objects.filter(withdrawal_request_accepted_by=user['username'],req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
+
+                    withdrwal_amount = sum(item['ammount'] for item in with_today)
+
                     
+                    print("account",account)
+
                     wallet_data = {
                         'id': account.id if account else None,
                         'total_balance': account.total_balnce if account else 0,
-                        'withdrawal_today': account.withdrawal_today if account else 0
+                        'withdrawal_today': withdrwal_amount  if account else 0
                     }
 
                     # Combine user data with wallet data
@@ -96,10 +103,10 @@ class UserList(APIView,TemplateView):
                             bene_account = BeneficiaryDetails.objects.get(client=client)
 
                             if bene_account:
-                                print("bene_account")
+                                
                                 first_account=Account.objects.create(client=client,account_bene=bene_account,
                                 ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
-                                print('with bene')
+                               
                                 client_data['id'] = first_account.id
                                 client_data['ammount'] = first_account.ammount
                                 client_data['total_balnce'] = first_account.total_balnce
@@ -124,18 +131,14 @@ class UserList(APIView,TemplateView):
                     
                     if account:
                             acc=   account.last()
-                            
-                            print("account",account)
-                            print("account=",acc.id)
+                           
                             client_data['id'] = acc.id
                             client_data['ammount'] = acc.ammount
                         
                             client_data['total_balnce'] = acc.total_balnce
-                            
-                            
-                            
+                      
                             context.append(client_data)
-                            print("===>>>>>>>>>>>>>") 
+                            
                     
                 
                 def dict_compare(d1, d2):
@@ -151,6 +154,8 @@ class UserList(APIView,TemplateView):
                    
                     account = Account.objects.filter(client__email=user['username']).last()
                     
+                    print("ACC",account)
+
                     wallet_data = {
                         'id': account.id if account else None,
                         'total_balance': account.total_balnce if account else 0,
@@ -372,21 +377,12 @@ class ClientDashboard(APIView, TemplateView):
 
             acc_ste_list=[]
             account_access = []
-            
-            balance = 0
+            print(withdrawal_requests.first())
+            balance = withdrawal_requests.first().total_balnce
             withdrawal_today = 0
             for acc in account_statements:
                 
-                if acc and acc.account.client==request.user :
-                    balance=acc.account.total_balnce
-                    print(acc.account.withdrawal_today)
-                    if acc.account.withdrawal_day == datetime.now().date() and acc.account.req_status=="Approved":
-                        withdrawal_today = acc.account.withdrawal_today
-                # else:
-                #   balance = 0
-
-
-                
+               
                 
                 if acc.account.account_bene is not None:
                     acc_ste={}
@@ -802,8 +798,13 @@ class WithdrawalRequestDetail(APIView):
                     transaction_request.reasons = request.data['reasons']
 
                     if transaction_request.withdrawal_day == datetime.now().date() and transaction_request_pre.req_status == 'Approved':
+                        
+                        with_today = Account.objects.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount')
 
-                        transaction_request.withdrawal_today = transaction_request_pre.withdrawal_today + int(request.data['amount'])
+                        withdrwal_amount = sum(item['ammount'] for item in with_today)
+
+                        transaction_request.withdrawal_today = withdrwal_amount
+                      
                     else:
                         transaction_request.withdrawal_today = 0
 
@@ -862,7 +863,7 @@ class WithdrawalRequestDetail(APIView):
                 if serializer.is_valid():
                 
                     serializer.save()
-                    return Response(serializer.data)
+                    return Response(serializer.data,status=status.HTTP_200_OK)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -1210,18 +1211,28 @@ class BeneView(View):
 
             try:
                 beneficiaries = BeneficiaryDetails.objects.select_related('client').filter(client=request.user)
+
+                accounts_details = Account.objects.filter(client=request.user).last()
+
+                balance = accounts_details.total_balnce
+
+                with_today = accounts_details.withdrawal_today
                 
-                beneficiaries_id = beneficiaries.values_list('id',flat=True)
+                if beneficiaries:
+                    beneficiaries_id = beneficiaries.values_list('id',flat=True)
 
-                accounts = Account.objects.filter(account_bene__in=beneficiaries_id )
+                    accounts = Account.objects.filter(account_bene__in=beneficiaries_id )
 
-                with_today=accounts.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
-                
-                balance = accounts.last().total_balnce
+                    with_today=accounts.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
+                    
+                    balance = balance
 
-                with_today = sum(item['ammount'] for item in with_today)
+                    with_today = sum(item['ammount'] for item in with_today)
 
-                return render(request,self.template_name,{'bene':beneficiaries,'balance':balance,'withdrwal_today':with_today})
+                    return render(request,self.template_name,{'bene':beneficiaries,'balance':balance,'withdrwal_today':with_today})
+                else:
+                    return render(request,self.template_name,{'bene':beneficiaries,'balance':balance,'withdrwal_today':with_today})
+
             except Exception as e:
 
                 return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
