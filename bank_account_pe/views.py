@@ -383,9 +383,12 @@ class ClientDashboard(APIView, TemplateView):
 
             acc_ste_list=[]
             account_access = []
-           
-            balance = withdrawal_requests.first().total_balnce
-            withdrawal_today = 0
+
+            if withdrawal_requests:
+                balance = withdrawal_requests.first().total_balnce
+            else:
+                balance= 0
+                
             for acc in account_statements:
                 
                
