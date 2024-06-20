@@ -74,47 +74,59 @@ $(document).ready(function () {
                     'amount':amount
                 }),
                 success: function (data) {
-                    $.confirm({
+                    var popup=$.confirm({
                             title: ``,
                             content:"Withdrwal Request Approved Successfully!",
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
                             buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.reload(); // Reload the page
-                                }
+                            // OK: {
+                            //     text: "Close",
+                            //     btnClass: "btn-blue",
+                            //     action: function () {
+                            //         window.location.reload(); // Reload the page
+                            //     }
                                
                                 
-                            },
+                            // },
                             },
                             
                         
                         });
+
+                        setTimeout(function() {
+                                popup.close();
+                                window.location.reload(); 
+                            }, 1000); // Close after 3 seconds
                 },
                 error: function (error) {
 
-                    $.confirm({
+                    var popup=$.confirm({
                             title:'',
                             content:error,
                             type:'red',
                             typeAnimated:true,
                             buttons:{
-                                        tryAgain: {
-                                            text: 'Try again',
-                                            btnClass: 'btn-red',
-                                            action: function () {
-                                                window.location.reload(); // Reload the page
-                                            }
+                                        // tryAgain: {
+                                        //     text: 'Try again',
+                                        //     btnClass: 'btn-red',
+                                        //     action: function () {
+                                        //         window.location.reload(); // Reload the page
+                                        //     }
                                             
-                                        },
+                                        // },
                                                     
                                     }
 
                         });
+
+                        setTimeout(function() {
+                                popup.close();
+                                window.location.reload(); 
+                            }, 1000); // Close after 3 seconds
+
+
 
                     console.error('Error:', error);
                 }
@@ -159,26 +171,31 @@ $(document).ready(function () {
                         'amount':amount
                     }),
                     success: function (data) {
-                        $.confirm({
+                        var popup=$.confirm({
                                 title: ``,
                                 content:"Withdrwal Request Rejected!",
                                 type: "green",
                                 typeAnimated: true,
                                 columnClass: 'medium',
                                 buttons: {
-                                OK: {
-                                    text: "Close",
-                                    btnClass: "btn-blue",
-                                    action: function () {
-                                        window.location.reload(); // Reload the page
-                                    }
+                                // OK: {
+                                //     text: "Close",
+                                //     btnClass: "btn-blue",
+                                //     action: function () {
+                                //         window.location.reload(); // Reload the page
+                                //     }
                                 
                                     
-                                },
+                                // },
                                 },
                                 
                             
                             });
+
+                            setTimeout(function() {
+                                popup.close();
+                                window.location.reload(); 
+                            }, 1000); // Close after 3 seconds
                     },
                     error: function (error) {
 
@@ -214,6 +231,19 @@ $(document).ready(function () {
         // For request accepted by admin
         $('.status-dropdown-request').change(function () {
             // Get the selected option value and the withdrawal request primary key
+
+            var selectedOption = $(this).val();
+
+            // if (selectedOption === 'Accepted') {
+            //     $('#admin-remarks-container').show();
+            //     $('#utr-number-container').show();
+            //     $('#action-container').show();
+                
+            // } else {
+            //     $('#admin-remarks-container').hide();
+            //     $('#utr-number-container').hide();
+            //     $('#action-container').hide();
+            // }
            
             var selectedStatus = $(this).val();
             var requestId = $(this).data('requested-id');
@@ -239,7 +269,7 @@ $(document).ready(function () {
                 success: function (data) {
                     // Update the status cell text with the new status
                     $('#status' + requestId).text(selectedStatus);
-                    window.location.reload();
+                    // window.location.reload();
                 },
                 error: function (error) {
                     console.error('Error:', error);
@@ -247,6 +277,8 @@ $(document).ready(function () {
             });
         });
 
+
+        
 
         
 

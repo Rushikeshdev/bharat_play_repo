@@ -18,7 +18,7 @@ $(document).ready(function() {
                     success: function(response) {
                         // If login is successful, display success message
 
-                        $.confirm({
+                        var popup=$.confirm({
                             title: ``,
                             content:"Withdrawal Requested Successfully!",
                             type: "green",
@@ -40,6 +40,11 @@ $(document).ready(function() {
                         });
                         console.log(typeof response);
                         // window.location.reload();
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 1000); // Close after 3 seconds
+                        
 
                        
                     },
@@ -66,6 +71,12 @@ $(document).ready(function() {
                         var errorMessage = JSON.parse(xhr.responseText).Message;
                         // Handle the error message accordingly
                         console.error(errorMessage)
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 1000); // Close after 3 seconds
+                        
                     }
                 });
             });

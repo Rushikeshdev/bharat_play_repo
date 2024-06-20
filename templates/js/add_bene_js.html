@@ -25,26 +25,25 @@ $(document).ready(function() {
                     success: function(response) {
                         // If login is successful, display success message
 
-                        $.confirm({
+                        var popup=$.confirm({
                             title: ``,
                             content:"Beneficiary Added Successfully!",
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
                             buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.reload(); // Reload the page
-                                }
-                               
-                                
+                           
                             },
-                            },
+
+                            
                             
                         
                         });
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 1000); // Close after 3 seconds
                         
                         console.log("success",response);
                         
@@ -55,24 +54,24 @@ $(document).ready(function() {
                         // If login fails, display error message
                         var errorMessage = JSON.parse(xhr.responseText); // Parse the JSON response
                         var errorDetail = errorMessage.errors.bene_account_number[0];
-                        $.confirm({
+                        var popup =$.confirm({
                             title:'',
                             content:errorDetail,
                             type:'red',
                             typeAnimated:true,
                             buttons:{
-                                        tryAgain: {
-                                            text: 'Try again',
-                                            btnClass: 'btn-red',
-                                            action: function () {
-                                                window.location.reload(); // Reload the page
-                                            }
-                                            
-                                        },
-                                                    
+                                              
                                     }
 
                         });
+
+                         // Set a delay for automatic closing (adjust as needed)
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 2000); // Close after 3 seconds
+
+                        console.log("success", response);
                     }
                 });
             });

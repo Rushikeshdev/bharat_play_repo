@@ -18,7 +18,7 @@
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
     />
 
-    <title>Account Statement</title>
+    <title>Statement</title>
     <style>
       .top
       {
@@ -120,7 +120,7 @@
           <div class="overview">
             <div class="title">
               <i class="uil uil-tachometer-fast-alt"></i>
-              <span class="text">Client Wallet</span>
+              <span class="text">Statement</span>
             </div>
           </div>
   
@@ -131,16 +131,20 @@
                   <tbody>
                       <tr>
                           <th>Serial No</th>
-                          <th>Date</th>
+                          <th>Narration</th>
                           <th>Deposit</th>
                           <th>Withdraw</th>
+                          <th>Balance</th>
+                          <th>Date</th>
                         </tr>
                         {% for acc_ste in account_statement %}
                         <tr>
                           <td data-th="Serial No">{{forloop.counter}}</td>
+                          <td data-th="Narration">{{acc_ste.narration}}</td>
+                          <td data-th="Deposit">{{acc_ste.deposit}}</td>
+                          <td data-th="Withdraw">{{acc_ste.withdraw}}</td>
+                          <td data-th="Balance">{{acc_ste.balance}}</td>
                           <td data-th="Created Date">{{acc_ste.txn_date}}</td>
-                          <td data-th="Created Date">{{acc_ste.deposit}}</td>
-                          <td data-th="Created Date">{{acc_ste.withdraw}}</td>
                         </tr>
                         {% endfor %}
                         

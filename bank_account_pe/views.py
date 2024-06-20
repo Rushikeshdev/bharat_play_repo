@@ -152,15 +152,19 @@ class UserList(APIView,TemplateView):
                 user_data_with_wallet = []
                 for user in serializer.data:
                    
-                    account = Account.objects.filter(client__email=user['username']).last()
+                    account = Account.objects.filter(client__email=user['username'],req_status='Approved').last()
                     
-                    print("ACC",account)
+                    with_today = Account.objects.filter(client__email=user['username'],req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount').order_by('-created_at')
+
+                    withdrwal_amount = sum(item['ammount'] for item in with_today)
 
                     wallet_data = {
                         'id': account.id if account else None,
                         'total_balance': account.total_balnce if account else 0,
-                        'withdrawal_today': account.withdrawal_today if account else 0
+                        'withdrawal_today': withdrwal_amount if account else 0
                     }
+
+                    print("wallet",wallet_data)
 
                     # Combine user data with wallet data
                     user_with_wallet = {
@@ -373,11 +377,13 @@ class ClientDashboard(APIView, TemplateView):
            
             serializer = AccountSerializer(withdrawal_requests, many=True)
           
-            account_statements = AccountStatement.objects.select_related('account').all().order_by('-id')
+            account_statements = AccountStatement.objects.select_related('account').filter(account__client=request.user).order_by('-id')
+
+
 
             acc_ste_list=[]
             account_access = []
-            print(withdrawal_requests.first())
+           
             balance = withdrawal_requests.first().total_balnce
             withdrawal_today = 0
             for acc in account_statements:
@@ -413,7 +419,7 @@ class ClientDashboard(APIView, TemplateView):
 
             withdrwal_amount = sum(item['ammount'] for item in with_today)
 
-          
+           
             context = {'withdrawal_requests': account_access,'balance':balance,'acc_ste':acc_ste_list,'withdrwal_today':withdrwal_amount}
            
             return self.render_to_response(context)
@@ -681,7 +687,7 @@ class WithdrawalRequestList(APIView, TemplateView):
                             'bank_name': request.data['bname'],
                             'req_status':'pending',
                             'admin_remark': 'NA',
-                            'remark_for_client':'NA',
+                            'remark_for_client':'',
                             'reasons':'NA',
                             'ref_number':0,
                             'total_balnce':total_bal-int(request.data['amount']),
@@ -1143,13 +1149,27 @@ class AccountStatementView(View):
                             
 
                             if request.user == acc_s.account.client and acc_s.account.req_status=='Approved':
-                                    print("hello")
-                                    account_statement = {
-                                        'txn_date': acc_s.trn_date,
-                                        'deposit': acc_s.deposit,
-                                        'withdraw': acc_s.withdraw,
-                                        'balance': acc_s.account.ammount
-                                    }
+                                    
+
+                                    if acc_s.account.withdraw_request_client:
+                                        account_statement = {
+                                            'txn_date': acc_s.trn_date,
+                                            'deposit': acc_s.deposit,
+                                            'withdraw': acc_s.withdraw,
+                                            'balance': acc_s.account.total_balnce,
+                                            'narration':acc_s.account.ref_number
+                                        }
+                                    else:
+                                        account_statement = {
+                                            'txn_date': acc_s.trn_date,
+                                            'deposit': acc_s.deposit,
+                                            'withdraw': acc_s.withdraw,
+                                            'balance': acc_s.account.total_balnce,
+                                            'narration':acc_s.account.remark_for_client 
+                                        }
+                                        
+
+                                    print(acc_s.account.withdraw_request_client)
                                     context.append(account_statement)
 
                         
@@ -1185,7 +1205,7 @@ class AccountStatementView(View):
                             withdrawal_today =0
                         
 
-                        print(context)
+                        print("context=",context)
 
                         
                         withdrawal_requests = Account.objects.select_related('client').filter(client=request.user,withdraw_request_client=True)

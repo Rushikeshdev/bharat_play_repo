@@ -388,7 +388,9 @@ margin:30px 0 30px 0;
               <th>Status</th>
               <th>Wallet</th>
               <th>Today's Withdrawal </th>
+              {% if request.user.is_superadmin %}
               <th>Action</th>
+              {% endif %}
               <th>Created Date</th>
               <th> </th>
             </tr>

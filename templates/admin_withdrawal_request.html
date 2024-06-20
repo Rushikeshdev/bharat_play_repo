@@ -82,6 +82,10 @@
       background-color: #0e0e37 !important;
       color: white;
     }
+    .jconfirm-buttons button {
+            display: none !important;
+        }
+
     .jconfirm .jconfirm-box.jconfirm-type-red {
      border-top: solid 7px #1f0e3b !important;
     animation-name: type-red;
@@ -227,13 +231,11 @@ display:flex;
                 <tr>
                   <th>Serial No</th>
                   <th>Client Name</th>
-                  <th>Created Date</th>
                   <th>Amount</th>
-                  <th>Reasons</th>
-                  <th>Current Status</th>
-                  <th>Request By Client </th>
-                  <th>Bene Account </th>
-                  <!-- <th>Request Status</th> -->
+                  <th>Status</th>
+                  <th>Action</th>
+                  <th>Created Date</th>
+                 
                  
                 </tr>
                 {% for withdrawal_request in withdrawal_requests %}
@@ -242,42 +244,22 @@ display:flex;
                   {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
                         <td data-th="Serial No">{{forloop.counter}}</td>
                         <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
-                        <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
-                        <td data-th="Amount" class="withdraw_amount">{{withdrawal_request.ammount}}</td>
-
-                        <!-- {% if withdrawal_request.req_status == 'Approved' %} -->
-
-                            <td data-th="UTR Number" id="utr_number">{{withdrawal_request.ref_number}}</td>
-                        <!-- {% else %} -->
-
-                            <td data-th="Reason" id="reason_status">{{withdrawal_request.reasons}}</td>
-
-
-                        <!-- {% endif %} -->
                         
-                      
+                        <td data-th="Amount" class="withdraw_amount">{{withdrawal_request.ammount}}</td>
+                       
+
                         <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
                         
-                       
-                        <!-- {% if withdrawal_request.withdrawal_request_accepted_by == 'Pending' %} -->
-                        
-                          <td data-th="Action">
+                          <!-- <td data-th="Action">
                             <select class="status-dropdown-request" data-requested-id="{{ withdrawal_request.id }}">
                               <option value="Pending">Pending</option>
                               <option value="Accepted">Accepted</option>
                             </select>
-                          </td>
-                        <!-- {% else %} -->
-
-
-                            <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.withdrawal_request_accepted_by }}</td>
-                          
-                        <!-- {% endif %} -->
-
-
-                       
-
-                        {% if withdrawal_request.withdrawal_request_accepted_by == request.user.email %}
+                          </td> -->
+                        
+                            <!-- <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.withdrawal_request_accepted_by }}</td> -->
+                         
+                        
                             <td data-th="Account-Info">
                               <button class="button_popup open-popup-btn" id="openModalBtn"
                                                 data-bene-id="{{withdrawal_request.id}}"
@@ -294,9 +276,9 @@ display:flex;
                                         </button>
                            
                             </td>
-                        {% endif %}
+                       
 
-
+                        <td data-th="Created Date">{{withdrawal_request.created_at_formatted}}</td>
 
                       {% endif %}
                       </tr>
@@ -311,11 +293,12 @@ display:flex;
   </section>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
-  {% include 'modal/bene_account_modal.html' %}
+  {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
   
   
   <script>

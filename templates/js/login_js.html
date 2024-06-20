@@ -20,22 +20,22 @@ $(document).ready(function() {
                         console.log("success",response);
                         if (response.user == 'is_admin'){
 
-                            $.confirm({
+                            var popup= $.confirm({
                                 title: ``,
                                 content:"Admin Login Successfully!",
                                 type: "green",
                                 typeAnimated: true,
                                 columnClass: 'medium',
                                 buttons: {
-                                OK: {
-                                    text: "Close",
-                                    btnClass: "btn-blue",
-                                    action: function () {
-                                        window.location.href = "/withdrawal-requests/"; 
-                                    }
+                                // OK: {
+                                //     text: "Close",
+                                //     btnClass: "btn-blue",
+                                //     action: function () {
+                                //         window.location.href = "/withdrawal-requests/"; 
+                                //     }
                                 
                                     
-                                },
+                                // },
 
                             
                             },
@@ -45,6 +45,11 @@ $(document).ready(function() {
                             
                         
                         });
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.href = "/withdrawal-requests/"; 
+                        }, 1000); // Close after 3 seconds
 
                         
 
@@ -55,7 +60,7 @@ $(document).ready(function() {
                         }
                         if (response.user == 'is_superadmin'){
 
-                            $.confirm({
+                           var popup= $.confirm({
                             title: ``,
                             content:"SuperAdmin Login Successfully!",
                             type: "green",
@@ -63,16 +68,16 @@ $(document).ready(function() {
                             columnClass: 'medium',
                             autoClose: 'close|0000',
                             buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                close: function () {},
-                                action: function () {
-                                    window.location.href = "/admin_dashboard/template/"; 
-                                }
+                            // OK: {
+                            //     text: "Close",
+                            //     btnClass: "btn-blue",
+                            //     close: function () {},
+                            //     action: function () {
+                            //         window.location.href = "/admin_dashboard/template/"; 
+                            //     }
                             
                                 
-                            },
+                            // },
                            
 
                             },
@@ -82,6 +87,11 @@ $(document).ready(function() {
 
                             });
 
+                            setTimeout(function() {
+                                popup.close();
+                                window.location.href = "/admin_dashboard/template/"; 
+                            }, 1000); // Close after 3 seconds
+
                            
 
 
@@ -89,28 +99,35 @@ $(document).ready(function() {
                         }
                         if (response.user == 'is_client'){
 
-                            $.confirm({
+                          var popup=  $.confirm({
                             title: ``,
                             content:"Client Login Successfully!",
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
                             buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.href = "/dashboard_client/template/"; 
-                                }
+                            // OK: {
+                            //     text: "Close",
+                            //     btnClass: "btn-blue",
+                            //     action: function () {
+                            //         window.location.href = "/dashboard_client/template/"; 
+                            //     }
                                
                                 
-                            },
+                            // },
                             
                             },
+                            
                             
                             
                         
                         });
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.href = "/dashboard_client/template/"; 
+                        }, 1000); // Close after 3 seconds
+                        
 
                            
                         }
@@ -118,7 +135,7 @@ $(document).ready(function() {
                     },
                     error: function(xhr, status, error) {
                         // If login fails, display error message
-                        $.confirm({
+                        var popup=$.confirm({
                             title:'',
                             content:'User Is Not Authenticated',
                             type:'red',
@@ -135,11 +152,19 @@ $(document).ready(function() {
                                                     
                             //         }
 
-                            action: function () {
-                                    window.location.href = "/admin_dashboard/template/"; 
-                                }
+                            // action: function () {
+                            //         window.location.href = "/admin_dashboard/template/"; 
+                            //     }
 
                         });
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); 
+                        }, 1000); // Close after 3 seconds
+                        
+
+
                     }
                 });
             });
