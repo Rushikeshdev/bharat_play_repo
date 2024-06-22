@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<!-- Coding By CodingNepal - codingnepalweb.com -->
+
 <html lang="en">
 
 <head>
@@ -9,13 +9,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!----======== CSS ======== -->
+  
   <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
   <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   
-  <!----===== Iconscout CSS ===== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+ 
   <title>Admin Client List</title>
   <style>
     #adminTable {
@@ -162,9 +162,7 @@ margin:30px 0 30px 0;
   </style>
 
 <style>
-  /* Add your existing styles here */
-
-  /* Toggle switch styles */
+ 
   .toggle-switch {
       position: relative;
       display: inline-block;
@@ -258,7 +256,7 @@ margin:30px 0 30px 0;
       </ul>
     </div>
   </nav>
-  <!-- Client List Section -->
+ 
   <section id="add_beneficiary" class="dashboard">
     <div class="top">
       <i class="uil sidebar-toggle"></i>
@@ -268,7 +266,7 @@ margin:30px 0 30px 0;
             <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
       </div>
 
-      <!--<img src="images/profile.jpg" alt="">-->
+      
     </div>
 
     
@@ -295,17 +293,18 @@ margin:30px 0 30px 0;
 
       <div id="adminList">
         <table id="adminTable">
-          <tbody>
-            <tr class="main_th">
-              <th>Serial Number</th>  
-              <th> Username</th>
-              <th> Password</th>
-              <th> Status</th>
-              <th>Today's Withdrawal </th>
-              <th>Created Date</th>
-              <th> </th>
-            </tr>
-
+            <thead>
+              <tr class="main_th">
+                <th>Serial Number</th>  
+                <th> Username</th>
+                <th> Password</th>
+                <th> Status</th>
+                <th>Today's Withdrawal </th>
+                <th>Created Date</th>
+                
+              </tr>
+            </thead>
+            <tbody>
             {% for user in users %}
                   <tr>
                     <td data-th="Serial No">{{forloop.counter}}</td>
@@ -321,23 +320,21 @@ margin:30px 0 30px 0;
                         <span class="slider"></span>
                     </label>
 
-
-
                     </td>
                     <td data-th="Today's Withdrawal">{{user.wallet.withdrawal_today}}</td>
                     <td data-th="Created Date">{{user.created}}</td>
-
+                   </tr>
                     
             {% endfor %}
             
-            <!-- Client data will be dynamically inserted here -->
+           
           </tbody>
         </table>
       </div>
 
     </div>
   </section>
-  <!-- End Client List Section -->
+ 
   
   
 

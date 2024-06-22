@@ -17,7 +17,11 @@
 
    <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!----===== Iconscout CSS ===== -->
+   
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+
+
+   <!----===== Iconscout CSS ===== -->
     <link
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
@@ -214,18 +218,21 @@ font-size:18px;
                 
               <table class="rwd-table" id="admin_dashboard_table">
 
-                <tbody>
-                  <tr>
-                    <th>Sr.No</th>
-                    <th>Client Name</th>                    
-                    <th>UTR/Remark</th>
-                    <th>Credit</th>
-                    <th>Debit</th>
-                    <th>Status</th>                   
-                    <th>Admin</th>
-                    <th>Approved By</th>
-                    <th>Created Date</th>
-                  </tr>
+                  <thead>
+                    <tr>
+                      <th>Sr.No</th>
+                      <th>Client Name</th>                    
+                      <th>UTR/Remark</th>
+                      <th>Credit</th>
+                      <th>Debit</th>
+                      <th>Balance</th>
+                      <th>Status</th>                   
+                      <th>Admin</th>
+                      <th>Approved By</th>
+                      <th>Created Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
                   {% for withdrawal_request,txn in withdrawal_requests %}
                   
                   <tr>
@@ -252,7 +259,7 @@ font-size:18px;
                   
                     {% endif %}
                     
-                    
+                    <td data-th="Balance">{{withdrawal_request.superadmin_balance}}</td>
                     
                     
                     <td data-th="Status">{{withdrawal_request.req_status}}</td>
@@ -264,25 +271,10 @@ font-size:18px;
                   {% endfor %}
                 </tbody>
               </table>
+              
               <br>
               <br>
-              <div class="pagination">
-                <span class="step-links">
-                    {% if withdrawal_requests.has_previous %}
-                        <a href="?page=1">&laquo; first</a>
-                        <a href="?page={{ withdrawal_requests.previous_page_number }}">previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ withdrawal_requests.number }} of {{ withdrawal_requests.paginator.num_pages }}.
-                    </span>
-
-                    {% if withdrawal_requests.has_next %}
-                        <a href="?page={{ withdrawal_requests.next_page_number }}">next</a>
-                        <a href="?page={{ withdrawal_requests.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
-                </span>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -293,6 +285,8 @@ font-size:18px;
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    
     {% include 'js/admin_dashboard_export_js.html' %}
    
   </body>

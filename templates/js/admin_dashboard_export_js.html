@@ -1,19 +1,50 @@
 <script>
     $(document).ready(function() {
         $('#exportBtn').click(function() {
-            // Reference to the table
-            var table = $('#admin_dashboard_table')[0];
+            // // Reference to the table
+            // var table = $('#admin_dashboard_table')[0];
             
-            // Convert the table to a worksheet
-            var worksheet = XLSX.utils.table_to_sheet(table);
+            // // Convert the table to a worksheet
+            // var worksheet = XLSX.utils.table_to_sheet(table);
             
-            // Create a new workbook and append the worksheet
-            var workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+            // // Create a new workbook and append the worksheet
+            // var workbook = XLSX.utils.book_new();
+            // XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
             
-            // Export the workbook to an Excel file
-            XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
+            // // Export the workbook to an Excel file
+            // XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
+
+            $.ajax({
+                url: '/admin_dashboard/template/',
+                type: 'GET',
+                data: {
+                    length: -1  // Retrieve all records
+                },
+                success: function(response) {
+
+                    console.log("Response",response);
+                    // Convert the received data to worksheet
+                    var worksheet_data = response.data.map(item => {
+                    return {
+                        'Field 1': item.field1,
+                        'Field 2': item.field2,
+                        'Field 3': item.field3,
+                        // Add all other fields
+                    };
+                    });
+
+                    // Create worksheet and workbook
+                    var worksheet = XLSX.utils.json_to_sheet(worksheet_data);
+                    var workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+                    // Export the workbook to an Excel file
+                    XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
+                }
+                });
         });
+        
+
 
        
         $('#searchBarAdmin').on('input', function() {
@@ -136,8 +167,19 @@ function filterTable() {
 
     });
 }
+        $('#admin_dashboard_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+        });
+
+
+});
 
 
 
-    });
 </script>

@@ -118,6 +118,7 @@ class Account(models.Model):
     withdrawal_request_accepted_by = models.CharField(max_length=255,default='Pending')
     remark_for_client = models.CharField(max_length=255,default='',blank=True,null=True)
     updated_at = models.DateTimeField(auto_now=True)
+    superadmin_balance = models.IntegerField(default=0)
 
 
 

@@ -17,7 +17,7 @@
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
     />
-
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <title>Statement</title>
     <style>
       .top
@@ -127,19 +127,24 @@
           <div class="activity">
             <div class="activity-data">
               <div class="container">
-                <table class="rwd-table">
-                  <tbody>
+                <table class="rwd-table" id="client_account_statement">
+
+                      <thead>
                       <tr>
                           <th>Serial No</th>
+                          <th>Name</th>
                           <th>Narration</th>
                           <th>Deposit</th>
                           <th>Withdraw</th>
                           <th>Balance</th>
                           <th>Date</th>
                         </tr>
+                      </thead>
+                      <tbody>
                         {% for acc_ste in account_statement %}
                         <tr>
                           <td data-th="Serial No">{{forloop.counter}}</td>
+                          <td data-th="Bene Name">{{acc_ste.paid_to}}</td>
                           <td data-th="Narration">{{acc_ste.narration}}</td>
                           <td data-th="Deposit">{{acc_ste.deposit}}</td>
                           <td data-th="Withdraw">{{acc_ste.withdraw}}</td>
@@ -148,7 +153,7 @@
                         </tr>
                         {% endfor %}
                         
-                  </tbody>
+                      </tbody>
               
                 </table>
               </div>
@@ -157,6 +162,39 @@
         </div>
       </section>
       <!-- End Dashboard Section -->
-   
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
+  
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+      <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+      
+      <script>
+
+        $(document).ready(function() {
+
+          $('#client_account_statement').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+
+
+    });
+
+
+
+
+
+        });
+
+
+      </script>
     </body>
     </html>

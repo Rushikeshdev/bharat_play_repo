@@ -14,6 +14,7 @@
    <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <link
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
@@ -208,10 +209,11 @@ font-size:18px;
                 
               <table class="rwd-table" id="admin_dashboard_table">
 
-                <tbody>
+                <thead>
                   <tr>
                     <th>Sr.No</th>
                     <th>Client Name</th>
+                    <th>Bene Account</th>
                     <th>UTR/Remark</th>
                     <th>Amount</th>
                     <th>Mode</th>
@@ -219,10 +221,14 @@ font-size:18px;
                     <th>Admin</th>
                     <th>Created Date</th>
                   </tr>
+                </thead>
+                  <tbody>
                   {% for withdrawal_request,txn in withdrawal_requests %}
                   <tr>
                     <td data-th="Serial No">{{forloop.counter}}</td>
                     <td data-th="Client">{{withdrawal_request.client.email}}</td>
+
+                    <td data-th="Bene Account">{{withdrawal_request.account_bene.bene_account_number}}</td>
                       
                     <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
                     
@@ -247,6 +253,7 @@ font-size:18px;
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     {% include 'js/admin_dashboard_export_js.html' %}
   </body>
 </html>
