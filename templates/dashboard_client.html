@@ -497,8 +497,7 @@
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
     <script>
 
-    $(document).ready(function() {
-        function showForm(formId, createdDate, amount, paid_to, account_number, reasons, ref_number,req_status) {
+function showForm(formId, createdDate, amount, paid_to, account_number, reasons, ref_number,req_status) {
             var modal = document.getElementById(formId);
 
             var tran_msg = document.getElementById("tran_msg");
@@ -507,11 +506,11 @@
 
             if (req_status=="Approved"){
 
-                tran_msg.textContent = "Successfull Transaction"
+                tran_msg.textContent = "Successfull Transaction!"
             }
             else{
 
-                tran_msg.textContent = "Diclined Transaction"
+                tran_msg.textContent = "Declined transaction!"
 
 
             }
@@ -544,6 +543,10 @@
             modal.style.display = "none"; // Hide the modal
         }
 
+
+
+    $(document).ready(function() {
+        
 
         $('#client_dashboard_table').DataTable({
             "paging": true,
