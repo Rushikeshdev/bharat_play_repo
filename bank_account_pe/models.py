@@ -109,7 +109,6 @@ class Account(models.Model):
     reasons = models.CharField(max_length=255,default='')
     admin_remark = models.CharField(max_length=255,default='')
     ref_number = models.CharField(max_length=255)
-    total_balnce = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now=True)
     withdraw_request_client = models.BooleanField(default=False)
     status_change_by = models.CharField(max_length=255,default='')
@@ -118,24 +117,63 @@ class Account(models.Model):
     withdrawal_request_accepted_by = models.CharField(max_length=255,default='Pending')
     remark_for_client = models.CharField(max_length=255,default='',blank=True,null=True)
     updated_at = models.DateTimeField(auto_now=True)
-    superadmin_balance = models.IntegerField(default=0)
+  
 
 
 
     def __str__(self):
-        return f"{self.account_bene},{self.ammount}"
+
+        if self.account_bene is not None:
+            return f"{self.account_bene},{self.ammount}"
+        
+        return f"Transaction Done by SuperAdmin {self.ammount}"
+
+
+class ClientWallet(models.Model):
+
+    client = models.OneToOneField(User, on_delete=models.CASCADE,related_name='user')
+    client_wallet_total_balance = models.IntegerField(default=0)
+    admin_remark_superadmin = models.CharField(max_length=255,default='')
+    utr_number_superadmin_narration = models.CharField(max_length=255,default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.client},{self.client_wallet_total_balance}"
 
 
 
 class AccountStatement(models.Model):
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='account')
+    account = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='account',null=True, blank=True)
+    clientwallet = models.ForeignKey(ClientWallet, on_delete=models.CASCADE,related_name='clientwallet')
+    account_tnx_status = models.CharField(max_length=255,default='pending')
     deposit = models.IntegerField()
     withdraw = models.IntegerField()
-    trn_date = models.DateTimeField()
+    statement_balance = models.IntegerField(default=0)
+    trn_date = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        # Convert trn_date and updated_at to local time before saving
+        now_utc = datetime.utcnow()
+        trn_date = timezone.localtime(timezone.make_aware(now_utc, timezone.utc))
+        updated_at = timezone.localtime(timezone.make_aware(now_utc, timezone.utc))
+        self.trn_date = trn_date.strftime('%Y-%m-%d %H:%M')
+        self.updated_at = updated_at.strftime('%Y-%m-%d %H:%M')
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.account},{self.trn_date}"
+
+        if self.account is not None:
+            return f"{self.account},{self.trn_date}"
+
+        else:
+             return f"{self.clientwallet},{self.trn_date}"
+
+
+
+
 
 
 

@@ -57,6 +57,7 @@
             <div>
                 <label><input type="radio" name="transactionType" value="withdraw" required> Withdraw</label>
                 <label><input type="radio" name="transactionType" value="deposit" required> Deposit</label>
+                <h1 class="client_main_balance"><h2>
             </div>
 
             <input type="text" placeholder="Amount" id="amount_modal_id" style="background-color: #f2f2f2; border: none; padding: 15px 18px; width: 100%; margin-bottom: 20px; border-bottom: 1px solid #0e0e37;" required />
@@ -74,6 +75,8 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
 
@@ -99,12 +102,22 @@
         var clientId;
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
+
+
+
+
+
+
+
+
         // Open the modal when the eye icon is clicked
         $('.client1').on('click', function() {
             $('#client-wallet').css('display', 'flex');
             tdId = $(this).parent().attr("id");
             clientId = $(this).closest('tr').find('[data-th="client_id"]').text();
-           
+            main_wallet_bal = $(this).parent().attr("data-Main_Wallet_balance");
+
+            $(".client_main_balance").text(main_wallet_bal);
 
            
         });

@@ -48,8 +48,10 @@ $(document).ready(function () {
             var selectedStatus = $(this).text();
             var utr_number = $('.utr_number_ui').val();
             var admin_remark = $('.admin_remark_ui').val();
+            var client_id = $("#client_id_for_status_change").text();
             var amount =$("#modal-bene-withdraw-amount").text();
 
+            console.log("client_id",client_id);
             console.log("utr_number",utr_number);
 
             console.log("admin_remark",admin_remark);
@@ -66,6 +68,7 @@ $(document).ready(function () {
                 contentType: 'application/json',
                 data: JSON.stringify({
                     'id': requestId,
+                    'client_id':client_id,
                     'ref_number':utr_number,
                     'reasons':'NA',
                     'req_status': selectedStatus,
@@ -146,8 +149,9 @@ $(document).ready(function () {
         $("#rejected_id").click(function(e) {
 
 
-                var utr_number = $('.utr_number_ui').val()
-                var admin_remark = $('.admin_remark_ui').val()
+                var utr_number = $('.utr_number_ui').val();
+                var admin_remark = $('.admin_remark_ui').val();
+                var client_id = $("#client_id_for_status_change").text();
                 var amount =$("#modal-bene-withdraw-amount").text();
                 var selectedStatus = $(this).text();
 
@@ -161,8 +165,10 @@ $(document).ready(function () {
                             xhr.setRequestHeader("X-CSRFToken", csrftoken);
                         },
                     contentType: 'application/json',
+                    
                     data: JSON.stringify({
                         'id': requestId,
+                        'client_id':client_id,
                         'ref_number':utr_number,
                         'reasons':'NA',
                         'req_status': selectedStatus,

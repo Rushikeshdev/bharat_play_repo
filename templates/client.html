@@ -435,7 +435,7 @@ margin:30px 0 30px 0;
                     <td id="" data-th="Today's Withdrawal">{{ user.wallet.withdrawal_today }} </td> 
                      
                     {% if request.user.is_superadmin %}
-                      <td id="{{ user.wallet.id }}">  &nbsp <i class="uil uil-eye client1"></i></td>
+                      <td id="{{ user.wallet.id }}" data-Main_Wallet_balance="{{ user.wallet.total_balance }}">  &nbsp <i class="uil uil-eye client1"></i></td>
                     {% endif %}
 
                     <td data-th="Created Date">{{user.created}}</td>
@@ -460,14 +460,9 @@ margin:30px 0 30px 0;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   
 
-
-
-  <!-- {% include 'js/client_js.html' %} -->
-  {% include 'modal/create_client_modal.html' %}
-  <!-- {% include 'js/admin_wallet_js.html' %} -->
-  {% include 'modal/client_wallet_modal_js.html' %}
-
-
+{% include 'modal/create_client_modal.html' %}
+  
+{% include 'modal/client_wallet_modal_js.html' %}
 
 </body>
 

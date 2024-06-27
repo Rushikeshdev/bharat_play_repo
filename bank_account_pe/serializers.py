@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username','password' ,'is_active', 'is_client', 'is_admin','raw_password','created']
+        fields = ['id','username','password' ,'is_active', 'is_client', 'is_admin','raw_password','created']
     
     
 
@@ -68,4 +68,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 
+class ClientWalletSerializer(serializers.ModelSerializer):
 
+         class Meta:
+            model = ClientWallet
+            fields = '__all__'
