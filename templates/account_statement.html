@@ -236,7 +236,7 @@
           <input type="text" class="date_design" id="end-date">
         </div>
         <div>
-          <button  class="export-btn" id="exportBtn">Export</button>
+          <button  class="export-btn" id="client_statement_exportBtn">Export</button>
         </div>
       </div>
 
@@ -309,6 +309,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
+  {% include 'js/client_statement_export_js.html' %}
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
   <script>
 

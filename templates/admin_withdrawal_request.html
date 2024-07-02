@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
   <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
   <!----===== Iconscout CSS ===== -->
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
@@ -327,7 +328,7 @@ div#admin_table_withdrwal_request_length {
           <input type="text" class="date_design" id="end-date">
         </div>
         <div>
-          <button  class="export-btn" id="exportBtn">Export</button>
+          <button  class="export-btn" id="superadmin_with_req_Btn">Export</button>
         </div>
       </div>
 
@@ -404,12 +405,14 @@ div#admin_table_withdrwal_request_length {
   </section>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
+  {% include 'js/superadmin_withdraw_export_js.html' %}
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
   
   

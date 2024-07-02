@@ -1,4 +1,5 @@
 from distutils.log import error
+import re
 from typing import Any
 from django.http.response import HttpResponse as HttpResponse
 from rest_framework.views import APIView
@@ -576,19 +577,41 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
                                    mode = "Deposit"
 
-                            data.append({
-                                'client_email': item['client_email'],
-                                'utr_number': item['ref_number'],
-                                'amount': item['ammount'],
-                                'status': item['req_status'],
-                                'mode': mode,
-                                'bene_account_name':item['account_bene_details']['bene_account_name'],
-                                'bene_account_number':item['account_bene_details']['bene_account_number'],
-                                'bene_bank_name':item['account_bene_details']['bene_bank_name'],
-                                'bene_branch_ifsc':item['account_bene_details']['bene_branch_ifsc'],
-                                'admin_remark': item['admin_remark'],
-                                'created_at': item['created_at_formatted'],
-                        })
+                            if request.user.is_superadmin:
+                                    data.append({
+                                        'client_email': item['client_email'],
+                                        'utr_number': item['ref_number'],
+                                        'amount': item['ammount'],
+                                        'status': item['req_status'],
+                                        'mode': mode,
+                                        'bene_account_name':item['account_bene_details']['bene_account_name'],
+                                        'bene_account_number':item['account_bene_details']['bene_account_number'],
+                                        'bene_bank_name':item['account_bene_details']['bene_bank_name'],
+                                        'bene_branch_ifsc':item['account_bene_details']['bene_branch_ifsc'],
+                                        'admin_remark': item['admin_remark'],
+                                        'created_at': item['created_at_formatted'],
+                                })
+
+                            elif request.user.is_admin and not request.user.is_superadmin:
+
+                                if item['req_status'].lower() == 'pending':
+
+                                    data.append({
+                                        'client_email': item['client_email'],
+                                        'utr_number': item['ref_number'],
+                                        'amount': item['ammount'],
+                                        'status': item['req_status'],
+                                        'mode': mode,
+                                        'bene_account_name':item['account_bene_details']['bene_account_name'],
+                                        'bene_account_number':item['account_bene_details']['bene_account_number'],
+                                        'bene_bank_name':item['account_bene_details']['bene_bank_name'],
+                                        'bene_branch_ifsc':item['account_bene_details']['bene_branch_ifsc'],
+                                        'admin_remark': item['admin_remark'],
+                                        'created_at': item['created_at_formatted'],
+                                })
+
+
+
 
                         return JsonResponse({'withdrawal_requests': data})
 
@@ -1232,8 +1255,67 @@ class AccountStatementView(LoginRequiredMixin,View):
                         with_today = withdrawal_requests.filter(req_status='Approved',withdrawal_day=datetime.now().date()).values('ammount')
 
                         withdrwal_amount = sum(item['ammount'] for item in with_today)
+                        
+                        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
 
-                        # print("context",context[0]['txn_date'])
+                                data = []
+
+                                
+
+                                for item in context:
+
+                                    if item['deposit'] != 0 :
+                                        mode = 'deposit'
+                                    else:
+                                        mode= 'withdraw'
+
+                                    if 'status' in item:
+
+                                        status_ = item['status']
+                                    else:
+
+                                        status_ = '' 
+
+                                    if item['account'] is not None:
+                                        bene_account_name=item['account'].account_bene.bene_account_name
+                                        bene_account_number=item['account'].account_bene.bene_account_number
+                                        bene_bank_name=item['account'].account_bene.bene_bank_name
+                                        bene_branch_ifsc=item['account'].account_bene.bene_branch_ifsc
+                                        admin_remark= item['account'].admin_remark
+
+                                    else:
+
+                                        bene_account_name=''
+                                        bene_account_number=''
+                                        bene_bank_name=''
+                                        bene_branch_ifsc=''
+                                        admin_remark=''
+
+
+                                    
+                                    if request.user.is_client:
+                                        
+                                        data.append({
+                                                'client_email': item['narration'],
+                                                'deposit': item['deposit'],
+                                                'withdraw': item['withdraw'],
+                                                'status':status_,
+                                                'mode': mode,
+                                                'bene_account_name':bene_account_name,
+                                                'bene_account_number':bene_account_number,
+                                                'bene_bank_name':bene_bank_name,
+                                                'bene_branch_ifsc':bene_branch_ifsc,
+                                                'admin_remark': admin_remark,
+                                                'created_at': item['txn_date'],
+                                        })
+
+                                return JsonResponse({'withdrawal_requests': data})
+
+
+
+
+
+                        
 
                         return render(request,self.template_name,context={"account_statement":context,'balance':balance,'withdrwal_today':withdrwal_amount})
                 
