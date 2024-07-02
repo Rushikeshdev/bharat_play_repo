@@ -1,195 +1,110 @@
+
+
 <script>
-    $(document).ready(function() {
-        $('#exportBtn').click(function() {
-            // Reference to the table
-            var table = $('#admin_dashboard_table')[0];
-            
-            // Convert the table to a worksheet
-            var worksheet = XLSX.utils.table_to_sheet(table);
-            
-            // Create a new workbook and append the worksheet
-            var workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-            
-            // Export the workbook to an Excel file
-            XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
+$(document).ready(function() {
+    $('#exportBtn').click(function() {
+        // Make an AJAX request to fetch the data
+        $.ajax({
+            url: '/admin_dashboard/template', 
+            type: 'GET',
+            success: function(response) {
+               
+                var data = [];
+                var headers = [
+                    "Sr.No",
+                    "Client Name",
+                    "Credit",
+                    "Debit",
+                    "Status",
+                    "Admin",
+                    "Approved By",
+                  
+                    "Bene Name",
+                    "Bene Account Number",
+                    "Bene Bank Name",
+                    "Bene IFSC Code",
+                    "Bene Mode",
+                    "Bene Deposit",
+                    "Bene Withdraw",
+                    "Bene Status",
+                    "Bene Remarks",
+                    "Bene UTR",
+                    "Created Date",
+                ];
+                data.push(headers);
+                
+                // Process the response data
+                $.each(response.withdrawal_requests, function(index, entry) {
+                    var row = [];
+                    console.log("ENTERY",entry.is_wallet);
+                    if (entry.is_wallet) {
+                        
+                        // Process client wallet statement
+                        row.push(index + 1); // Serial number
+                        row.push(entry.client_email);
+                        row.push(entry.deposit);
+                        row.push(entry.withdraw);
+                        row.push(entry.status);
+                        row.push(entry.admin_remark_superadmin);
+                        row.push(''); // Approved By (not available in client wallet statement)
+                       
+                        row.push(''); // Bene Name
+                        row.push(''); // Bene Account Number
+                        row.push(''); // Bene Bank Name
+                        row.push(''); // Bene IFSC Code
+                        row.push(''); // Bene Mode
+                        row.push(''); // Bene Deposit
+                        row.push(''); // Bene Withdraw
+                        row.push(''); // Bene Status
+                        row.push(entry.admin_remark_superadmin); // Bene Remarks
+                        row.push(entry.utr_number_superadmin_narration); // Bene UTR
+                        row.push(entry.created_at);
+                    } else {
 
-        //     $.ajax({
-        //         url: '/admin_dashboard/template/',
-        //         type: 'GET',
-        //         data: {
-        //             length: -1  // Retrieve all records
-        //         },
-        //         success: function(response) {
+                       
 
-        //             console.log("Response",response);
-        //             // Convert the received data to worksheet
-        //             var worksheet_data = response.data.map(item => {
-        //             return {
-        //                 'Field 1': item.field1,
-        //                 'Field 2': item.field2,
-        //                 'Field 3': item.field3,
-        //                 // Add all other fields
-        //             };
-        //             });
+                        // Process withdrawal request
+                        row.push(index + 1); // Serial number
+                        row.push(entry.client_email);
+                        row.push(entry.deposit);
+                        row.push(entry.withdraw);
+                        row.push(entry.status);
+                        row.push(entry.admin_remark);
+                        row.push(entry.status_change_by);
+                       
+                        
+                        row.push(entry.bene_account_name);
+                        row.push(entry.bene_account_number);
+                        row.push(entry.bene_bank_name);
+                        row.push(entry.bene_branch_ifsc);
 
-        //             // Create worksheet and workbook
-        //             var worksheet = XLSX.utils.json_to_sheet(worksheet_data);
-        //             var workbook = XLSX.utils.book_new();
-        //             XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+                        row.push(entry.tnx);
+                        row.push(entry.deposit);
+                        row.push(entry.withdraw);
+                        row.push(entry.status);
 
-        //             // Export the workbook to an Excel file
-        //             XLSX.writeFile(workbook, 'admin_dashboard_data.xlsx');
-        //         }
-        //         });
+                        row.push(entry.admin_remark);
+                        row.push(entry.utr_number);
+                        row.push(entry.created_at);
+                    }
+                    data.push(row);
+                });
+
+                // Convert the extracted data to a worksheet
+                var worksheet = XLSX.utils.aoa_to_sheet(data);
+
+                // Create a new workbook and append the worksheet
+                var workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+                // Export the workbook to an Excel file
+                XLSX.writeFile(workbook, 'superadmin_dashboard_data.xlsx');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching data:', error);
+                
+            }
         });
-        
-
-
-       
-        $('#searchBarAdmin').on('input', function() {
-            var value = $(this).val().toLowerCase();
-            var found = false;
-
-            $('#admin_dashboard_table tbody tr').each(function(index) {
-                if (index === 0) return; // Skip the header row
-
-                var rowText = $(this).text().toLowerCase();
-
-                if (rowText.includes(value)) {
-                    $(this).show();
-                    found = true;
-                } else {
-                    $(this).hide();
-                }
-            });
-
-            // if (found) {
-            //     $('#searchBarAdmin').val('');
-            // }
-        });
-
-        
-        function formatDate(dateString) {
-    // Regular expression to parse the input date string
-    var regex = /(\w+)\s(\d+),\s(\d+),\s(\d+):(\d+)\s(\w+)./;
-    var match = dateString.match(regex);
-
-    if (!match) {
-        return 'Invalid Date';
-    }
-
-    var monthName = match[1];
-    var day = match[2];
-    var year = match[3];
-    var hours = parseInt(match[4]);
-    var minutes = match[5];
-    var period = match[6];
-
-    // Convert month name to abbreviated form
-    var monthAbbr = {
-        January: 'Jan', February: 'Feb', March: 'Mar', April: 'Apr', May: 'May', June: 'Jun',
-        July: 'Jul', August: 'Aug', September: 'Sep', October: 'Oct', November: 'Nov', December: 'Dec'
-    };
-    var month = monthAbbr[monthName];
-
-    // Adjust hours for AM/PM
-    if (period === 'p.m.' && hours < 12) {
-        hours += 12;
-    } else if (period === 'a.m.' && hours === 12) {
-        hours = 0;
-    }
-
-    // Format hours and minutes
-    hours = hours % 12 || 12; // Convert to 12-hour format
-    var formattedHours = hours < 10 ? '0' + hours : hours;
-    var formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-    var formattedPeriod = period.toUpperCase().replace('A.M.', 'AM').replace('P.M.', 'PM');
-    console.log("formattedPeriod",formattedPeriod);
-    // Construct the formatted date string
-    var formattedDate = `${month} ${day < 10 ? '0' + day : day}, ${year}, ${formattedHours}:${formattedMinutes} ${formattedPeriod+"M"}`;
-    return formattedDate;
-}
-
-
-
-
-        var startDatePicker = flatpickr("#start-date", {
-            dateFormat: "Y-m-d",
-            onChange: filterTable
-        });
-
-        var endDatePicker = flatpickr("#end-date", {
-            dateFormat: "Y-m-d",
-            onChange: filterTable
-        });
-
-        // Filter button event listener
-        $("#filter-button").click(function() {
-            filterTable();
-        });
-
-// Function to filter the table based on selected dates
-function filterTable() {
-    var startDate = startDatePicker.selectedDates[0];
-    var endDate = endDatePicker.selectedDates[0];
-
-    if (endDate) {
-        endDate.setHours(23, 59, 59, 999);
-    }
-
-    var rows = $("#admin_dashboard_table tbody tr");
-
-    rows.each(function(index) {
-        if (index === 0) return; // skip header row
-
-        var createdDateStr = $(this).find("td[data-th='Created Date']").text().trim();
-        console.log("createdDateStr",createdDateStr);
-
-        var formattedDate = formatDate(createdDateStr);
-
-        console.log("formattedDate",formattedDate);
-
-
-
-
-        var createdDate = new Date(formattedDate);
-        console.log("created_date",createdDate);
-        console.log("start_date",startDate);
-        console.log("end_date",endDate);
-        // Check if the created date is within the range
-        if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-        
-
     });
-}
-        var datatable=$('#admin_dashboard_table').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            
-            
-        });
-
-
-        
-
-       
-
-
-
-
-
-
 });
-
-
-
 </script>

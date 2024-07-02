@@ -435,6 +435,30 @@
             
     });
 
+    $('#superadmin_dashboard_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+            
+    });
+
+    $('#admin_dashboard_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+            
+    });
+
+
+
        
         var modal = $("#myModal");
 
@@ -467,16 +491,28 @@
 
                 $("#admin-statement-dashboaerd").hide();
 
+                if(button.data("bene-mode")==='wallet'){
+
+                    console.log("===",button.data("bene-deposit"));
+                    console.log("===",button.data("bene-withdraw"));
+
+                    $("#modal-bene-deposit-amount").text(button.data("bene-deposit"));
+                    $("#modal-bene-withdraw-amount").text(button.data("bene-withdraw"));
+
+                }
+
+
                 if(button.data("bene-mode")==='deposit'){
 
-                    $("#modal-bene-deposit-amount").text(button.data("bene-amount"));
-                    $("#modal-bene-withdraw-amount").text(0);
+                    $("#modal-bene-deposit-amount").text(button.data("bene-deposit"));
+                    $("#modal-bene-withdraw-amount").text(button.data("bene-withdraw"));
                    
                 }
-                else{
-
-                    $("#modal-bene-deposit-amount").text(0);
-                    $("#modal-bene-withdraw-amount").text(button.data("bene-amount"));
+                
+                if (button.data("bene-mode")==='withdraw'){
+                    
+                    $("#modal-bene-deposit-amount").text(button.data("bene-deposit"));
+                    $("#modal-bene-withdraw-amount").text(button.data("bene-withdraw"));
 
                 }
 
@@ -513,7 +549,7 @@
 
 
             }
-            if (is_admin===0){
+            if (is_admin===0 | is_superadmin===0){
                
 
                 $(".client-remarks-container_for").hide();
@@ -547,6 +583,8 @@
         });
     });
 </script>
+
+
 
 </body>
 </html>

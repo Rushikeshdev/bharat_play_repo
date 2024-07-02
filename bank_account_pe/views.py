@@ -46,7 +46,7 @@ class UserList(LoginRequiredMixin,APIView,TemplateView):
     def get(self, request):
 
   
-        # try:
+        try:
             
             print(timezone.get_current_timezone())
             if request.user.is_superadmin and "admintemplate" in request.build_absolute_uri():
@@ -135,12 +135,13 @@ class UserList(LoginRequiredMixin,APIView,TemplateView):
             
     
             return self.render_to_response(context_wallet_user)
-        # except Exception as e:
-        #      return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+             print(e)
+             return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request):
         try:
-            print("superadmin......",request.data)
+            
 
             now_local = local_time()
 
@@ -232,102 +233,184 @@ def update_user_status(request):
 
 
 
+class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
+        template_name_admin = 'admin_dashboard.html'
+        template_name_superadmin = 'superadmin_dashboard.html'
 
+       
 
+        def get(self, request):
 
-class AdminDashboard(LoginRequiredMixin,APIView, TemplateView):
-    
-
-    template_name_admin = 'admin_dashboard.html'
-
-    template_name_superadmin = 'superadmin_dashboard.html'
-
-    def get(self, request):
-
-        try:
-
+            try:
+                
                 if request.user.is_superadmin:
-
                     self.template_name = self.template_name_superadmin
-
                     withdrawal_requests = Account.objects.all().order_by('-updated_at')
-
-                elif request.user.is_admin and not request.user.is_superadmin :
-
+                elif request.user.is_admin and not request.user.is_superadmin:
                     self.template_name = self.template_name_admin
-            
                     withdrawal_requests = Account.objects.filter(status_change_by=request.user.email).order_by('-updated_at')
+                
                 serializer = AccountSerializer(withdrawal_requests, many=True)
-
-               
-
-                
-
                 account_statement = []
-
-                for account in withdrawal_requests:
-
-                    acc_ste_dict  =dict()
-                    acc_ste = AccountStatement.objects.filter(account=account).order_by('-updated_at')
-
-                    
-
-                    for acc_s in acc_ste:
-
-                        print("acc_ste",acc_s.account_tnx_status.lower())
-
-                        if acc_s.account_tnx_status.lower() == 'rejected':
-                            acc_ste_dict['tnx'] = 'deposit'
-                            acc_ste_dict['deposit'] = acc_s.deposit
-                            acc_ste_dict['withdraw'] = acc_s.withdraw
-                            break
-
-                        elif acc_s.account_tnx_status.lower() == 'approved' or acc_s.account_tnx_status.lower() == 'pending' :
-                            acc_ste_dict['tnx'] = 'withdraw'
-                            acc_ste_dict['deposit'] = acc_s.deposit
-                            acc_ste_dict['withdraw'] = acc_s.withdraw
-                            break
-                            
-                        
-                        
-
-                    account_statement.append(acc_ste_dict)
-
-                
-
 
                 account_and_statement = []
 
-                withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
+                if request.user.is_superadmin:
 
+                   
+                # Query all AccountStatements ordered by updated_at
+                    all_statements = AccountStatement.objects.all().order_by('-updated_at')
+
+                    for stmt in all_statements:
+                        if stmt.account is None:
+                            # Process client wallet statements
+                            wallet_dict = {
+                                'client_email': stmt.clientwallet.client.email,
+                                'admin_remark_superadmin': stmt.clientwallet.admin_remark_superadmin,
+                                'utr_number_superadmin_narration': stmt.clientwallet.utr_number_superadmin_narration,
+                                'deposit': stmt.deposit,
+                                'withdraw': stmt.withdraw,
+                                'balance': stmt.statement_balance,
+                                'status': 'Client Wallet Always Approved',
+                                'created_at': stmt.updated_at,
+                                'is_wallet': True
+                            }
+                            account_and_statement.append({'client_wallet_statement': wallet_dict, 'tnx': []})
+                        else:
+                            # Process regular account statements
+                            acc_ste_dict = {}
+                            if stmt.account_tnx_status.lower() == 'rejected':
+                                acc_ste_dict['tnx'] = 'deposit'
+                                acc_ste_dict['deposit'] = stmt.deposit
+                                acc_ste_dict['withdraw'] = stmt.withdraw
+                                acc_ste_dict['status']   = stmt.account_tnx_status
+
+                            elif stmt.account_tnx_status.lower() in ['approved', 'pending']:
+                                acc_ste_dict['tnx'] = 'withdraw'
+                                acc_ste_dict['deposit'] = stmt.deposit
+                                acc_ste_dict['withdraw'] = stmt.withdraw
+                                acc_ste_dict['status']   = stmt.account_tnx_status
+
+                            # Find the corresponding withdrawal request
+                            for withdrawal_request in withdrawal_requests:
+                                if withdrawal_request == stmt.account:
+                                    account_and_statement.append({'withdrawal_request': withdrawal_request, 'tnx': acc_ste_dict})
+                                    break
+
+                    # Handle AJAX request for data for export
+                    
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                       
+                       
+                        data = []
+
+                        for item in account_and_statement:
+
+                            if 'client_wallet_statement' in item:
+                               
+                                data.append(item['client_wallet_statement'])
+                            else:
+                                
+                                data.append({
+                                    'client_email': item['withdrawal_request'].client.email,
+                                    'utr_number': item['withdrawal_request'].ref_number,
+                                    'deposit': item['tnx']['deposit'],
+                                    'withdraw': item['tnx']['withdraw'],
+                                    'status': item['tnx']['status'],
+                                    'bene_account_name':item['withdrawal_request'].account_bene.bene_account_name,
+                                    'bene_account_number':item['withdrawal_request'].account_bene.bene_account_number,
+                                    'bene_bank_name':item['withdrawal_request'].account_bene.bene_bank_name,
+                                    'bene_branch_ifsc':item['withdrawal_request'].account_bene.bene_branch_ifsc,
+                                    'admin_remark': item['withdrawal_request'].admin_remark,
+                                    'status_change_by': item['withdrawal_request'].status_change_by,
+                                    'created_at': item['withdrawal_request'].created_at,
+                                })
+
+                       
+                           
+                        return JsonResponse({'withdrawal_requests': data})
                 
-                
+                    context = {'withdrawal_requests': account_and_statement}
+                    return self.render_to_response(context)
+
+                #Admin Statement
                 if request.user.is_admin and not request.user.is_superadmin:
+                    
+                    for account in withdrawal_requests:
+                        acc_ste_dict = dict()
+                        acc_ste = AccountStatement.objects.filter(account=account).order_by('-updated_at')
+
+                        for acc_s in acc_ste:
+                            if acc_s.account_tnx_status.lower() == 'rejected':
+                                acc_ste_dict['tnx'] = 'deposit'
+                                acc_ste_dict['deposit'] = acc_s.deposit
+                                acc_ste_dict['withdraw'] = acc_s.withdraw
+                                acc_ste_dict['status']   = acc_s.account_tnx_status
+                                break
+                            elif acc_s.account_tnx_status.lower() == 'approved' or acc_s.account_tnx_status.lower() == 'pending':
+                                acc_ste_dict['tnx'] = 'withdraw'
+                                acc_ste_dict['deposit'] = acc_s.deposit
+                                acc_ste_dict['withdraw'] = acc_s.withdraw
+                                acc_ste_dict['status']   = acc_s.account_tnx_status
+                                break
+
+                        account_statement.append(acc_ste_dict)
+
+
                     withdrawal_requests=withdrawal_requests.filter(status_change_by=request.user.email)
                     
                     withdraw_request_with_txn = zip(withdrawal_requests,account_statement)
 
+                    for zip_obj in withdraw_request_with_txn:
+                            
+                        account_and_statement.append(zip_obj)
 
-                for zip_obj in withdraw_request_with_txn:
-                      
-                    account_and_statement.append(zip_obj)
-                    
-                #     if request.user.is_superadmin:
-                #         account_and_statement.append(zip_obj)
+                    #Export Admin Statement
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                       
+                       
+                        data = []
 
-                #     elif not zip_obj[1]:
-                #         account_and_statement.append(zip_obj)
+                        for item in account_and_statement:
 
-                #     elif zip_obj and zip_obj[1]['tnx'] == 'withdraw':
-                #         account_and_statement.append(zip_obj)
+                         
+                                data.append({
+                                    'client_email': item[0].client.email,
+                                    'utr_number': item[0].ref_number,
+                                    'deposit': item[1]['deposit'],
+                                    'withdraw': item[1]['withdraw'],
+                                    'status': item[1]['status'],
+                                    'mode': item[1]['tnx'],
+                                    'bene_account_name':item[0].account_bene.bene_account_name,
+                                    'bene_account_number':item[0].account_bene.bene_account_number,
+                                    'bene_bank_name':item[0].account_bene.bene_bank_name,
+                                    'bene_branch_ifsc':item[0].account_bene.bene_branch_ifsc,
+                                    'admin_remark': item[0].admin_remark,
+                                    'status_change_by': item[0].status_change_by,
+                                    'created_at': item[0].created_at,
+                                })
 
-                          
-                context = {'withdrawal_requests': account_and_statement,'txn':account_and_statement}
-              
-                return self.render_to_response(context)
+                       
+                           
+                        return JsonResponse({'withdrawal_requests': data})
 
-        except Exception as e:
-            return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    context = {'withdrawal_requests': account_and_statement}
+
+                    return self.render_to_response(context)
+
+
+                
+
+                
+
+            except Exception as e:
+               print(e)
+               return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+       
+
+
+
 
 
 
@@ -366,12 +449,13 @@ class ClientDashboard(LoginRequiredMixin,APIView, TemplateView):
             account_statements = AccountStatement.objects.filter(
                 Q(account=None) |  # Filter for statements where account is None
                 (Q(account__client=request.user) & Q(clientwallet__client=request.user))  # Original filter
-            ).order_by('-updated_at')
+            )
 
             acc_ste_list=[]
             account_access = []
-
-            balance = account_statements.first().clientwallet.client_wallet_total_balance
+            
+            
+            balance = ClientWallet.objects.get(client=request.user).client_wallet_total_balance
 
             account_client_dashboard = Account.objects.filter(client__email=request.user,withdraw_request_client=True).order_by('-updated_at')
  
@@ -477,18 +561,50 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
             context = {'withdrawal_requests': serializer.data,'withdrawal_today':admin_withdrwal_amount}
             
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                       
+                       
+                        data = []
+
+                        for item in serializer.data:
+
+                            if item['req_status'].lower() == 'approved' or item['req_status'].lower() == 'pending':
+
+                                    mode = 'Withdraw'
+
+                            else:
+
+                                   mode = "Deposit"
+
+                            data.append({
+                                'client_email': item['client_email'],
+                                'utr_number': item['ref_number'],
+                                'amount': item['ammount'],
+                                'status': item['req_status'],
+                                'mode': mode,
+                                'bene_account_name':item['account_bene_details']['bene_account_name'],
+                                'bene_account_number':item['account_bene_details']['bene_account_number'],
+                                'bene_bank_name':item['account_bene_details']['bene_bank_name'],
+                                'bene_branch_ifsc':item['account_bene_details']['bene_branch_ifsc'],
+                                'admin_remark': item['admin_remark'],
+                                'created_at': item['created_at_formatted'],
+                        })
+
+                        return JsonResponse({'withdrawal_requests': data})
+
+
             
             return self.render_to_response(context)
         
         except Exception as e:
-            
+            print(e)
             return Response(e,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
     
     def post(self, request):
         
             
-        # try:
+        try:
             if 'client' in request.data:
                 client = request.data['client']
             else:
@@ -561,7 +677,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
             else:   
 
-                    print("HELLO---------->")
+                   
                  
                     bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
@@ -630,8 +746,9 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
                     return Response(data={"Message":"Insufficient Balance"},status=status.HTTP_400_BAD_REQUEST)
-        # except Exception as  e:
-        #     return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as  e:
+            print(e)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -676,8 +793,10 @@ class WithdrawalRequestDetail(APIView):
                 
 
                 transaction_request_pre = self.get_object(pre_pk)
-                
+               
                 client_id = request.data['client_id']
+
+                
              
                 client_wallet_total_balance_obj = ClientWallet.objects.get(client__email=client_id)
 
@@ -703,7 +822,7 @@ class WithdrawalRequestDetail(APIView):
                                                                     statement_balance = statement_balance,
                                                                     trn_date=local_time())
 
-                            print(account_statement_from_client_withdr)
+                           
 
                     except Exception as e:
                         print("MASG==",e)
@@ -954,24 +1073,24 @@ class WalletListView(View):
                     'created_at':client.created
             }
 
-            print('client',client)
+            
            
             # Retrieve account data for the current client
             account = Account.objects.filter(client__email=client.email)
             
             check_bene = BeneficiaryDetails.objects.filter(client=client)  
 
-            print('check_bene',check_bene)
+           
            
             if  not account:
                 if check_bene:
                     bene_account = BeneficiaryDetails.objects.get(client=client)
 
                     if bene_account:
-                        print("bene_account")
+                       
                         first_account=Account.objects.create(client=client,account_bene=bene_account,
                         ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
-                        print('with bene')
+                        
                         client_data['id'] = first_account.id
                         client_data['ammount'] = first_account.ammount
                         client_data['total_balnce'] = first_account.total_balnce
@@ -981,7 +1100,7 @@ class WalletListView(View):
                     context.append(client_data)
 
                 else:
-                    print('without bene')
+                   
                     first_account=Account.objects.create(client=client,account_bene=None,
                     ammount=0,ref_number=0,withdrawal_day=datetime.now().date())
                     client_data['id'] = first_account.id
@@ -1002,8 +1121,7 @@ class WalletListView(View):
             if account:
                     acc=   account.last()
                     
-                    print("account",account)
-                    print("account=",acc.id)
+                   
                     client_data['id'] = acc.id
                     client_data['ammount'] = acc.ammount
                    
@@ -1026,13 +1144,6 @@ class WalletListView(View):
         # Use a list comprehension to filter out duplicate dictionaries
         context = [context[i] for i in range(len(context)) if all(not dict_compare(context[i], context[j]) for j in range(i+1, len(context)))]
 
-       
-
-        print(context)
-
-
-
-
 
         return render(request,self.template_name,context={"wallet":context})
 
@@ -1044,7 +1155,7 @@ class AccountStatementView(LoginRequiredMixin,View):
 
         def get(self, request):
 
-            # try:
+            try:
                     if request.user.is_client:
                         acc_ste=AccountStatement.objects.filter(Q(account__client=request.user) | Q(clientwallet__client=request.user)).order_by('-updated_at')
 
@@ -1052,7 +1163,7 @@ class AccountStatementView(LoginRequiredMixin,View):
 
                         balance = client_wallet_total_balance_obj.client_wallet_total_balance 
 
-                        print(acc_ste)
+                      
                         
 
                         context = []
@@ -1127,9 +1238,9 @@ class AccountStatementView(LoginRequiredMixin,View):
                         return render(request,self.template_name,context={"account_statement":context,'balance':balance,'withdrwal_today':withdrwal_amount})
                 
                     return render(request,'login.html')
-            # except Exception as e:
-
-            #     return Response(e,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            except Exception as e:
+                print(e)
+                return Response(e,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 
@@ -1164,7 +1275,7 @@ class BeneView(View):
                     return render(request,self.template_name,{'bene':beneficiaries,'balance':balance,'withdrwal_today':with_today})
 
             except Exception as e:
-
+                print(e)
                 return Response(e, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

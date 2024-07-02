@@ -1,91 +1,85 @@
 <script>
     $(document).ready(function() {
-        $('#superadminexportBtn').click(function() {
-            // Reference to the table
-            var table = $('#superadmin_withdraw_table')[0];
+        $('#superadmin_with_req_Btn').click(function() {
+
+
+            // Make an AJAX request to fetch the data
+        $.ajax({
+            url: '/withdrawal-requests/', 
+            type: 'GET',
+            success: function(response) {
+               
+                var data = [];
+                var headers = [
+                    "Sr.No",
+                    "Client Name",
+                    "Amount",
+                    "Status",
+        
+                  
+                    "Bene Name",
+                    "Bene Account Number",
+                    "Bene Bank Name",
+                    "Bene IFSC Code",
+                    "Bene Mode",
+
+                    "Bene Remarks",
+                    "Bene UTR",
+                    "Created Date",
+                ];
+                data.push(headers);
+                
+                // Process the response data
+                $.each(response.withdrawal_requests, function(index, entry) {
+                    var row = [];
+                    
+                     
+
+                       
+
+                        // Process withdrawal request
+                        row.push(index + 1); // Serial number
+                        row.push(entry.client_email);
+                        row.push(entry.amount);
+                
+                        row.push(entry.status);
+                        
+                        
+                        row.push(entry.bene_account_name);
+                        row.push(entry.bene_account_number);
+                        row.push(entry.bene_bank_name);
+                        row.push(entry.bene_branch_ifsc);
+
+                        row.push(entry.mode);
+                       
+
+                        row.push(entry.admin_remark);
+                        row.push(entry.utr_number);
+                        row.push(entry.created_at);
+                    
+                    data.push(row);
+                });
+
+                // Convert the extracted data to a worksheet
+                var worksheet = XLSX.utils.aoa_to_sheet(data);
+
+                // Create a new workbook and append the worksheet
+                var workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+                // Export the workbook to an Excel file
+                XLSX.writeFile(workbook, 'superadmin_dashboard_data.xlsx');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching data:', error);
+                
+            }
+        });
             
-            // Convert the table to a worksheet
-            var worksheet = XLSX.utils.table_to_sheet(table);
-            
-            // Create a new workbook and append the worksheet
-            var workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-            
-            // Export the workbook to an Excel file
-            XLSX.writeFile(workbook, 'superadmin_withdraw_data.xlsx');
         });
 
        
-        $('#searchBarSuperAdmin').on('input', function() {
-            var value = $(this).val().toLowerCase();
-            var found = false;
-
-            $('#superadmin_withdraw_table tbody tr').each(function(index) {
-                if (index === 0) return; // Skip the header row
-
-                var rowText = $(this).text().toLowerCase();
-
-                if (rowText.includes(value)) {
-                    $(this).show();
-                    found = true;
-                } else {
-                    $(this).hide();
-                }
-            });
-
-            // if (found) {
-            //     $('#searchBarAdmin').val('');
-            // }
-        });
         
-
-        var startDatePicker = flatpickr("#start-date", {
-    dateFormat: "Y-m-d",
-    onChange: filterTable
-});
-
-var endDatePicker = flatpickr("#end-date", {
-    dateFormat: "Y-m-d",
-    onChange: filterTable
-});
-
-// Filter button event listener
-$("#filter-button").click(function() {
-    filterTable();
-});
-
-// Function to filter the table based on selected dates
-function filterTable() {
-    var startDate = startDatePicker.selectedDates[0];
-    var endDate = endDatePicker.selectedDates[0];
-
-    if (endDate) {
-        endDate.setHours(23, 59, 59, 999);
-    }
-
-    var rows = $("#superadmin_withdraw_table tbody tr");
-
-    rows.each(function(index) {
-        if (index === 0) return; // skip header row
-
-        var createdDateStr = $(this).find("td[data-th='Created Date']").text().trim();
-        console.log("createdDateStr",createdDateStr);
-        
-        var createdDate = new Date(createdDateStr);
-        console.log("created_date",createdDate);
-        console.log("start_date",startDate);
-        console.log("end_date",endDate);
-        // Check if the created date is within the range
-        if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-        
-
-    });
-}
-
 
     });
 </script>

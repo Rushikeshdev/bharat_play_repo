@@ -6,41 +6,7 @@
 
 $(document).ready(function () {
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        // Add change event listener to all status dropdowns
-        // $('.status-dropdown').change(function () {
-        //     // Get the selected option value and the withdrawal request primary key
-           
-        //     var selectedStatus = $(this).val();
-        //     var requestId = $(this).data('request-id');
-        //     console.log('----',requestId);
-        //     // Send an AJAX request to update the status
-            
-        //     $.ajax({
-        //         url: '/withdrawal-requests/'+ requestId + '/',
-        //         type: 'PUT',
-        //         beforeSend: function(xhr, settings) {
-        //                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        //             },
-        //         contentType: 'application/json',
-        //         data: JSON.stringify({
-        //             'id': requestId,
-        //             'ref_number':0,
-        //             'reasons':'NA',
-        //             'req_status': selectedStatus,
-        //             'transaction_type':'NA',
-        //             'admin_remark':'NA',
-        //             'amount':0
-        //         }),
-        //         success: function (data) {
-        //             // Update the status cell text with the new status
-        //             $('#status' + requestId).text(selectedStatus);
-        //         },
-        //         error: function (error) {
-        //             console.error('Error:', error);
-        //         }
-        //     });
-        // });
-
+        
         $("#approve_id").click(function(e) {
 
             

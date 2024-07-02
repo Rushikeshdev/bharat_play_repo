@@ -282,7 +282,7 @@ font-size:18px;
 
         <div class="search-box export_style">
           
-          <button  class="export-btn" id="superadminexportBtn">Export</button>
+          <button  class="export-btn" id="superadmin_with_req_Btn">Export</button>
                     
           <input type="text"   class="search-bar"  id="searchBarSuperAdmin" placeholder="Search">
           
@@ -330,7 +330,7 @@ font-size:18px;
                   {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
                   <tr>
                       <td data-th="Serial No">{{forloop.counter}}</td>
-                      <td data-th="Client Name">{{withdrawal_request.client_email}}</td>
+                      <td data-th="Client Name" id="client_id_for_status_change">{{withdrawal_request.client_email}}</td>
                       <td data-th="Amount">{{withdrawal_request.ammount}}</td>
                       <td data-th="Status" id="status{{ withdrawal_request.id }}">{{ withdrawal_request.req_status }}</td>
                       <td data-th="Account-Info">
@@ -344,7 +344,8 @@ font-size:18px;
                               data-bene-withdraw-amount="{{ withdrawal_request.ammount }}"
                               data-bene-status="{{ withdrawal_request.req_status }}"
                               data-bene-remarks="{{ withdrawal_request.remarks }}"
-                              data-bene-utr="{{ withdrawal_request.ref_number }}">
+                              data-bene-utr="{{ withdrawal_request.ref_number }}"
+                              data-is_superadmin="{{ 0 }}">
                               <i class="fa fa-eye" aria-hidden="true"></i>
                           </button>
                       </td>

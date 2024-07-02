@@ -149,26 +149,23 @@ $(document).ready(function() {
             success: function(response) {
                 // If login is successful, display success message
                 console.log("success");
-                $.confirm({
+                var popup=$.confirm({
                             title: ``,
                             content:"Admin Added Successfully!",
                             type: "green",
                             typeAnimated: true,
                             columnClass: 'medium',
                             buttons: {
-                            OK: {
-                                text: "Close",
-                                btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.reload(); // Reload the page
-                                }
-                               
-                                
-                            },
+                           
                             },
                             
                         
                         });
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 1000); 
                 
                 
                 // You might want to reload the client list here or update it with the new client data

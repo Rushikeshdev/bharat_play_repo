@@ -216,81 +216,90 @@ font-size:18px;
           <div class="activity-data">
             <div class="container">
                 
-              <table class="rwd-table" id="admin_dashboard_table">
-
-                  <thead>
+              <table class="rwd-table" id="superadmin_dashboard_table">
+                <thead>
                     <tr>
-                      <th>Sr.No</th>
-                      <th>Client Name</th>                    
-                      <th>UTR/Remark</th>
-                      <th>Credit</th>
-                      <th>Debit</th>
-                      <th>Status</th>                   
-                      <th>Admin</th>
-                      <th>Approved By</th>
-                      <th>Action</th>
-                      <th>Created Date</th>
+                        <th>Sr.No</th>
+                        <th>Client Name</th>                    
+                        <th>UTR/Remark</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Status</th>                   
+                        <th>Admin</th>
+                        <th>Approved By</th>
+                        <th>Action</th>
+                        <th>Created Date</th>
                     </tr>
-                  </thead>
-                  <tbody>
-                  {% for withdrawal_request,txn in withdrawal_requests %}
-                  
-                  <tr>
-                    <td data-th="Serial No">{{ forloop.counter }}</td>
-                    <td data-th="Client">{{withdrawal_request.client.email}}</td>
-
-                    
-                    <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
-                
-                    {% if txn.tnx == 'deposit'  %}
-                        
-                        <td data-th="Credit">{{withdrawal_request.ammount}}</td> 
-                        <td data-th="Debit">0</td>
-                    {% else %}
-
-                           
-                          <td data-th="Credit">0</td>
-                          <td data-th="Debit">{{withdrawal_request.ammount}}</td>
-                  
-                    {% endif %}
-                   
-                    <td data-th="Status">{{withdrawal_request.req_status}}</td>
-                    
-                    <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
-                    <td data-th="Status Changed By">{{withdrawal_request.status_change_by}}</td>
-
-                    <td data-th="Bene-Account-Info">
-
-                      <button class="button_popup open-popup-btn" id="openModalBtn"
-                                        data-bene-id="{{withdrawal_request.id}}"
-                                        data-bene-name="{{ withdrawal_request.account_bene.bene_account_name }}"
-                                        data-bene-account-number="{{ withdrawal_request.account_bene.bene_account_number }}"
-                                        data-bene-bank-name="{{ withdrawal_request.account_bene.bene_bank_name }}"
-                                        data-bene-ifsc-code="{{ withdrawal_request.account_bene.bene_branch_ifsc }}"
-                                        data-bene-mode="{{ txn.tnx }}"
-
-                                  
-                                        data-bene-amount="{{ withdrawal_request.ammount }}"
-                                        
-                                        data-bene-amount="{{ withdrawal_request.ammount }}"
-                                        
-                                        data-bene-status="{{ withdrawal_request.req_status }}"
-
-                                        data-bene-remarks="{{ withdrawal_request.admin_remark }}"
-                                        data-bene-utr="{{ withdrawal_request.ref_number }}"
-                                        data-is_superadmin="{{ 1 }}"
-                                        >
+                </thead>
+                <tbody>
+                    {% for entry in withdrawal_requests %}
+                        <tr>
+                            {% if entry.client_wallet_statement %}
+                                <td data-th="Serial No">{{ forloop.counter }}</td>
+                                <td data-th="Client">{{ entry.client_wallet_statement.client_email }}</td>
+                                <td data-th="UTR/Remark">{{ entry.client_wallet_statement.utr_number_superadmin_narration }}</td>
+                                <td data-th="Credit">{{ entry.client_wallet_statement.deposit }}</td>
+                                <td data-th="Debit">{{ entry.client_wallet_statement.withdraw }}</td>
+                                <td data-th="Status">{{ entry.client_wallet_statement.status }}</td>
+                                <td data-th="Admin">{{ entry.client_wallet_statement.admin_remark_superadmin }}</td>
+                                <td data-th="Approved By"></td>
+                                <td data-th="Action">
+                                    <button class="button_popup open-popup-btn" id="openModalBtn"
+                                        data-bene-id="N/A"
+                                        data-bene-name="N/A"
+                                        data-bene-account-number="N/A"
+                                        data-bene-bank-name="N/A"
+                                        data-bene-ifsc-code="N/A"
+                                        data-bene-mode="wallet"
+                                        data-bene-deposit="{{ entry.client_wallet_statement.deposit }}"
+                                        data-bene-withdraw="{{ entry.client_wallet_statement.withdraw }}"
+                                        data-bene-status="{{ entry.client_wallet_statement.status }}"
+                                        data-bene-remarks="{{ entry.client_wallet_statement.admin_remark_superadmin }}"
+                                        data-bene-utr="{{ entry.client_wallet_statement.utr_number_superadmin_narration }}"
+                                        data-is_superadmin="1">
                                         <i class="fa fa-eye" aria-hidden="true"></i>
-                                </button>
-                   
-                    </td>
+                                    </button>
+                                </td>
+                                <td data-th="Created Date">{{ entry.client_wallet_statement.created_at }}</td>
+                            {% else %}
+                                <td data-th="Serial No">{{ forloop.counter }}</td>
+                                <td data-th="Client">{{ entry.withdrawal_request.client.email }}</td>
+                                <td data-th="UTR/Remark">{{ entry.withdrawal_request.ref_number }}</td>
 
-
-                    <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
-                  </tr>
-                  {% endfor %}
+                                {% if entry.tnx.tnx == 'deposit' %}
+                                    <td data-th="Credit">{{ entry.tnx.deposit }}</td>
+                                    <td data-th="Debit">0</td>
+                                {% else %}
+                                    <td data-th="Credit">0</td>
+                                    <td data-th="Debit">{{ entry.tnx.withdraw }}</td>
+                                {% endif %}
+                                
+                                <td data-th="Status">{{ entry.tnx.status }}</td>
+                                <td data-th="Admin">{{ entry.withdrawal_request.admin_remark }}</td>
+                                <td data-th="Approved By">{{ entry.withdrawal_request.status_change_by }}</td>
+                                <td data-th="Action">
+                                    <button class="button_popup open-popup-btn" id="openModalBtn"
+                                        data-bene-id="{{ entry.withdrawal_request.id }}"
+                                        data-bene-name="{{ entry.withdrawal_request.account_bene.bene_account_name }}"
+                                        data-bene-account-number="{{ entry.withdrawal_request.account_bene.bene_account_number }}"
+                                        data-bene-bank-name="{{ entry.withdrawal_request.account_bene.bene_bank_name }}"
+                                        data-bene-ifsc-code="{{ entry.withdrawal_request.account_bene.bene_branch_ifsc }}"
+                                        data-bene-mode="{{ entry.tnx.tnx }}"
+                                        data-bene-deposit="{{ entry.tnx.deposit }}"
+                                        data-bene-withdraw="{{ entry.tnx.withdraw }}"
+                                        data-bene-status="{{ entry.tnx.status }}"
+                                        data-bene-remarks="{{ entry.withdrawal_request.admin_remark }}"
+                                        data-bene-utr="{{ entry.withdrawal_request.ref_number }}"
+                                        data-is_superadmin="1">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </td>
+                                <td data-th="Created Date">{{ entry.withdrawal_request.created_at }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
                 </tbody>
-              </table>
+            </table>
               
               <br>
               <br>
@@ -307,8 +316,9 @@ font-size:18px;
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     
-    {% include 'js/admin_dashboard_export_js.html' %}
     {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+    {% include 'js/admin_dashboard_export_js.html' %}
+   
    
   </body>
 </html>
