@@ -209,11 +209,40 @@ font-size:18px;
 .withdrawal-request-list-superadmin{
   margin:auto;
 }
+div#superadmin_withdraw_table_length 
+{
+  padding-bottom:40px;
+}
+table.dataTable thead>tr>th.sorting_asc:before
+{
+  opacity:0 !important;
+}
+table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:after
+{
+  opacity:0 !important;
+}
+table.dataTable thead>tr>th.sorting:before
 
+{
+  opacity:0 !important;
+}
+#superadmin_withdraw_table thead tr {
+    background: #0e0e37;
+    color: #fff;
+}
+
+#superadmin_withdraw_table  tr:nth-child(odd) td {
+    background-color: #ebf3f9;
+    color:black;
+}
+
+#superadmin_withdraw_table  tr:nth-child(even) td {
+    background-color: #f5f9fc;
+}
 </style>  
 </head>
 
-<body>
+<body style="background-color: white;">
   <nav>
     <div class="logo-name">
       <div class="logo-image">
@@ -280,13 +309,7 @@ font-size:18px;
           <span class="text">Withdraw Request List</span>
         </div>
 
-        <div class="search-box export_style">
-          
-          <button  class="export-btn" id="superadmin_with_req_Btn">Export</button>
-                    
-          <input type="text"   class="search-bar"  id="searchBarSuperAdmin" placeholder="Search">
-          
-        </div>
+        
 
         
       </div>
@@ -302,6 +325,9 @@ font-size:18px;
             <label class="label_Date" for="end-date">End Date:</label>
             <i class="fas fa-calendar-alt end_date"></i>
             <input type="text" class="date_design" id="end-date">
+        </div>
+        <div>
+          <button  class="export-btn" id="superadmin_with_req_Btn">Export</button>
         </div>
     </div>
 

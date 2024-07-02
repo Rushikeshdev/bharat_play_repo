@@ -28,17 +28,7 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
       <style>
       
-        .export_style{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  }
+      
 
 
 .export-btn {
@@ -78,6 +68,7 @@ justify-content:space-between;
 .main_date_style {
             display: flex;
             margin-bottom: 20px;
+            /* justify-content: space-between; */
         }
 
         .date-container {
@@ -117,12 +108,53 @@ justify-content:space-between;
 {
 font-size:18px;
 }
+#dashboard_section
+{
+  position: absolute !important;
+  left: 250px;
+}
+section#dashboard_section {
+  width: 105%;
+}
+#superadmin_dashboard_table thead tr {
+    background: #0e0e37;
+    color: #fff;
+}
 
+#superadmin_dashboard_table tr:nth-child(odd) td {
+    background-color: #ebf3f9;
+    color:black;
+}
+
+#superadmin_dashboard_table tr:nth-child(even) td {
+    background-color: #f5f9fc;
+}
+
+button#openModalBtn {
+    border: none;
+    background: none;
+}
+table#superadmin_dashboard_table
+{
+  padding-top:40px;
+}
+table.dataTable thead>tr>th.sorting_asc:before
+{
+  opacity: 0 !important;
+}
+table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:after
+{
+  opacity: 0 !important;
+}
+table.dataTable thead>tr>th.sorting:before
+{
+  opacity: 0 !important;
+}
 </style>
 
     <title>Admin Dashboard Panel</title>
   </head>
-  <body>
+  <body style="background: white;">
     <nav>
       <div class="logo-name">
         <div class="logo-image">
@@ -171,12 +203,17 @@ font-size:18px;
     <!-- Dashboard Section -->
     <section id="dashboard_section" class="dashboard" active>
       <div class="top">
-        <div class="search-box">
-          <a href="{% url 'logout' %}"><span class="link-name">Logout
-              <span
-                style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+        <div>
+          <div class="search-box">
+            <a href="{% url 'logout' %}"><span class="link-name">Logout
+                <span
+                  style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+          </div>
+          <div class="c_name" style="margin: 0 30px;">
+            <p style="font-weight:700">XYZ</p>
+          </div>
+         
         </div>
-
        
         
       </div>
@@ -187,13 +224,11 @@ font-size:18px;
             <i class="uil uil-tachometer-fast-alt"></i>
             <span class="text">Statement</span>
           </div>
-          <div class="search-box export_style">
-          
-            <button  class="export-btn" id="exportBtn">Export</button>
+         
                       
-            <input type="text"   class="search-bar"  id="searchBarAdmin" placeholder="Search">
+           
             
-            </div>
+          
         </div>
         <br>
         <br>
@@ -208,6 +243,9 @@ font-size:18px;
               <label class="label_Date" for="end-date">End Date:</label>
               <i class="fas fa-calendar-alt end_date"></i>
               <input type="text" class="date_design" id="end-date">
+          </div>
+          <div>
+            <button  class="export-btn" id="exportBtn">Export</button>
           </div>
         </div>
 

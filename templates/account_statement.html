@@ -2,221 +2,337 @@
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!----======== CSS ======== -->
-    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
-    <!----===== Iconscout CSS ===== -->
-    <link
-      rel="stylesheet"
-      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
-    />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <title>Statement</title>
-    <style>
-      .top
-      {
-        display: flex !important;
-    justify-content: space-between !important;
-      }
-      
-      .balance_style{
+  <!----======== CSS ======== -->
+  <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+
+  <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+  <!----===== Iconscout CSS ===== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <title>Statement</title>
+  <style>
+    .top {
+      display: flex !important;
+      justify-content: space-between !important;
+    }
+
+    .balance_style {
 
       display: flex;
-      }
-      .top{
+    }
+
+    .top {
       font-size: 18px;
-      }
-      .withdrawal_today{
-        display: flex;
-      }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <div class="logo-name">
-        <div class="logo-image">
-          <img src="{% static 'images/logo.png' %}" alt="" />
-        </div>
+    }
+
+    .withdrawal_today {
+      display: flex;
+    }
+
+    table.dataTable thead>tr>th.sorting_asc:before {
+      opacity: 0 !important;
+    }
+
+    table.dataTable thead>tr>th.sorting:after,
+    table.dataTable thead>tr>th.sorting_asc:after {
+      opacity: 0 !important;
+    }
+
+    table.dataTable thead>tr>th.sorting:before {
+      opacity: 0 !important;
+    }
+
+    div#client_account_statement_length {
+      padding-bottom: 40px;
+    }
+
+    #client_account_statement thead tr {
+      background: #0e0e37;
+      color: #fff;
+    }
+
+    #client_account_statement tr:nth-child(odd) td {
+      background-color: #ebf3f9;
+      color:black;
+    }
+
+    #client_account_statement tr:nth-child(even) td {
+      background-color: #f5f9fc;
+      color:black;
+    }
+    button#openModalBtn {
+      border: none;
+    }
+    .main_date_style {
+      display: flex;
+      margin-bottom: 20px;
+    }
+ .date-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 50px;
+      line-height: 50px;
+      margin-right: 30px;
+    }
+
+    .date-container .label_Date {
+      margin-right: 15px;
+    }
+
+    .date-container input {
+      width: 200px;
+      padding: 10px;
+      padding-left: 35px;
+      box-sizing: border-box;
+      border: 1px solid gray;
+    }
+
+    .date-container .fa-calendar-alt {
+      position: absolute;
+      left: 10px;
+      color: #aaa;
+    }
+
+   .start_date {
+      padding-left: 120px;
+
+    }
+
+    .end_date {
+      padding-left: 110px;
+    }
+
+    .label_Date {
+      font-size: 18px;
+    }
+ .export-btn {
+      background-color: #1c003b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .export-btn:hover {
+      background-color: #1c004b;
+    }
+
+
+
+  </style>
+</head>
+
+<body style="background-color: white;">
+  <nav>
+    <div class="logo-name">
+      <div class="logo-image">
+        <img src="{% static 'images/logo.png' %}" alt="" />
       </div>
-
-      <div class="menu-items">
-        <ul class="nav-links">
-          <li>
-            <a href="{% url 'dashboard-client-form' %}" class="active">
-              <i class="uil uil-chart-pie"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'add-bene-template'  %}">
-              <i class="uil uil-user-plus"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Add Beneficiary</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'withdrawal-requests-template'  %}">
-              <i class="uil uil-money-withdraw"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Withdrawal Request</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'account_statement_list' %}">
-              <i class="uil uil-wallet"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Account Statement</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-     <!-- Dashboard Section -->
-     <section id="dashboard_section" class="dashboard" active>
-        
-      <div class="top">
-        <div class="client_balance">
-            <div class="balance_style">
-                <p style="margin-right:5px;">Balance :</p>
-
-
-
-
-                <p>{{balance}}</p>
-
-            </div>
-            
-            <div class="withdrawal_today">
-
-                <p style="margin-right:5px;">Withdraw Today :</p>
-    
-    
-    
-    
-                <p>{{withdrwal_today}}</p>
-    
-    
-    
-            </div>
-        </div>
-      
-        <div class="search-box">
-            <a href="{% url 'logout' %}"><span class="link-name">Logout
-                    <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
-        </div>
-
-        <!--<img src="images/profile.jpg" alt="">-->
     </div>
- 
-        <div class="dash-content">
-          <div class="overview">
-            <div class="title">
-              <i class="uil uil-tachometer-fast-alt"></i>
-              <span class="text">Statement</span>
-            </div>
-          </div>
-  
-          <div class="activity">
-            <div class="activity-data">
-              <div class="container">
-                <table class="rwd-table" id="client_account_statement">
 
-                      <thead>
-                      <tr>
-                          <th>Serial No</th>
-                          <th>Narration</th>
-                          <th>Deposit</th>
-                          <th>Withdraw</th>
-                          <th>Status</th>
-                          <th>Balance</th>
-                          <th>Action</th>
-                          <th>Date</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for acc_ste in account_statement %}
-                        <tr>
-                          <td data-th="Serial No">{{forloop.counter}}</td>
-                          <td data-th="Narration">{{acc_ste.narration}}</td>
-                          <td data-th="Deposit">{{acc_ste.deposit}}</td>
-                          <td data-th="Withdraw">{{acc_ste.withdraw}}</td>
-                          <td data-th="Status">{{acc_ste.status}}</td>
-                          <td data-th="Balance">{{acc_ste.balance}}</td>
-                          <td data-th="Bene-Account-Info">
+    <div class="menu-items">
+      <ul class="nav-links">
+        <li>
+          <a href="{% url 'dashboard-client-form' %}" class="active">
+            <i class="uil uil-chart-pie"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'add-bene-template'  %}">
+            <i class="uil uil-user-plus"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Add Beneficiary</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'withdrawal-requests-template'  %}">
+            <i class="uil uil-money-withdraw"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Withdrawal Request</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'account_statement_list' %}">
+            <i class="uil uil-wallet"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Account Statement</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Dashboard Section -->
+  <section id="dashboard_section" class="dashboard" active>
 
-                            <button class="button_popup open-popup-btn" id="openModalBtn"
-                                              data-bene-id="{{withdrawal_request.id}}"
-                                              data-bene-name="{{ acc_ste.account.account_bene.bene_account_name }}"
-                                              data-bene-account-number="{{ acc_ste.account.account_bene.bene_account_number }}"
-                                              data-bene-bank-name="{{ acc_ste.account.account_bene.bene_bank_name }}"
-                                              data-bene-ifsc-code="{{acc_ste.account.account_bene.bene_branch_ifsc }}"
-                                              data-bene-mode="{{ withdrawal_request.mode }}"
-                                              data-bene-deposit-amount="{{ acc_ste.deposit }}"
-                                              data-bene-withdraw-amount="{{ acc_ste.withdraw }}"
-                                              data-bene-status="{{ acc_ste.status }}"
+    <div class="top">
+      <div class="client_balance">
+        <div class="balance_style">
+          <p style="margin-right:5px;">Balance :</p>
 
-                                              data-bene-remarks="{{ acc_ste.account.admin_remark }}"
-                                              data-bene-utr="{{ acc_ste.account.ref_number }}">
-                                              <i class="fa fa-eye" aria-hidden="true"></i>
-                                      </button>
-                         
-                          </td>
-                          <td data-th="Created Date">{{acc_ste.txn_date}}</td>
-                        </tr>
-                        {% endfor %}
-                        
-                      </tbody>
-              
-                </table>
-              </div>
-            </div>
+
+
+
+          <p>{{balance}}</p>
+
+        </div>
+
+        <div class="withdrawal_today">
+
+          <p style="margin-right:5px;">Withdraw Today :</p>
+
+
+
+
+          <p>{{withdrwal_today}}</p>
+
+
+
+        </div>
+      </div>
+      <div>
+        <div class="search-box">
+          <a href="{% url 'logout' %}"><span class="link-name">Logout
+              <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+        </div>
+        <div class="c_name" style="margin: 0 30px;">
+          <p style="font-weight:700">XYZ</p>
+        </div>
+      </div>
+
+
+      <!--<img src="images/profile.jpg" alt="">-->
+    </div>
+
+    <div class="dash-content">
+      <div class="overview">
+        <div class="title">
+          <i class="uil uil-tachometer-fast-alt"></i>
+          <span class="text">Statement</span>
+        </div>
+      </div>
+      <div class="main_date_style">
+        <div class="date-container">
+          <label class="label_Date" for="start-date">Start Date:</label>
+          <i class="fas fa-calendar-alt start_date"></i>
+          <input type="text" class="date_design" id="start-date">
+        </div>
+        <div class="date-container">
+          <label class="label_Date" for="end-date">End Date:</label>
+          <i class="fas fa-calendar-alt end_date"></i>
+          <input type="text" class="date_design" id="end-date">
+        </div>
+        <div>
+          <button  class="export-btn" id="exportBtn">Export</button>
+        </div>
+      </div>
+
+
+
+
+      <div class="activity">
+        <div class="activity-data">
+          <div class="container">
+            <table class="rwd-table" id="client_account_statement">
+
+              <thead>
+                <tr>
+                  <th>Serial No</th>
+                  <th>Narration</th>
+                  <th>Deposit</th>
+                  <th>Withdraw</th>
+                  <th>Status</th>
+                  <th>Balance</th>
+                  <th>Action</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for acc_ste in account_statement %}
+                <tr>
+                  <td data-th="Serial No">{{forloop.counter}}</td>
+                  <td data-th="Narration">{{acc_ste.narration}}</td>
+                  <td data-th="Deposit">{{acc_ste.deposit}}</td>
+                  <td data-th="Withdraw">{{acc_ste.withdraw}}</td>
+                  <td data-th="Status">{{acc_ste.status}}</td>
+                  <td data-th="Balance">{{acc_ste.balance}}</td>
+                  <td data-th="Bene-Account-Info">
+
+                    <button class="button_popup open-popup-btn" id="openModalBtn"
+                      data-bene-id="{{withdrawal_request.id}}"
+                      data-bene-name="{{ acc_ste.account.account_bene.bene_account_name }}"
+                      data-bene-account-number="{{ acc_ste.account.account_bene.bene_account_number }}"
+                      data-bene-bank-name="{{ acc_ste.account.account_bene.bene_bank_name }}"
+                      data-bene-ifsc-code="{{acc_ste.account.account_bene.bene_branch_ifsc }}"
+                      data-bene-mode="{{ withdrawal_request.mode }}" data-bene-deposit-amount="{{ acc_ste.deposit }}"
+                      data-bene-withdraw-amount="{{ acc_ste.withdraw }}" data-bene-status="{{ acc_ste.status }}"
+                      data-bene-remarks="{{ acc_ste.account.admin_remark }}"
+                      data-bene-utr="{{ acc_ste.account.ref_number }}">
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+
+                  </td>
+                  <td data-th="Created Date">{{acc_ste.txn_date}}</td>
+                </tr>
+                {% endfor %}
+
+              </tbody>
+
+            </table>
           </div>
         </div>
-      </section>
-      <!-- End Dashboard Section -->
+      </div>
+    </div>
+  </section>
+  <!-- End Dashboard Section -->
 
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  
-  
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
-      <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-      
-      {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
-      <script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-        $(document).ready(function() {
 
-          $('#client_account_statement').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+  {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+  <script>
+
+    $(document).ready(function () {
+
+      $('#client_account_statement').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+
+
+      });
+
+
+
 
 
     });
 
 
+  </script>
+</body>
 
-
-
-        });
-
-
-      </script>
-    </body>
-    </html>
+</html>

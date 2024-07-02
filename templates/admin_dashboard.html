@@ -2,163 +2,204 @@
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!----======== CSS ======== -->
-    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
-   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!----===== Iconscout CSS ===== -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link
-      rel="stylesheet"
-      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!----======== CSS ======== -->
+  <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
 
-      <style>
-        .export_style{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  }
+  <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <!----===== Iconscout CSS ===== -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    .export_style {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+    }
 
 
-.export-btn {
-  background-color: #1c003b;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    .export-btn {
+      background-color: #1c003b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .export-btn:hover {
+      background-color: #1c004b;
+    }
+
+
+    .search-bar {
+      width: 250px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+    }
+
+    .search-bar:focus {
+      border-color: #1c004b;
+      outline: none;
+    }
+
+    .overview {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .main_date_style {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .date-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 50px;
+      line-height: 50px;
+      margin-right: 30px;
+    }
+
+    .date-container .label_Date {
+      margin-right: 15px;
+    }
+
+    .date-container input {
+      width: 200px;
+      padding: 10px;
+      padding-left: 35px;
+      box-sizing: border-box;
+      border: 1px solid gray;
+    }
+
+    .date-container .fa-calendar-alt {
+      position: absolute;
+      left: 10px;
+      color: #aaa;
+    }
+
+    .start_date {
+      padding-left: 120px;
+
+    }
+
+    .end_date {
+      padding-left: 110px;
+    }
+
+    .label_Date {
+      font-size: 18px;
+    }
+    div#admin_dashboard_table_length {
+    padding-bottom: 40px;
 }
-
-.export-btn:hover {
-  background-color: #1c004b;
-}
-
-
-.search-bar {
-  width: 250px;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
-}
-
-.search-bar:focus {
-  border-color: #1c004b;
-  outline: none;
-}
-.overview
+table.dataTable thead>tr>th.sorting_asc:before
 {
-display:flex;
-justify-content:space-between;
+  opacity: 0 !important;
 }
-.main_date_style {
-            display: flex;
-            margin-bottom: 20px;
-        }
-
-        .date-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            height: 50px;
-            line-height: 50px;
-            margin-right: 30px;
-        }
-
-        .date-container .label_Date {
-            margin-right: 15px;
-        }
-
-        .date-container input {
-            width: 200px; 
-            padding: 10px;
-            padding-left: 35px;
-            box-sizing: border-box;
-            border: 1px solid gray;
-        }
-
-        .date-container .fa-calendar-alt {
-            position: absolute;
-            left: 10px;
-            color: #aaa;
-        }
-        .start_date{
-          padding-left:120px;
-          
-        }
-        .end_date{
-          padding-left:110px;
-        }
-        .label_Date
+table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:after
 {
-font-size:18px;
+  opacity: 0 !important;
+}
+table.dataTable thead>tr>th.sorting:before
+{
+  opacity: 0 !important;
+}
+#admin_dashboard_table thead tr {
+    background: #0e0e37;
+    color: #fff;
 }
 
-</style>
+#admin_dashboard_table tr:nth-child(odd) td {
+    background-color: #ebf3f9;
+    color:black;
+}
 
-    <title>Admin Dashboard Panel</title>
-  </head>
-  <body>
-    <nav>
-      <div class="logo-name">
-        <div class="logo-image">
-          <img src="{% static 'images/logo.png' %}" alt />
-        </div>
-      </div>
+#admin_dashboard_table tr:nth-child(even) td {
+    background-color: #f5f9fc;
+    color:black;
+}
+button#openModalBtn
+{
+  border:none;
+  background: none;;
+}
+  </style>
 
-      <div class="menu-items">
-        <ul class="nav-links">
-          <li>
-            <a href="{% url 'withdrawal-request-list' %}">
-              <i class="uil uil-money-withdraw"></i>
-              <span class="link-name">Withdrawal Request</span>
-            </a>
-          </li>
-          
-          <li>
-            <a href="{% url 'client-list-template' %}">
-              <i class="uil uil-user-plus"></i>
-              <span class="link-name">Client List</span>
-            </a>
-          </li>
-          
-          <li>
-            <a href="">
-              <i class="uil uil-chart-pie"></i>
-              <span class="link-name">Withdrawal Statement</span>
-            </a>
-          </li>
-          
-        </ul>
+  <title>Admin Dashboard Panel</title>
+</head>
+
+<body style="background-color: white !important;">
+  <nav>
+    <div class="logo-name">
+      <div class="logo-image">
+        <img src="{% static 'images/logo.png' %}" alt />
       </div>
-    </nav>
-    <!-- Dashboard Section -->
-    <section id="dashboard_section" class="dashboard" active>
-      <div class="top">
+    </div>
+
+    <div class="menu-items">
+      <ul class="nav-links">
+        <li>
+          <a href="{% url 'withdrawal-request-list' %}">
+            <i class="uil uil-money-withdraw"></i>
+            <span class="link-name">Withdrawal Request</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="{% url 'client-list-template' %}">
+            <i class="uil uil-user-plus"></i>
+            <span class="link-name">Client List</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="">
+            <i class="uil uil-chart-pie"></i>
+            <span class="link-name">Withdrawal Statement</span>
+          </a>
+        </li>
+
+      </ul>
+    </div>
+  </nav>
+  <!-- Dashboard Section -->
+  <section id="dashboard_section" class="dashboard" active>
+    <div class="top">
+      <div>
         <div class="search-box">
           <a href="{% url 'logout' %}"><span class="link-name">Logout
-              <span
-                style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+              <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+        </div>
+        <div class="c_name" style="margin: 0 30px;">
+          <p style="font-weight:700">XYZ</p>
         </div>
 
-        <!-- <div class="search-box">
+      </div>
+
+      <!-- <div class="search-box">
           <button id="exportBtn">Export</button>
           
         </div>
@@ -168,116 +209,110 @@ font-size:18px;
 
         </div> -->
 
-        
+
+    </div>
+
+    <div class="dash-content">
+      <div class="overview">
+        <div class="title">
+          <i class="uil uil-tachometer-fast-alt"></i>
+          <span class="text">Withdrawal Statement</span>
+        </div>
+
+      </div>
+      <br>
+      <br>
+
+      <div class="main_date_style">
+        <div class="date-container">
+          <label class="label_Date" for="start-date">Start Date:</label>
+          <i class="fas fa-calendar-alt start_date"></i>
+          <input type="text" class="date_design" id="start-date">
+        </div>
+        <div class="date-container">
+          <label class="label_Date" for="end-date">End Date:</label>
+          <i class="fas fa-calendar-alt end_date"></i>
+          <input type="text" class="date_design" id="end-date">
+        </div>
+        <div>
+          <button  class="export-btn" id="exportBtn">Export</button>
+        </div>
       </div>
 
-      <div class="dash-content">
-        <div class="overview">
-          <div class="title">
-            <i class="uil uil-tachometer-fast-alt"></i>
-            <span class="text">Withdrawal Statement</span>
-          </div>
-          <div class="search-box export_style">
-          
-            <button  class="export-btn" id="exportBtn">Export</button>
-                      
-            <input type="text"   class="search-bar"  id="searchBarAdmin" placeholder="Search">
-            
-            </div>
-        </div>
-        <br>
-        <br>
 
-        <div class="main_date_style">
-          <div class="date-container">
-              <label class="label_Date" for="start-date">Start Date:</label>
-              <i class="fas fa-calendar-alt start_date" ></i>
-              <input type="text" class="date_design" id="start-date">
-          </div>
-          <div class="date-container">
-              <label class="label_Date" for="end-date">End Date:</label>
-              <i class="fas fa-calendar-alt end_date"></i>
-              <input type="text" class="date_design" id="end-date">
-          </div>
-        </div>
-      
-        
 
-        <div class="activity">
-          <div class="activity-data">
-            <div class="container">
-                
-              <table class="rwd-table" id="admin_dashboard_table">
+      <div class="activity">
+        <div class="activity-data">
+          <div class="container">
 
-                <thead>
-                  <tr>
-                    <th>Sr.No</th>
-                    <th>Client Name</th>
-                   
-                    <th>UTR/Remark</th>
-                    <th>Amount</th>
-                    <th>Mode</th>
-                    <th>Status</th>
-                    <th>Admin</th>
-                    <th>Action</th>
-                    <th>Created Date</th>
-                  </tr>
-                </thead>
-                  <tbody>
-                  {% for withdrawal_request,txn in withdrawal_requests %}
-                  <tr>
-                    <td data-th="Serial No">{{forloop.counter}}</td>
-                    <td data-th="Client">{{withdrawal_request.client.email}}</td>
+            <table class="rwd-table" id="admin_dashboard_table">
 
-                      
-                    <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td> 
-                    
-                    <td data-th="Amount">{{withdrawal_request.ammount}}</td>
-                    <td data-th="Txn">{{txn.tnx}}</td>
-                    <td data-th="Status">{{withdrawal_request.req_status}}</td>
-                    
-                    <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
+              <thead>
+                <tr>
+                  <th>Sr.No</th>
+                  <th>Client Name</th>
 
-                    <td data-th="Bene-Account-Info">
+                  <th>UTR/Remark</th>
+                  <th>Amount</th>
+                  <th>Mode</th>
+                  <th>Status</th>
+                  <th>Admin</th>
+                  <th>Action</th>
+                  <th>Created Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for withdrawal_request,txn in withdrawal_requests %}
+                <tr>
+                  <td data-th="Serial No">{{forloop.counter}}</td>
+                  <td data-th="Client">{{withdrawal_request.client.email}}</td>
 
-                      <button class="button_popup open-popup-btn" id="openModalBtn"
-                                        data-bene-id="{{withdrawal_request.id}}"
-                                        data-bene-name="{{ withdrawal_request.account_bene.bene_account_name }}"
-                                        data-bene-account-number="{{ withdrawal_request.account_bene.bene_account_number }}"
-                                        data-bene-bank-name="{{ withdrawal_request.account_bene.bene_bank_name }}"
-                                        data-bene-ifsc-code="{{ withdrawal_request.account_bene.bene_branch_ifsc }}"
-                                        data-bene-mode="{{ txn.tnx }}"
 
-                                        data-bene-deposit-amount="{{ txn.deposit }}"
-                                        data-bene-withdraw-amount="{{ txn.withdraw }}"
-                                        data-bene-status="{{ withdrawal_request.req_status }}"
+                  <td data-th="RTN Number">{{withdrawal_request.ref_number}}</td>
 
-                                        data-bene-remarks="{{ withdrawal_request.admin_remark }}"
-                                        data-bene-utr="{{ withdrawal_request.ref_number }}"
-                                        data-is_admin="{{ 1 }}">
-                                        <i class="fa fa-eye" aria-hidden="true"></i>
-                                </button>
-                   
-                    </td>
+                  <td data-th="Amount">{{withdrawal_request.ammount}}</td>
+                  <td data-th="Txn">{{txn.tnx}}</td>
+                  <td data-th="Status">{{withdrawal_request.req_status}}</td>
 
-                    <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
-                    
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+                  <td data-th="Status">{{withdrawal_request.admin_remark}}</td>
+
+                  <td data-th="Bene-Account-Info">
+
+                    <button class="button_popup open-popup-btn" id="openModalBtn"
+                      data-bene-id="{{withdrawal_request.id}}"
+                      data-bene-name="{{ withdrawal_request.account_bene.bene_account_name }}"
+                      data-bene-account-number="{{ withdrawal_request.account_bene.bene_account_number }}"
+                      data-bene-bank-name="{{ withdrawal_request.account_bene.bene_bank_name }}"
+                      data-bene-ifsc-code="{{ withdrawal_request.account_bene.bene_branch_ifsc }}"
+                      data-bene-mode="{{ txn.tnx }}" data-bene-deposit-amount="{{ txn.deposit }}"
+                      data-bene-withdraw-amount="{{ txn.withdraw }}"
+                      data-bene-status="{{ withdrawal_request.req_status }}"
+                      data-bene-remarks="{{ withdrawal_request.admin_remark }}"
+                      data-bene-utr="{{ withdrawal_request.ref_number }}" data-is_admin="{{ 1 }}">
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+
+                  </td>
+
+                  <td data-th="Created Date">{{withdrawal_request.created_at}}</td>
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </section>
-    <!-- End Dashboard Section -->
+    </div>
+  </section>
+  <!-- End Dashboard Section -->
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    {% include 'js/admin_dashboard_export_js.html' %}
-    {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
-  </body>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  {% include 'js/admin_dashboard_export_js.html' %}
+  {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+</body>
+
 </html>

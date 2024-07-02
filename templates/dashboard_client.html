@@ -26,13 +26,17 @@
         .popup-form {
             display: none;
             position: fixed;
-            top: 50%;
+            top: 55%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: #fff;
+         background-color: white;
             padding: 20px;
             border: 1px solid #ccc;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            background-image: url('/bharat_play_repo/static/images/watermark_background_low_opacity.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+          
         }
 
         .close-icon {
@@ -49,7 +53,7 @@
 
         .statement_form_main {
             width: 500px;
-            padding: 25px 25px;
+            padding: 0px 25px;
         }
 
         .content_center {
@@ -97,8 +101,7 @@
 
             display: flex;
         }
-    </style>
-    <style>
+   
         .overview {
             display: flex;
             justify-content: space-between;
@@ -160,7 +163,7 @@
         .main_date_style {
             display: flex;
             margin-bottom: 20px;
-            justify-content: space-between;
+            /* justify-content: space-between; */
         }
 
         .date-container {
@@ -237,9 +240,41 @@
 
         }
 
-        .popup-form {
-            background-color: #a8b0b1;
-        }
+      
+        .fa-calendar-alt:before, .fa-calendar-days:before {
+    content: "\f073";
+    display:none;
+}
+#client_dashboard_table thead tr {
+    background: #0e0e37;
+    color: #fff;
+}
+
+#client_dashboard_table tr:nth-child(odd) td {
+    background-color: #ebf3f9;
+    color: black;
+}
+
+#client_dashboard_table tr:nth-child(even) td {
+    background-color: #f5f9fc;
+    color: black;
+}
+div#client_dashboard_table_length
+{
+    padding-bottom: 40px;
+}
+table.dataTable thead>tr>th.sorting_asc:before
+{
+    opacity:0 !important;
+}
+table.dataTable thead>tr>th.sorting:after, table.dataTable thead>tr>th.sorting_asc:after
+{
+    opacity:0 !important;
+}
+table.dataTable thead>tr>th.sorting:before
+{
+    opacity:0 !important;
+}
     </style>
 
 
@@ -317,11 +352,18 @@
 
 
 
-            <div class="search-box">
-                <a href="{% url 'logout' %}"><span class="link-name">Logout
-                        <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
-
-            </div>
+     <div>
+        <div class="search-box">
+            <a href="{% url 'logout' %}"><span class="link-name">Logout
+                <span
+                  style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+          </div>
+          <div class="c_name" style="margin: 0 30px;">
+            <p style="font-weight:700">XYZ</p>
+          </div>
+         
+        </div>
+            
             <!-- <div>
         <button id="exportBtnClient">Export</button>
         <input type="text" id="searchBarClient" placeholder="Search">
@@ -345,9 +387,9 @@
             <br>
 
             <div class="main_date_style">
-                <div>
+                <!-- <div>
                     <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
-                </div>
+                </div> -->
                 <div class="date-container">
                     <label class="label_Date" for="start-date">Start Date:</label>
                     <i class="fas fa-calendar-alt start_date"></i>
@@ -427,33 +469,33 @@
                                         </div>
                                         
                                                 <h2 id="tran_msg"></h2>
-                                                <br>
+                                              
                                                 <div id='model_created_at' class="font_bold"></div>
-                                                <br>
+                                              
                                             
                                         
                                     </div>
                                 </div>
-
+<br>
                                 <hr>
-                                <br>
+                              
                                 <div class="statement_info">
 
                                     <div id='paid_to_id' class="font_bold recietname"></div>
                                     <div id='model_amount' class="font_bold"></div>
                                 </div>
-                                <br>
+                             
                                 <hr>
-                                <br>
+                             
                                 <div class="statement_info">
                                     <div>
                                         <p class="font1">UTR/Transaction ID </p>
                                     </div>
                                     <div id='ref_number_id' class="font_bold font2"></div>
                                 </div>
-                                <br>
+                               
                                 <hr>
-                                <br>
+                              
                                 <div class="statement_info">
 
                                     <div>
@@ -461,7 +503,7 @@
                                     </div>
                                     <div id='model_account' class="font_bold font2"></div>
                                 </div>
-                                <br>
+                              
                                 <hr>
                                 <!-- <div class="statement_info">
                                   <div>

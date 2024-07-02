@@ -28,7 +28,7 @@
 
 body{
     min-height: 100vh;
-    background-color: var(--primary-color);
+    background-color: white !important;
 }
 body.dark{
     --primary-color: #3A3B3C;
@@ -241,7 +241,7 @@ nav.close ~ .dashboard .top{
 }
 .dashboard .top .search-box{
     position: relative;
-    height: 45px;
+ 
     max-width: 600px;
  
     margin: 0 30px;

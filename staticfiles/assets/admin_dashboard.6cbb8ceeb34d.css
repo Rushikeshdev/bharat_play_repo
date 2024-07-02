@@ -5,21 +5,22 @@
     border-collapse: collapse;
   }
   
-  .rwd-table tr:first-child {
-    border-top: none;
+  .rwd-table thead {
     background: #0e0e37;
     color: #fff;
-  }
-  
+}
+   .rwd-table tr:nth-child(odd):not(:first-child) {
+    background-color: #ebf3f9;
+}
+.rwd-table tr:nth-child(even):not(:first-child) {
+  background-color: #f5f9fc;
+}
   .rwd-table tr {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     background-color: #f5f9fc;
   }
-  
-  .rwd-table tr:nth-child(odd):not(:first-child) {
-    background-color: #ebf3f9;
-  }
+
   
   .rwd-table th {
     display: none;
