@@ -167,33 +167,32 @@
         }
 
         .date-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            height: 50px;
-            line-height: 50px;
-            margin-right: 30px;
-        }
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 50px;
+    line-height: 50px;
+    margin-right: 30px;
+}
 
-        .date-container .label_Date {
-            margin-right: 15px;
-        }
+.date-container .label_Date {
+    margin-right: 15px;
+    font-size: 18px;
+}
 
-        .date-container input {
-            width: 250px;
-            padding: 10px;
-            font-size: 16px;
-            height: 50px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            transition: border-color 0.3s ease;
-        }
+.date-container input {
+    width: 200px;
+    padding: 10px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    border: 1px solid gray;
+}
 
-        .date-container .fa-calendar-alt {
+        /* .date-container .fa-calendar-alt {
             position: absolute;
             left: 10px;
             color: #aaa;
-        }
+        } */
 
         .start_date {
             padding-left: 120px;
@@ -275,6 +274,11 @@ table.dataTable thead>tr>th.sorting:before
 {
     opacity:0 !important;
 }
+.date-container .fa-calendar-alt {
+            position: absolute;
+            left: 10px;
+            color: #aaa;
+        }
     </style>
 
 
@@ -391,18 +395,19 @@ table.dataTable thead>tr>th.sorting:before
                     <input type="text" class="search-bar" id="searchBarClient" placeholder="Search">
                 </div> -->
                 <div class="date-container">
+                    
                     <label class="label_Date" for="start-date">Start Date:</label>
-                    <i class="fas fa-calendar-alt start_date"></i>
-                    <input type="text" class="date_design" id="start-date">
+                    <input type="date" class="date_design" id="start-date" >
                 </div>
                 <div class="date-container">
+                  
                     <label class="label_Date" for="end-date">End Date:</label>
-                    <i class="fas fa-calendar-alt end_date"></i>
-                    <input type="text" class="date_design" id="end-date">
+                    <input type="date" class="date_design" id="end-date" >
                 </div>
+            
                 <div>
                     <button class="export-btn" id="exportBtnClient">Export</button>
-                </div>
+                </div> 
             </div>
 
 
@@ -608,8 +613,31 @@ function showForm(formId, createdDate, amount, paid_to, account_number, reasons,
 
     {% include 'js/client_dashboard_export_js.html' %}
     {% include 'js/recipttnx_js.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr("#start-date", {
+                dateFormat: "Y-m-d",
+            });
+            flatpickr("#end-date", {
+                dateFormat: "Y-m-d",
+            });
+        });
+      
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Ensure no other scripts are initializing flatpickr automatically
+        if (typeof flatpickr !== 'undefined') {
+            flatpickr('#start-date', {
+                enableTime: false,
+                dateFormat: "Y-m-d",
+            });
+        } else {
+            console.error('Flatpickr library is not loaded');
+        }
+    </script>
 </body>
 
 </html>

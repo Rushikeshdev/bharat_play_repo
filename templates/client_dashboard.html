@@ -1,355 +1,349 @@
-
 {% load static %}
 
 
 <!DOCTYPE html>
 <!-- Coding By CodingNepal - codingnepalweb.com -->
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!----======== CSS ======== -->
-    <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
-    <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!----===== Iconscout CSS ===== -->
-    <link
-      rel="stylesheet"
-      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
-    />
-    
-    <title>Withdrawal</title>
-    <style>
-      .withdrawal-requests_form input
-      {
-        background-color: #f2f2f2;
-    border: none;
-    padding: 15px 18px;
-    width: 500px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #0e0e37;
-      }
-      .rwd-table
-      {
-        color: #333;
-    border-radius: 0.4em;
-    overflow: hidden;
-    margin: auto;
-    width: 100%;
-    max-width: 100%;
-    border-collapse: collapse;
-      }
-   
-.rwd-table tr {
-    border-color: #bfbfbf;
-}
-.rwd-table tr {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    background-color: #f5f9fc;
-}
-.rwd-table th, .rwd-table td {
-    padding: 1em 1em !important;
-    text-align: center;
-}
-.top
-{
-  display: flex !important;
-  justify-content: space-between !important;
-    height: 50px;
-   
-}
-.search_box input
-{
-  padding: 10px;
-  border: white;
-  border-bottom: 2px solid #f2f2f2;
+  <!----======== CSS ======== -->
+  <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
+  <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 
-}
-.highlight {
-    background-color: #eeedf6;
-  }
+  <!----===== Iconscout CSS ===== -->
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
 
-  .jconfirm .jconfirm-box.jconfirm-type-red {
-     border-top: solid 7px #1f0e3b !important;
-    animation-name: type-red;
-}
-   .jconfirm .jconfirm-holder
-    {
+  <title>Withdrawal</title>
+  <style>
+    .withdrawal-requests_form input {
+      background-color: #f2f2f2;
+      border: none;
+      padding: 15px 18px;
+      width: 500px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #0e0e37;
+    }
+
+    .rwd-table {
+      color: #333;
+      border-radius: 0.4em;
+      overflow: hidden;
+      margin: auto;
+      width: 100%;
+      max-width: 100%;
+      border-collapse: collapse;
+    }
+
+    .rwd-table tr {
+      border-color: #bfbfbf;
+    }
+
+    .rwd-table tr {
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      background-color: #f5f9fc;
+    }
+
+    .rwd-table th,
+    .rwd-table td {
+      padding: 1em 1em !important;
+      text-align: center;
+    }
+
+    .top {
+      display: flex !important;
+      justify-content: space-between !important;
+      height: 50px;
+
+    }
+
+    .search_box input {
+      padding: 10px;
+      border: white;
+      border-bottom: 2px solid #f2f2f2;
+
+    }
+
+    .highlight {
+      background-color: #eeedf6;
+    }
+
+    .jconfirm .jconfirm-box.jconfirm-type-red {
+      border-top: solid 7px #1f0e3b !important;
+      animation-name: type-red;
+    }
+
+    .jconfirm .jconfirm-holder {
       width: 500px;
     }
-    .jconfirm .jconfirm-cell
-    {
+
+    .jconfirm .jconfirm-cell {
       display: flex !important;
-    justify-content: center;
-    margin-top: 255px;
-    margin-left: 248px;
+      justify-content: center;
+      margin-top: 255px;
+      margin-left: 248px;
     }
-.jconfirm .jconfirm-box .jconfirm-buttons button.btn-red
-{
-    background-color: #EF5350;
-}
-.jconfirm-buttons button {
-        display: none !important;
+
+    .jconfirm .jconfirm-box .jconfirm-buttons button.btn-red {
+      background-color: #EF5350;
     }
-.search_box input
-{
-    border-bottom: 2px solid black;
-    background: #f2f2f2;
-    width: 300px !important;
-}
-.client_balance
-{
-  display: flex;
-}
-.withdrwal_today{
 
-  display: flex;
-}
-.balance_style {
-  display:flex;
-}
-.dashboard .top .search-box 
-{
-  height:auto;
-  margin-top:25px;
-}
-#client_withdrawal_request  th {
-    background: #0e0e37;
-    color: #fff;
-}
+    .jconfirm-buttons button {
+      display: none !important;
+    }
 
-#client_withdrawal_request  tr:nth-child(odd) td {
-    background-color: #ebf3f9;
-}
+    .search_box input {
+      border-bottom: 2px solid black;
+      background: #f2f2f2;
+      width: 300px !important;
+    }
 
-#client_withdrawal_request tr:nth-child(even) td {
-    background-color: #f5f9fc;
+    .client_balance {
+      display: flex;
+    }
+
+    .withdrwal_today {
+
+      display: flex;
+    }
+
+    .balance_style {
+      display: flex;
+    }
+
+    .dashboard .top .search-box {
+      height: auto;
+      margin-top: 25px;
+    }
+
+    #client_withdrawal_request th {
+      background: #0e0e37;
+      color: #fff;
+    }
+
+    #client_withdrawal_request tr:nth-child(odd) td {
+      background-color: #ebf3f9;
+    }
+
+    #client_withdrawal_request tr:nth-child(even) td {
+      background-color: #f5f9fc;
+    }
+    .dashboard .top .search-box {
+    position: relative;
+    height: 45px;
+    max-width: 600px;
+    margin: 0 30px;
 }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <div class="logo-name">
-        <div class="logo-image">
-          <img src="{% static 'images/logo.png' %}" alt="" />
+a {
+    text-decoration: none;
+    color: black;
+}
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="logo-name">
+      <div class="logo-image">
+        <img src="{% static 'images/logo.png' %}" alt="" />
+      </div>
+    </div>
+
+    <div class="menu-items">
+      <ul class="nav-links">
+        <li>
+          <a href="{% url 'dashboard-client-form' %}" class="active">
+            <i class="uil uil-chart-pie"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'add-bene-template'  %}">
+            <i class="uil uil-user-plus"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Add Beneficiary</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'withdrawal-requests-template'  %}">
+            <i class="uil uil-money-withdraw"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Withdrawal Request</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'account_statement_list' %}">
+            <i class="uil uil-wallet"></i>
+            <!-- Example icon class -->
+            <span class="link-name">Account Statement</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Withdrawal Request Section -->
+  <section id="add_beneficiary" class="dashboard">
+    <div class="top">
+
+      <div>
+        <div class="client_balance">
+          <div class="balance_style">
+            <p style="margin-right:5px;">Balance :</p>
+
+            <p>{{balance}}</p>
+          </div>
+
         </div>
+        <div class="withdrwal_today">
+
+          <p style="margin-right:5px;">Withdrwal Today :</p>
+
+          <p>{{withdrwal_today}}</p>
+
+
+        </div>
+
       </div>
 
-      <div class="menu-items">
-        <ul class="nav-links">
-          <li>
-            <a href="{% url 'dashboard-client-form' %}" class="active">
-              <i class="uil uil-chart-pie"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'add-bene-template'  %}">
-              <i class="uil uil-user-plus"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Add Beneficiary</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'withdrawal-requests-template'  %}">
-              <i class="uil uil-money-withdraw"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Withdrawal Request</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'account_statement_list' %}">
-              <i class="uil uil-wallet"></i>
-              <!-- Example icon class -->
-              <span class="link-name">Account Statement</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-    <!-- Withdrawal Request Section -->
-    <section id="add_beneficiary" class="dashboard">
-      <div class="top">
-
-        <div>
-          <div class="client_balance">
-              <div class="balance_style">
-                  <p style="margin-right:5px;">Balance :</p>
-
-                  <p>{{balance}}</p>
-              </div>
-
-          </div>
-          <div class="withdrwal_today">
-
-              <p style="margin-right:5px;">Withdrwal Today :</p>
-
-              <p>{{withdrwal_today}}</p>
 
 
-          </div>
-
+      <!-- <div>
+        <div class="search-box">
+          <a href="{% url 'logout' %}"><span class="link-name">Logout
+              <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
         </div>
-
-
-
-        <div>
-          <div class="search-box">
-            <a href="{% url 'logout' %}"><span class="link-name"
-                >Logout
-                <span style="font-weight: 600; font-size: 16px">↪️</span></span
-              ></a>
-        </div>
-    <br>
+        <br>
         <div class="c_name" style="margin: 0 30px;">
           <p style="font-weight:700">{{request.user}}</p>
         </div>
+      </div> -->
+      <div>
+        <div class="search-box">
+            <a href="/logout/"><span class="link-name">Logout
+                <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+          </div>
+          <div class="c_name" style="margin: 0 30px;">
+            <p style="font-weight:700">{{request.user}}</p>
+          </div>
+         
         </div>
-   
-        <!--<img src="images/profile.jpg" alt="">-->
+
+      <!--<img src="images/profile.jpg" alt="">-->
+    </div>
+
+    <div class="dash-content">
+      <div class="overview">
+        <div class="title">
+          <i class="uil uil-money-withdraw"></i>
+          <span class="text">Withdrawal Request</span>
+        </div>
       </div>
 
-      <div class="dash-content">
-        <div class="overview">
-          <div class="title">
-            <i class="uil uil-money-withdraw"></i>
-            <span class="text">Withdrawal Request</span>
-          </div>
+      <div class="activity">
+        <div class="activity-data">
+          <form action="" class="withdrawal-requests_form" id="withdrawal-requests_form_id">
+            <input type="text" id="amount" name="amount" placeholder="Amount*" required /><br />
+            <h2>Bank Details</h2>
+            <br />
+            <input type="text" id="aname" name="aname" placeholder="Name*" required /><br />
+            <input type="text" id="anumber" name="anumber" placeholder="Account Number*" required /><br />
+            <input type="text" id="abranch" name="abranch" placeholder="Branch/IFSC*" required /><br />
+            <input type="text" id="bname" name="bname" placeholder="Bank Name*" required /><br />
+            <div class="submit_div">
+              <input class="submit_btn" type="submit" value="Submit" />
+            </div>
+          </form>
+        </div>
+        <br>
+        <br>
+
+        <div class="search_box">
+          <input type="search" placeholder="Search" oninput="highlightRows(this.value)" onsearch="refreshPage()" />
         </div>
 
-        <div class="activity">
-          <div class="activity-data">
-            <form action="" class="withdrawal-requests_form" id="withdrawal-requests_form_id">
-              <input
-                type="text"
-                id="amount"
-                name="amount"
-                placeholder="Amount*"
-                required
-              /><br />
-              <h2>Bank Details</h2>
-              <br />
-              <input
-                type="text"
-                id="aname"
-                name="aname"
-                placeholder="Name*"
-                required
-              /><br />
-              <input
-                type="text"
-                id="anumber"
-                name="anumber"
-                placeholder="Account Number*"
-                required
-              /><br />
-              <input
-                type="text"
-                id="abranch"
-                name="abranch"
-                placeholder="Branch/IFSC*"
-                required
-              /><br />
-              <input
-                type="text"
-                id="bname"
-                name="bname"
-                placeholder="Bank Name*"
-                required
-              /><br />
-              <div class="submit_div">
-                <input class="submit_btn" type="submit" value="Submit" />
-              </div>
-            </form>
-          </div>
-          <br>
-          <br>
-
-          <div class="search_box">
-            <input type="search" placeholder="Search" oninput="highlightRows(this.value)" onsearch="refreshPage()"/>
-          </div>
-
-          <br>
+        <br>
 
 
-          <div class="container">
-            <table class="rwd-table" id="client_withdrawal_request">
-             
+        <div class="container">
+          <table class="rwd-table" id="client_withdrawal_request">
 
-                <tbody>
-                 
-                  <tr>
-                    <th> </th>
-                    <th>Sr.No</th>
-                    <th>Name</th>
-                    <th>Account Number</th>
-                    <th>Bank Name</th>
-                    <th>IFSC Code</th>
-                    
-                  </tr>
-                 {% for bene in bene %}
-                  <tr>
-                    <td><input type="radio" name="selected_account" value="{{ entry.id }}"></td>
-                    <td data-th="Serial No">{{forloop.counter}}</td>
-                    <td data-th="Name">{{bene.bene_account_name}}</td>
-                    <td data-th="account_number">{{bene.bene_account_number}}</td>
-                    <td data-th="bank name">{{bene.bene_bank_name}}</td>
-                    <td data-th="IFSC Code">{{bene.bene_branch_ifsc}}</td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
+
+            <tbody>
+
+              <tr>
+                <th> </th>
+                <th>Sr.No</th>
+                <th>Name</th>
+                <th>Account Number</th>
+                <th>Bank Name</th>
+                <th>IFSC Code</th>
+
+              </tr>
+              {% for bene in bene %}
+              <tr>
+                <td><input type="radio" name="selected_account" value="{{ entry.id }}"></td>
+                <td data-th="Serial No">{{forloop.counter}}</td>
+                <td data-th="Name">{{bene.bene_account_name}}</td>
+                <td data-th="account_number">{{bene.bene_account_number}}</td>
+                <td data-th="bank name">{{bene.bene_bank_name}}</td>
+                <td data-th="IFSC Code">{{bene.bene_branch_ifsc}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
 
-        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- End Withdrawal Request Section -->
+  <!-- End Withdrawal Request Section -->
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
-    {% include 'js/withdrawal_form_js.html' %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+  {% include 'js/withdrawal_form_js.html' %}
 
-    {% include 'js/add_bene_auto_js.html' %}
-   
-
+  {% include 'js/add_bene_auto_js.html' %}
 
 
-<script>
-function highlightRows(searchTerm) {
-  const rows = document.querySelectorAll('.container .rwd-table tbody tr:not(:first-child)');
-  
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td[data-th]');
-    
-    let found = false;
 
-    cells.forEach(cell => {
-      if (cell.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
-        found = true;
-        cell.classList.add('highlight');
-      } else {
-        cell.classList.remove('highlight');
-      }
-    });
-    if (found) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
+
+  <script>
+    function highlightRows(searchTerm) {
+      const rows = document.querySelectorAll('.container .rwd-table tbody tr:not(:first-child)');
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td[data-th]');
+
+        let found = false;
+
+        cells.forEach(cell => {
+          if (cell.textContent.toLowerCase().includes(searchTerm.toLowerCase())) {
+            found = true;
+            cell.classList.add('highlight');
+          } else {
+            cell.classList.remove('highlight');
+          }
+        });
+        if (found) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
     }
-  });
-}
 
 
 
-</script>
+  </script>
 
-     
-  </body>
+
+</body>
+
 </html>

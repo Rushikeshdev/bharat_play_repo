@@ -42,6 +42,16 @@
         max-width: 100%;
         border-collapse: collapse;
     }
+    .dashboard .top .search-box {
+    position: relative;
+    height: 45px;
+    max-width: 600px;
+    margin: 0 30px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}
     </style>
   </head>
   <body>
@@ -89,7 +99,7 @@
     </nav>
     <!-- Dashboard Section -->
     <section id="dashboard_section" class="dashboard" active>
-      <div class="top">
+      <!-- <div class="top">
         <div class="search-box">
           <a href="{% url 'logout' %}"><span class="link-name"
             >Logout
@@ -97,8 +107,18 @@
           ></a>
         </div>
 
-        <!--<img src="images/profile.jpg" alt="">-->
-      </div>
+      
+      </div> -->
+      <div>
+        <div class="search-box">
+            <a href="/logout/"><span class="link-name">Logout
+                <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
+          </div>
+          <div class="c_name" style="margin: 0 30px;">
+            <p style="font-weight:700">XYZ</p>
+          </div>
+         
+        </div>
 
       <div class="dash-content">
         <div class="overview">

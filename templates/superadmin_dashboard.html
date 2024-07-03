@@ -27,9 +27,6 @@
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
       <style>
-      
-      
-
 
 .export-btn {
   background-color: #1c003b;
@@ -68,7 +65,7 @@ justify-content:space-between;
 .main_date_style {
             display: flex;
             margin-bottom: 20px;
-            /* justify-content: space-between; */
+            / justify-content: space-between; /
         }
 
         .date-container {
@@ -113,9 +110,9 @@ font-size:18px;
   position: absolute !important;
   left: 250px;
 }
-section#dashboard_section {
-  width: 105%;
-}
+/* section#dashboard_section {
+  width: 102%;
+} */
 #superadmin_dashboard_table thead tr {
     background: #0e0e37;
     color: #fff;
@@ -150,9 +147,16 @@ table.dataTable thead>tr>th.sorting:before
 {
   opacity: 0 !important;
 }
+#superadmin_dashboard_table td {
+      padding: 10px; /* Adjust padding as needed */
+      border: 1px solid #ddd; /* Border for cells */
+      word-wrap: break-word; /* Allow long words to wrap */
+      max-width: 80px; /* Max width for td to trigger overflow */
+      vertical-align: top; /* Ensure content aligns at the top */
+    }
 </style>
 
-    <title>Admin Dashboard Panel</title>
+    <title>Super Admin Dashboard Panel</title>
   </head>
   <body style="background: white;">
     <nav>
@@ -235,17 +239,17 @@ table.dataTable thead>tr>th.sorting:before
 
         <div class="main_date_style">
           <div class="date-container">
-              <label class="label_Date" for="start-date">Start Date:</label>
-              <i class="fas fa-calendar-alt start_date" ></i>
-              <input type="text" class="date_design" id="start-date">
+            <label class="label_Date" for="start-date">Start Date:</label>
+            <!-- <i class="fas fa-calendar-alt start_date"></i> -->
+            <input type="date" class="date_design" id="start-date" name="start_date">
           </div>
           <div class="date-container">
-              <label class="label_Date" for="end-date">End Date:</label>
-              <i class="fas fa-calendar-alt end_date"></i>
-              <input type="text" class="date_design" id="end-date">
+            <label class="label_Date" for="end-date">End Date:</label>
+            <!-- <i class="fas fa-calendar-alt end_date"></i> -->
+            <input type="date" class="date_design" id="end-date" name="end_date">
           </div>
           <div>
-            <button  class="export-btn" id="exportBtn">Export</button>
+            <button class="export-btn" id="exportBtn">Export</button>
           </div>
         </div>
 
@@ -348,7 +352,18 @@ table.dataTable thead>tr>th.sorting:before
       </div>
     </section>
     <!-- End Dashboard Section -->
-
+    <script>
+      $(document).ready(function() {
+        flatpickr("#start-date", {
+          dateFormat: "Y-m-d",
+          allowInput: true,
+        });
+        flatpickr("#end-date", {
+          dateFormat: "Y-m-d",
+          allowInput: true,
+        });
+      });
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
