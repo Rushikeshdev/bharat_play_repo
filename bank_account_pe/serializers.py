@@ -62,7 +62,6 @@ class AccountSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
     
         if request and request.method == 'GET' and obj.account_bene:
-            print("Request=",BeneficiaryDetailsSerializer(obj.account_bene).data)
             return BeneficiaryDetailsSerializer(obj.account_bene).data
         return None
 

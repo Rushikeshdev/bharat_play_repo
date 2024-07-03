@@ -396,13 +396,13 @@
             <tr class="conditional-fields">
                 <th>Admin Remarks</th>
                 <td id="admin-remarks-container">
-                    <input type="text" class="admin_remark_ui" placeholder="Enter the Reasons"> 
+                    <input type="text" class="admin_remark_ui" placeholder="Enter the Reasons" required> 
                 </td>
             </tr>
             <tr class="conditional-fields">
                 <th>UTR/Transaction ID</th>
                 <td id="utr-number-container">
-                    <input type="text" class="utr_number_ui" placeholder="Enter the UTR Number"> 
+                    <input type="text" class="utr_number_ui" placeholder="Enter the UTR Number" required> 
                 </td>
             </tr>
             <tr class="conditional-fields">
@@ -424,39 +424,7 @@
 <script>
     $(document).ready(function() {
 
-        $('#superadmin_withdraw_table').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            
-            
-    });
-
-    $('#superadmin_dashboard_table').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            
-            
-    });
-
-    $('#admin_dashboard_table').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            
-            
-    });
-
+     
 
 
        
@@ -471,6 +439,7 @@
         
         openPopupBtn.on("click", function() {
             var button = $(this);
+            console.log("hello...",);
             $(".status-dropdown-request").attr("data-requested-id", button.data("bene-id"));
             $("#approve_id").attr("data-request-id", button.data("bene-id"));
             $("#rejected_id").attr("data-request-id", button.data("bene-id"));
@@ -558,6 +527,11 @@
 
             }
 
+            if (is_superadmin===0){
+
+                $("#admin-statement-dashboaerd").hide();
+            }
+
             modal.show();
         });
 
@@ -581,6 +555,43 @@
                 $(".conditional-fields").hide();
             }
         });
+
+        $('#superadmin_withdraw_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+            
+    });
+
+    $('#superadmin_dashboard_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+            
+    });
+
+    $('#admin_dashboard_table').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            
+            
+    });
+
+
+
+
     });
 </script>
 

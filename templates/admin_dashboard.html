@@ -194,7 +194,7 @@ button#openModalBtn
               <span style="font-weight: 600; font-size: 16px">↪️</span></span></a>
         </div>
         <div class="c_name" style="margin: 0 30px;">
-          <p style="font-weight:700">XYZ</p>
+          <p style="font-weight:700">{{request.user}}</p>
         </div>
 
       </div>
@@ -311,8 +311,10 @@ button#openModalBtn
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  {% include 'js/admin_dashboard_export_js.html' %}
+  
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+  {% include 'js/admin_dashboard_export_js.html' %}
+  
 </body>
 
 </html>

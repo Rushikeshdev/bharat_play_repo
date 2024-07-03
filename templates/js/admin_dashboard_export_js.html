@@ -13,23 +13,23 @@ $(document).ready(function() {
                 var headers = [
                     "Sr.No",
                     "Client Name",
+                    "UTR/Remark",
                     "Credit",
                     "Debit",
                     "Status",
                     "Admin",
                     "Approved By",
-                  
-                    "Bene Name",
-                    "Bene Account Number",
-                    "Bene Bank Name",
-                    "Bene IFSC Code",
-                    "Bene Mode",
-                    "Bene Deposit",
-                    "Bene Withdraw",
-                    "Bene Status",
-                    "Bene Remarks",
-                    "Bene UTR",
                     "Created Date",
+                    " ",
+                  
+                    "Name",
+                    "Account Number",
+                    "Bank Name",
+                    "Bene IFSC Code",
+                   
+                   
+                   
+                   
                 ];
                 data.push(headers);
                 
@@ -42,23 +42,23 @@ $(document).ready(function() {
                         // Process client wallet statement
                         row.push(index + 1); // Serial number
                         row.push(entry.client_email);
+                        row.push(entry.utr_number_superadmin_narration); 
                         row.push(entry.deposit);
                         row.push(entry.withdraw);
                         row.push(entry.status);
                         row.push(entry.admin_remark_superadmin);
+                        row.push('');
+                        row.push(entry.created_at);
                         row.push(''); // Approved By (not available in client wallet statement)
                        
                         row.push(''); // Bene Name
                         row.push(''); // Bene Account Number
                         row.push(''); // Bene Bank Name
                         row.push(''); // Bene IFSC Code
-                        row.push(''); // Bene Mode
-                        row.push(''); // Bene Deposit
-                        row.push(''); // Bene Withdraw
-                        row.push(''); // Bene Status
-                        row.push(entry.admin_remark_superadmin); // Bene Remarks
-                        row.push(entry.utr_number_superadmin_narration); // Bene UTR
-                        row.push(entry.created_at);
+                       
+                        
+                       
+                        
                     } else {
 
                        
@@ -66,26 +66,26 @@ $(document).ready(function() {
                         // Process withdrawal request
                         row.push(index + 1); // Serial number
                         row.push(entry.client_email);
+                        row.push(entry.utr_number);
                         row.push(entry.deposit);
                         row.push(entry.withdraw);
                         row.push(entry.status);
                         row.push(entry.admin_remark);
                         row.push(entry.status_change_by);
+                        row.push(entry.created_at);
+                        row.push('');
+
                        
                         
                         row.push(entry.bene_account_name);
                         row.push(entry.bene_account_number);
                         row.push(entry.bene_bank_name);
                         row.push(entry.bene_branch_ifsc);
+                       
 
-                        row.push(entry.tnx);
-                        row.push(entry.deposit);
-                        row.push(entry.withdraw);
-                        row.push(entry.status);
-
-                        row.push(entry.admin_remark);
-                        row.push(entry.utr_number);
-                        row.push(entry.created_at);
+                       
+                       
+                       
                     }
                     data.push(row);
                 });

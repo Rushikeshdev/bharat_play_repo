@@ -272,7 +272,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                 'deposit': stmt.deposit,
                                 'withdraw': stmt.withdraw,
                                 'balance': stmt.statement_balance,
-                                'status': 'Client Wallet Always Approved',
+                                'status': 'Approved',
                                 'created_at': stmt.updated_at,
                                 'is_wallet': True
                             }
@@ -286,7 +286,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                 acc_ste_dict['withdraw'] = stmt.withdraw
                                 acc_ste_dict['status']   = stmt.account_tnx_status
 
-                            elif stmt.account_tnx_status.lower() in ['approved', 'pending']:
+                            elif stmt.account_tnx_status.lower() == 'approved':
                                 acc_ste_dict['tnx'] = 'withdraw'
                                 acc_ste_dict['deposit'] = stmt.deposit
                                 acc_ste_dict['withdraw'] = stmt.withdraw
@@ -294,7 +294,8 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
                             # Find the corresponding withdrawal request
                             for withdrawal_request in withdrawal_requests:
-                                if withdrawal_request == stmt.account:
+                               
+                                if withdrawal_request == stmt.account and acc_ste_dict:
                                     account_and_statement.append({'withdrawal_request': withdrawal_request, 'tnx': acc_ste_dict})
                                     break
 
@@ -330,7 +331,8 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                        
                            
                         return JsonResponse({'withdrawal_requests': data})
-                
+
+                   
                     context = {'withdrawal_requests': account_and_statement}
                     return self.render_to_response(context)
 
