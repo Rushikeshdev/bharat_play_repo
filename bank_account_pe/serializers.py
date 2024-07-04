@@ -55,7 +55,8 @@ class AccountSerializer(serializers.ModelSerializer):
         return obj.client.email
 
     def get_created_at_formatted(self, obj):
-        return obj.created_at.strftime("%b %d, %Y, %I:%M %p")
+        local_time = timezone.localtime(obj.created_at)
+        return local_time.strftime("%b %d, %Y, %I:%M %p")
 
 
     def get_account_bene_details(self, obj):

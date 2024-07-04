@@ -119,6 +119,8 @@ class Account(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
   
 
+    def save(self, *args, **kwargs):
+            super().save(*args, **kwargs)
 
 
     def __str__(self):
