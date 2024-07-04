@@ -1,5 +1,6 @@
 from distutils.log import error
 import re
+from turtle import st
 from typing import Any
 from django.http.response import HttpResponse as HttpResponse
 from rest_framework.views import APIView
@@ -243,7 +244,8 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
         def get(self, request):
 
             try:
-                
+
+               
                 if request.user.is_superadmin:
                     self.template_name = self.template_name_superadmin
                     withdrawal_requests = Account.objects.all().order_by('-updated_at')
@@ -280,17 +282,20 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                         else:
                             # Process regular account statements
                             acc_ste_dict = {}
+                           
                             if stmt.account_tnx_status.lower() == 'rejected':
                                 acc_ste_dict['tnx'] = 'deposit'
                                 acc_ste_dict['deposit'] = stmt.deposit
-                                acc_ste_dict['withdraw'] = stmt.withdraw
+                                acc_ste_dict['withdraw'] = stmt.withdraw  
                                 acc_ste_dict['status']   = stmt.account_tnx_status
 
+
                             elif stmt.account_tnx_status.lower() == 'approved':
-                                acc_ste_dict['tnx'] = 'withdraw'
-                                acc_ste_dict['deposit'] = stmt.deposit
-                                acc_ste_dict['withdraw'] = stmt.withdraw
-                                acc_ste_dict['status']   = stmt.account_tnx_status
+                                
+                                    acc_ste_dict['tnx'] = 'withdraw'
+                                    acc_ste_dict['deposit'] = stmt.deposit
+                                    acc_ste_dict['withdraw'] = stmt.account.ammount #here we share approved amount from transaction.
+                                    acc_ste_dict['status']   = stmt.account_tnx_status
 
                             # Find the corresponding withdrawal request
                             for withdrawal_request in withdrawal_requests:
@@ -299,7 +304,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                     account_and_statement.append({'withdrawal_request': withdrawal_request, 'tnx': acc_ste_dict})
                                     break
 
-                    # Handle AJAX request for data for export
+                    # Handle AJAX request for data for export aal data of superadmin statement
                     
                     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                        
@@ -327,16 +332,20 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                     'status_change_by': item['withdrawal_request'].status_change_by,
                                     'created_at': item['withdrawal_request'].created_at,
                                 })
+                        
 
                        
                            
                         return JsonResponse({'withdrawal_requests': data})
+                    
+                   
 
                    
                     context = {'withdrawal_requests': account_and_statement}
                     return self.render_to_response(context)
 
-                #Admin Statement
+               
+                
                 if request.user.is_admin and not request.user.is_superadmin:
                     
                     for account in withdrawal_requests:
