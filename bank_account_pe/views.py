@@ -1,6 +1,5 @@
 from distutils.log import error
 import re
-from turtle import st
 from typing import Any
 from django.http.response import HttpResponse as HttpResponse
 from rest_framework.views import APIView

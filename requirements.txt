@@ -1,8 +1,25 @@
 asgiref==3.8.1
 backports.zoneinfo==0.2.1
+certifi==2024.2.2
+charset-normalizer==3.3.2
 Django==4.0.1
-# django-rest-framework==0.1.0
+django-rest-framework==0.1.0
 djangorestframework==3.15.1
+download==0.3.5
+idna==3.7
+numpy==1.24.4
+pandas==2.0.3
+psycopg2==2.9.9
+PyMuPDF==1.24.3
+PyMuPDFb==1.24.3
+python-dateutil==2.9.0.post0
+pytz==2024.1
+requests==2.31.0
+six==1.16.0
 sqlparse==0.5.0
+tika==2.6.0
+tqdm==4.66.4
 typing-extensions==4.11.0
+tzdata==2024.1
+urllib3==2.2.1
 whitenoise==6.6.0
