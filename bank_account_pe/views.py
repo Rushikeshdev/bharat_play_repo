@@ -396,6 +396,8 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
                         for item in account_and_statement:
 
+                                local_time = timezone.localtime(item[0].created_at)
+                                created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
                          
                                 data.append({
                                     'client_email': item[0].client.email,
@@ -410,7 +412,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                     'bene_branch_ifsc':item[0].account_bene.bene_branch_ifsc,
                                     'admin_remark': item[0].admin_remark,
                                     'status_change_by': item[0].status_change_by,
-                                    'created_at': item[0].created_at,
+                                    'created_at': created_at,
                                 })
 
                        
