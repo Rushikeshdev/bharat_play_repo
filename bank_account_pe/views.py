@@ -20,6 +20,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.dateparse import parse_date
 
 
 
@@ -243,6 +244,11 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
             try:
 
+                start_date_str = request.GET.get('start_date')
+                end_date_str = request.GET.get('end_date')
+                start_date = parse_date(start_date_str) if start_date_str else None
+                end_date = parse_date(end_date_str) if end_date_str else None
+
                
                 if request.user.is_superadmin:
                     self.template_name = self.template_name_superadmin
@@ -257,11 +263,12 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                 account_and_statement = []
 
                 if request.user.is_superadmin:
-
-                   
-                # Query all AccountStatements ordered by updated_at
-                    all_statements = AccountStatement.objects.all().order_by('-updated_at')
-
+                
+                    if start_date and end_date:
+                        all_statements = AccountStatement.objects.filter(updated_at__range=(start_date, end_date)).order_by('-updated_at')
+                    else:
+                        all_statements = AccountStatement.objects.all().order_by('-updated_at')
+               
                     for stmt in all_statements:
                         if stmt.account is None:
                             # Process client wallet statements
@@ -312,10 +319,16 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                         for item in account_and_statement:
 
                             if 'client_wallet_statement' in item:
-                               
+                
+                                local_time = timezone.localtime(item['client_wallet_statement']['created_at'])
+                                created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
+                                item['client_wallet_statement']['created_at'] = created_at
+
                                 data.append(item['client_wallet_statement'])
                             else:
-                                
+                                local_time = timezone.localtime(item['withdrawal_request'].created_at)
+                                created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
+                               
                                 data.append({
                                     'client_email': item['withdrawal_request'].client.email,
                                     'utr_number': item['withdrawal_request'].ref_number,
@@ -328,7 +341,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                     'bene_branch_ifsc':item['withdrawal_request'].account_bene.bene_branch_ifsc,
                                     'admin_remark': item['withdrawal_request'].admin_remark,
                                     'status_change_by': item['withdrawal_request'].status_change_by,
-                                    'created_at': item['withdrawal_request'].created_at,
+                                    'created_at': created_at,
                                 })
                         
 
@@ -735,6 +748,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                             'withdraw_request_client':True,
                             'withdrawal_day':datetime.now().date(),
                             'withdrawal_request_accepted_by':'Pending',
+                            'created_at':local_time()
                             
                             
 
