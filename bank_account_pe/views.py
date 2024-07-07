@@ -244,10 +244,13 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
             try:
 
-                start_date_str = request.GET.get('start_date')
-                end_date_str = request.GET.get('end_date')
-                start_date = parse_date(start_date_str) if start_date_str else None
-                end_date = parse_date(end_date_str) if end_date_str else None
+                # start_date_str = request.GET.get('start_date')
+                # end_date_str = request.GET.get('end_date')
+                # start_date = parse_date(start_date_str) if start_date_str else None
+                # end_date = parse_date(end_date_str) if end_date_str else None
+
+                # print("start_end",start_date)
+                # print("end_date",end_date)
 
                
                 if request.user.is_superadmin:
@@ -264,18 +267,31 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
                 if request.user.is_superadmin:
                 
-                    if start_date and end_date:
-                        all_statements = AccountStatement.objects.filter(updated_at__range=(start_date, end_date)).order_by('-updated_at')
-                    else:
-                        all_statements = AccountStatement.objects.all().order_by('-updated_at')
+                    # if start_date is not None and end_date is not None:
+                        
+                    #     start_date = start_date.isoformat()
+                    #     start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                    #     start_date = timezone.make_aware(datetime.combine(start_date, datetime.min.time()), timezone.get_current_timezone())
+                        
+
+                    #     end_date = end_date.isoformat()
+                    #     end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                    #     end_date = timezone.make_aware(datetime.combine(end_date, datetime.max.time()), timezone.get_current_timezone())
+                        
+                    #     all_statements = AccountStatement.objects.filter(updated_at__range=(start_date, end_date)).order_by('-updated_at')
+                    #     print("==",all_statements.count())
+                        
+                    # else:
+                        
+                    all_statements = AccountStatement.objects.all().order_by('-updated_at')
                
                     for stmt in all_statements:
                         if stmt.account is None:
                             # Process client wallet statements
                             wallet_dict = {
                                 'client_email': stmt.clientwallet.client.email,
-                                'admin_remark_superadmin': stmt.clientwallet.admin_remark_superadmin,
-                                'utr_number_superadmin_narration': stmt.clientwallet.utr_number_superadmin_narration,
+                                'admin_remark_superadmin': stmt.admin_remark_superadmin,
+                                'utr_number_superadmin_narration': stmt.utr_number_superadmin_narration,
                                 'deposit': stmt.deposit,
                                 'withdraw': stmt.withdraw,
                                 'balance': stmt.statement_balance,
@@ -283,6 +299,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                 'created_at': stmt.updated_at,
                                 'is_wallet': True
                             }
+                           
                             account_and_statement.append({'client_wallet_statement': wallet_dict, 'tnx': []})
                         else:
                             # Process regular account statements
@@ -310,10 +327,10 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                     break
 
                     # Handle AJAX request for data for export aal data of superadmin statement
-                    
+                   
                     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                        
-                       
+                      
                         data = []
 
                         for item in account_and_statement:
@@ -349,8 +366,10 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                            
                         return JsonResponse({'withdrawal_requests': data})
                     
-                   
 
+                    # for i in account_and_statement:                   
+
+                    #     print("context",i)
                    
                     context = {'withdrawal_requests': account_and_statement}
                     return self.render_to_response(context)
@@ -370,10 +389,10 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                                 acc_ste_dict['withdraw'] = acc_s.withdraw
                                 acc_ste_dict['status']   = acc_s.account_tnx_status
                                 break
-                            elif acc_s.account_tnx_status.lower() == 'approved' or acc_s.account_tnx_status.lower() == 'pending':
+                            elif acc_s.account_tnx_status.lower() == 'approved':
                                 acc_ste_dict['tnx'] = 'withdraw'
                                 acc_ste_dict['deposit'] = acc_s.deposit
-                                acc_ste_dict['withdraw'] = acc_s.withdraw
+                                acc_ste_dict['withdraw'] = acc_s.account.ammount
                                 acc_ste_dict['status']   = acc_s.account_tnx_status
                                 break
 
@@ -398,7 +417,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
                                 local_time = timezone.localtime(item[0].created_at)
                                 created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
-                         
+                               
                                 data.append({
                                     'client_email': item[0].client.email,
                                     'utr_number': item[0].ref_number,
@@ -419,14 +438,12 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                            
                         return JsonResponse({'withdrawal_requests': data})
 
+                    
+
                     context = {'withdrawal_requests': account_and_statement}
 
                     return self.render_to_response(context)
 
-
-                
-
-                
 
             except Exception as e:
                print(e)
@@ -675,14 +692,15 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
                                 statement_balance = client_wallet_total_balance_obj.client_wallet_total_balance
 
-                                client_wallet_total_balance_obj.admin_remark_superadmin = request.data['admin_remark']
+                                client_wallet_admin_remark = request.data['admin_remark']
 
-                                client_wallet_total_balance_obj.utr_number_superadmin_narration = request.data['remark_for_client']
+                                client_wallet_utr_number_superadmin_narration = request.data['remark_for_client']
 
                                 client_wallet_total_balance_obj.save()
 
                                 account_statement_from_client_withdr = AccountStatement.objects.create(account=None,clientwallet=client_wallet_total_balance_obj,
-                                deposit=int(request.data['amount']),withdraw=0, statement_balance=statement_balance,trn_date=local_time())
+                                deposit=int(request.data['amount']),withdraw=0, statement_balance=statement_balance,
+                                admin_remark_superadmin=client_wallet_admin_remark,utr_number_superadmin_narration=client_wallet_utr_number_superadmin_narration,trn_date=local_time())
 
 
                         except ClientWallet.DoesNotExist:
@@ -700,15 +718,17 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
                                 statement_balance = client_wallet_total_balance_obj.client_wallet_total_balance
 
-                                client_wallet_total_balance_obj.admin_remark_superadmin = request.data['admin_remark']
+                                client_wallet_admin_remark = request.data['admin_remark']
 
-                                client_wallet_total_balance_obj.utr_number_superadmin_narration = request.data['remark_for_client']
+                                client_wallet_utr_number_superadmin_narration = request.data['remark_for_client']
 
                                 client_wallet_total_balance_obj.save()
                                
 
                                 account_statement_from_client_withdr = AccountStatement.objects.create(account=None,clientwallet=client_wallet_total_balance_obj,
-                                deposit=0,withdraw=int(request.data['amount']),statement_balance=statement_balance,trn_date=local_time())
+                                deposit=0,withdraw=int(request.data['amount']),statement_balance=statement_balance,
+                                admin_remark_superadmin=client_wallet_admin_remark,utr_number_superadmin_narration=client_wallet_utr_number_superadmin_narration,
+                                trn_date=local_time())
 
 
                             else:   

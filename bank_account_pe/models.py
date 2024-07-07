@@ -135,8 +135,6 @@ class ClientWallet(models.Model):
 
     client = models.OneToOneField(User, on_delete=models.CASCADE,related_name='user')
     client_wallet_total_balance = models.IntegerField(default=0)
-    admin_remark_superadmin = models.CharField(max_length=255,default='')
-    utr_number_superadmin_narration = models.CharField(max_length=255,default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -153,6 +151,8 @@ class AccountStatement(models.Model):
     deposit = models.IntegerField()
     withdraw = models.IntegerField()
     statement_balance = models.IntegerField(default=0)
+    admin_remark_superadmin = models.CharField(max_length=255,null=True,blank=True)
+    utr_number_superadmin_narration = models.CharField(max_length=255,null=True,blank=True)
     trn_date = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
