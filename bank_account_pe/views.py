@@ -1262,7 +1262,7 @@ class AccountStatementView(LoginRequiredMixin,View):
                                             'deposit': acc_s.deposit,
                                             'withdraw': acc_s.withdraw,
                                             'balance': acc_s.statement_balance,
-                                            'narration':acc_s.clientwallet.utr_number_superadmin_narration,
+                                            'narration':acc_s.utr_number_superadmin_narration,
                                             # 'paid_to':paid_to
                                             'account':acc_s.account
                                         }
@@ -1280,7 +1280,7 @@ class AccountStatementView(LoginRequiredMixin,View):
                                             'deposit': acc_s.deposit,
                                             'withdraw': acc_s.withdraw,
                                             'balance': acc_s.statement_balance,
-                                            'narration':acc_s.clientwallet.utr_number_superadmin_narration,
+                                            'narration':acc_s.utr_number_superadmin_narration,
                                             # 'paid_to':paid_to
                                             'account':acc_s.account
                                         }
