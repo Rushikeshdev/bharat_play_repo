@@ -217,11 +217,13 @@
         
         openPopupBtn.on("click", function() {
             var button = $(this);
-            console.log("hello...",);
+
+           
+            
             $(".status-dropdown-request").attr("data-requested-id", button.data("bene-id"));
             $("#approve_id").attr("data-request-id", button.data("bene-id"));
             $("#rejected_id").attr("data-request-id", button.data("bene-id"));
-            console.log(button.data("bene-name"));
+            
             $("#modal-bene-name").text(button.data("bene-name"));
             $("#modal-bene-account-number").text(button.data("bene-account-number"));
             $("#modal-bene-bank-name").text(button.data("bene-bank-name"));

@@ -920,7 +920,14 @@ class WithdrawalRequestDetail(APIView):
         try:
 
                 transaction_request =  self.get_object(pk)
+
+                
+                # Check if the request is already accepted by another admin
+                if transaction_request.withdrawal_request_accepted_by.lower() != 'pending'  and transaction_request.withdrawal_request_accepted_by != request.user.email:
+                   
+                    return Response({"error": "This request is already processed by another admin."}, status=status.HTTP_400_BAD_REQUEST)
             
+
                 if request.data.get('withdrawal_request_accepted_by')=='Accepted':
 
                     request.data['withdrawal_request_accepted_by'] = request.user.email

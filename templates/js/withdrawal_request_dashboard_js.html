@@ -236,8 +236,36 @@ $(document).ready(function () {
                     $('#status' + requestId).text(selectedStatus);
                     // window.location.reload();
                 },
-                error: function (error) {
-                    console.error('Error:', error);
+                error: function (xhr,error) {
+                    console.error('Error:', error['error']);
+
+                    var popup=$.confirm({
+                            title:'',
+                            content:JSON.parse(xhr.responseText).error,
+                            type:'red',
+                            typeAnimated:true,
+                            buttons:{
+                                        tryAgain: {
+                                            text: 'Close',
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                window.location.reload(); // Reload the page
+                                            }
+                                            
+                                        },
+                                                    
+                                    }
+
+                        });
+
+                        
+
+                        setTimeout(function() {
+                        popup.close();
+                        window.location.reload(); // Reload the page (optional)
+                        }, 2000); // Close after 3 seconds
+                        
+                    
                 }
             });
         });
