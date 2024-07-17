@@ -150,7 +150,16 @@
             console.log('Eye button clicked, bene ID:', beneId);
         });
     
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/withdrawal-requests/');
+        // const socket = new WebSocket('ws://' + window.location.host + '/ws/withdrawal-requests/');
+        let socket;
+
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // For local development
+            socket = new WebSocket('ws://' + window.location.host + '/ws/withdrawal-requests/');
+        } else {
+            // For production
+            socket = new WebSocket('wss://' + window.location.host + '/ws/withdrawal-requests/');
+        }
     
         socket.onopen = function(event) {
             console.log('WebSocket connection opened');
