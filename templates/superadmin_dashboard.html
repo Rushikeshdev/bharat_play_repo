@@ -10,13 +10,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <!----======== CSS ======== -->
     <link rel="stylesheet" href="{% static 'assets/client.css' %}" />
     <link rel="stylesheet" href="{% static 'assets/client_bene.css' %}" />
 
    <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+   
+   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
    
    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 
@@ -27,6 +29,7 @@
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
       <style>
+  
 
 .export-btn {
   background-color: #1c003b;
@@ -65,7 +68,7 @@ justify-content:space-between;
 .main_date_style {
             display: flex;
             margin-bottom: 20px;
-            / justify-content: space-between; /
+             justify-content: space-between; 
         }
 
         .date-container {
@@ -352,7 +355,7 @@ table.dataTable thead>tr>th.sorting:before
       </div>
     </section>
     <!-- End Dashboard Section -->
-    <script>
+    <!-- <script>
       $(document).ready(function() {
         flatpickr("#start-date", {
           dateFormat: "Y-m-d",
@@ -363,14 +366,22 @@ table.dataTable thead>tr>th.sorting:before
           allowInput: true,
         });
       });
-    </script>
+    </script> -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     
+    
+
+    
+   
+    
     {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
     {% include 'js/admin_dashboard_export_js.html' %}
+
+    
    
    
   </body>

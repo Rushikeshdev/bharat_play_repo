@@ -1,0 +1,238 @@
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/withdrawal-requests/');
+
+        socket.onopen = function(event) {
+            console.log('WebSocket connection opened');
+        };
+
+        function updateTable(data) {
+                console.log("UPDATE CALLED...");
+                const tableBody = document.querySelector('#admin_table_withdrwal_request tbody');
+                const existingRow = tableBody.querySelector(`tr[data-id="${data.id}"]`);
+
+                if (existingRow) {
+                    existingRow.querySelector('td[data-th="Client Name"]').textContent = data.client_email;
+                    existingRow.querySelector('td[data-th="Amount"]').textContent = data.ammount;
+                    existingRow.querySelector('td[data-th="Status"]').textContent = data.req_status;
+                    existingRow.querySelector('td[data-th="Created Date"]').textContent = data.created_at_formatted;
+                } else {
+                   
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-id', data.id);
+
+                    newRow.innerHTML = `
+                        <td data-th="Serial No"></td>
+                        <td data-th="Client Name">${data.client_email}</td>
+                        <td data-th="Amount">${data.ammount}</td>
+                        <td data-th="Status">${data.req_status}</td>
+                        <td data-th="Action">
+                            <button class="button_popup open-popup-btn" id="openModalBtn"
+                                data-bene-id="${data.id}"
+                                data-bene-name="${data.bene_name}"
+                                data-bene-account-number="${data.bene_account_number}"
+                                data-bene-bank-name="${data.bene_bank_name}"
+                                data-bene-ifsc-code="${data.bene_ifsc_code}"
+                                data-bene-mode="${data.mode}"
+                                data-bene-withdraw-amount="${data.ammount}"
+                                data-bene-status="${data.req_status}"
+                                data-bene-remarks="${data.remarks}"
+                                data-bene-utr="${data.utr}">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td data-th="Created Date">${data.created_at_formatted}</td>
+                    `;
+
+                    // Insert the new row at the beginning of the table body
+                    tableBody.insertBefore(newRow, tableBody.firstChild);
+                }
+
+                // Update the serial numbers of all rows
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    row.querySelector('td[data-th="Serial No"]').textContent = index + 1;
+                });
+        }
+
+
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('WebSocket message received:', data);
+            updateTable(data);
+        };
+
+        socket.onclose = function(event) {
+            console.error('WebSocket closed unexpectedly');
+        };
+
+        
+    });
+</script>
+
+ 
+
+  -->
+
+
+  <script>
+    
+    $(document).ready(function() {
+        var table = $('#admin_table_withdrwal_request').DataTable({
+            paging: true,
+            lengthChange: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+        });
+
+        function showModal(beneId, beneName, beneAccountNumber, beneBankName, beneIfscCode, beneMode, beneWithdrawAmount, beneStatus, beneRemarks, beneUtr) {
+                // Populate modal with data
+                $('#modal-bene-name').text(beneName);
+                $('#modal-bene-account-number').text(beneAccountNumber);
+                $('#modal-bene-bank-name').text(beneBankName);
+                $('#modal-bene-ifsc-code').text(beneIfscCode);
+                $('#modal-bene-mode').text(beneMode);
+                $('#modal-bene-deposit-amount').text(" ");  // You can replace this with the actual deposit amount if available
+                $('#modal-bene-withdraw-amount').text(beneWithdrawAmount);
+                $('#modal-bene-status').text(beneStatus);
+
+                $('.client-remarks-container_for').hide();
+                $('.client-utr-number-container_for').hide();
+
+               
+
+
+                $(".status-dropdown-request").on("change", function() {
+                    if ($(this).val() === "Accepted") {
+                        $(".conditional-fields").show();
+                    } else {
+                        $(".conditional-fields").hide();
+                    }
+                });
+
+                // Show the modal
+                $('#myModal').show();
+            }
+
+        // Close the modal when the close button is clicked
+        $(document).on('click', '.close', function() {
+            $('#myModal').hide();
+        });
+    
+        $(document).on('click', '.open-popup-btn', function() {
+            // var beneId = $(this).data('bene-id');
+            // Add your modal opening logic here using beneId and other data attributes
+            
+            console.log($(this).data('bene_branch_ifsc'));
+
+            var beneId = $(this).data('bene-id');
+            var beneName = $(this).data('bene-name');
+            var beneAccountNumber = $(this).data('bene-account-number');
+            var beneBankName = $(this).data('bene-bank-name');
+            var beneIfscCode = $(this).data('bene-ifsc-code');
+            var beneMode = $(this).data('');
+            var beneWithdrawAmount = $(this).data('bene-withdraw-amount');
+            var beneStatus = $(this).data('bene-status');
+            var beneRemarks = $(this).data('bene-remarks');
+            var beneUtr = $(this).data('bene-utr');
+
+            $(".status-dropdown-request").attr("data-requested-id", beneId);
+            $("#approve_id").attr("data-request-id",beneId);
+            $("#rejected_id").attr("data-request-id", beneId);
+
+            showModal(beneId, beneName, beneAccountNumber, beneBankName, beneIfscCode, beneMode, beneWithdrawAmount, beneStatus, beneRemarks, beneUtr);
+
+
+
+            console.log('Eye button clicked, bene ID:', beneId);
+        });
+    
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/withdrawal-requests/');
+    
+        socket.onopen = function(event) {
+            console.log('WebSocket connection opened');
+        };
+    
+        function updateTable(data) {
+            console.log("UPDATE CALLED...");
+            const tableBody = document.querySelector('#admin_table_withdrwal_request tbody');
+            const existingRow = tableBody.querySelector(`tr[data-id="${data.id}"]`);
+    
+            if (existingRow) {
+                existingRow.querySelector('td[data-th="Client Name"]').textContent = data.client_email;
+                existingRow.querySelector('td[data-th="Amount"]').textContent = data.ammount;
+                existingRow.querySelector('td[data-th="Status"]').textContent = data.req_status;
+                existingRow.querySelector('td[data-th="Created Date"]').textContent = data.created_at_formatted;
+            } else {
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-id', data.id);
+    
+                newRow.innerHTML = `
+                    <td data-th="Serial No"></td>
+                    <td data-th="Client Name">${data.client_email}</td>
+                    <td data-th="Amount">${data.ammount}</td>
+                    <td data-th="Status">${data.req_status}</td>
+                    <td data-th="Action">
+                      <button class="button_popup open-popup-btn"
+                        data-bene-id="${data.id}"
+                        data-bene-name="${data.bene_account_name}"
+                        data-bene-account-number="${data.bene_account_number}"
+                        data-bene-bank-name="${data.bene_bank_name}"
+                        data-bene-ifsc-code="${data.bene_branch_ifsc}"
+                        data-bene-mode="${data.mode}"
+                        data-bene-withdraw-amount="${data.ammount}"
+                        data-bene-status="${data.req_status}"
+                        data-bene-remarks="${data.remarks}"
+                        data-bene-utr="${data.utr}">
+                        <i class="fa fa-eye" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                    <td data-th="Created Date">${data.created_at_formatted}</td>
+                `;
+    
+                tableBody.insertBefore(newRow, tableBody.firstChild);
+            }
+    
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                row.querySelector('td[data-th="Serial No"]').textContent = index + 1;
+            });
+    
+            // table.destroy();  // Destroy the existing DataTable
+            // table = $('#admin_table_withdrwal_request').DataTable({  // Reinitialize DataTable
+            //     paging: true,
+            //     lengthChange: true,
+            //     searching: true,
+            //     ordering: true,
+            //     info: true,
+            //     autoWidth: false,
+            // });
+        }
+    
+        // Listen for DataTable page change event
+        $('#admin_table_withdrwal_request').on('page.dt', function() {
+            // Check if the user navigates to page one
+            
+            if (table.page.info().page + 1 === 1) { // DataTables page index is zero-based
+                console.log('User navigated back to page one, refreshing page...');
+                socket.close();
+                window.location.reload(); // Reload the page
+            }
+        });
+    
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('WebSocket message received:', data);
+            updateTable(data);
+        };
+    
+        socket.onclose = function(event) {
+            console.error('WebSocket closed unexpectedly');
+    
+    
+        };
+    });
+    </script>

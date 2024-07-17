@@ -6,7 +6,8 @@
 
 $(document).ready(function () {
         var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        
+
+      
         $("#approve_id").click(function(e) {
 
             
@@ -203,23 +204,15 @@ $(document).ready(function () {
         // For request accepted by admin
         $('.status-dropdown-request').change(function () {
             // Get the selected option value and the withdrawal request primary key
-
+           
             var selectedOption = $(this).val();
 
-            // if (selectedOption === 'Accepted') {
-            //     $('#admin-remarks-container').show();
-            //     $('#utr-number-container').show();
-            //     $('#action-container').show();
-                
-            // } else {
-            //     $('#admin-remarks-container').hide();
-            //     $('#utr-number-container').hide();
-            //     $('#action-container').hide();
-            // }
+            
            
             var selectedStatus = $(this).val();
             var requestId = $(this).data('requested-id');
             console.log('----',requestId);
+            console.log('----',csrftoken);
             // Send an AJAX request to update the status
             
             $.ajax({

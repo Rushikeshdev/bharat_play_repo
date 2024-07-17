@@ -1,12 +1,114 @@
 
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 
 <script>
 $(document).ready(function() {
+
+
+//    // Initialize date pickers
+//    flatpickr("#start-date", {
+//         dateFormat: "Y-m-d",
+//         allowInput: true,
+//     });
+//     flatpickr("#end-date", {
+//         dateFormat: "Y-m-d",
+//         allowInput: true,
+//     });
+
+    
+
+    // function fetchFilteredData() {
+    //         var startDate = $('#start-date').val();
+    //         var endDate = $('#end-date').val();
+
+    //         $.ajax({
+    //             url: '/admin_dashboard/template', // Update with the correct URL
+    //             method: 'GET',
+    //             data: {
+    //                 start_date: startDate,
+    //                 end_date: endDate
+    //             },
+    //             success: function(response) {
+    //                 // Update the table with the filtered data
+    //                 var tableBody = $('#superadmin_dashboard_table tbody');
+    //                 tableBody.empty();
+    //                 response.withdrawal_requests.forEach(function(entry, index) {
+    //                     console.log("===",entry);
+    //                     var row = '<tr>';
+    //                     row += '<td data-th="Serial No">' + (index + 1) + '</td>';
+    //                     row += '<td data-th="Client">' + (entry.client_email || entry.withdrawal_request.client.email) + '</td>';
+    //                     row += '<td data-th="UTR/Remark">' + (entry.utr_number) + '</td>';
+    //                     row += '<td data-th="Credit">' + entry.deposit + '</td>';
+    //                     row += '<td data-th="Debit">' + entry.withdraw + '</td>';
+    //                     row += '<td data-th="Status">' + entry.status + '</td>';
+    //                     row += '<td data-th="Admin">' + entry.admin_remark + '</td>';
+    //                     row += '<td data-th="Approved By">' + entry.status_change_by + '</td>';
+    //                     row += '<td data-th="Action"><button class="button_popup open-popup-btn" id="openModalBtn"><i class="fa fa-eye" aria-hidden="true"></i></button></td>';
+    //                     row += '<td data-th="Created Date">' + entry.created_at + '</td>';
+    //                     row += '</tr>';
+    //                     tableBody.append(row);
+    //                 });
+    //             },
+    //             error: function(xhr, status, error) {
+    //                 console.error(error);
+    //             }
+    //         });
+    //     }
+
+    //     $('#start-date, #end-date').on('change', function() {
+    //         fetchFilteredData();
+    //     });
+
+            $("#start-date, #end-date").datepicker({ dateFormat: 'yy-mm-dd' });
+            
+            // Initialize the DataTable
+            var table = $('#superadmin_dashboard_table').DataTable();
+            
+            // Custom filtering function which will search data in date column between two dates
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    var min = $('#start-date').val();
+                    var max = $('#end-date').val();
+                    var date = data[0]; // Use data for the date column
+                    
+                    console.log("Min: ", min, " Max: ", max, " Date: ", date);
+
+                    // Convert strings to dates for comparison
+                    var minDate = min ? new Date(min) : null;
+                    var maxDate = max ? new Date(max) : null;
+                    var targetDate = new Date(date);
+
+                    if ((minDate === null && maxDate === null) ||
+                        (minDate === null && targetDate <= maxDate) ||
+                        (minDate <= targetDate && maxDate === null) ||
+                        (minDate <= targetDate && targetDate <= maxDate)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            // Event listener to the two range filtering inputs to redraw on input
+            $('#start-date, #end-date').keyup(function() {
+                table.draw();
+            });
+
+    
+
+
     $('#exportBtn').click(function() {
-        // Make an AJAX request to fetch the data
+
+       
+
         $.ajax({
             url: '/admin_dashboard/template', 
             type: 'GET',
+
+
             success: function(response) {
                
                 var data = [];
@@ -105,6 +207,14 @@ $(document).ready(function() {
                 
             }
         });
+
+
+        
     });
+
+    
+
+
 });
+
 </script>

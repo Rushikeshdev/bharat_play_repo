@@ -1,7 +1,6 @@
 {% load static %}
-
 <!DOCTYPE html>
-<!-- Coding By CodingNepal - codingnepalweb.com -->
+
 <html lang="en">
 
 <head>
@@ -411,56 +410,15 @@ div#admin_table_withdrwal_request_length {
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   
   {% include 'js/withdrawal_request_dashboard_js.html' %}
-  {% include 'js/status_change_js.html' %}
+  <!-- {% include 'js/status_change_js.html' %} -->
   {% include 'js/superadmin_withdraw_export_js.html' %}
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+  {% include 'websocket/withdrawal_request_ws_js.html' %}
   
   
-  <script>
-    $(document).ready(function() {
 
-      $('#admin_table_withdrwal_request').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            
-    });
-
-
-
-
-      $('.status-dropdown').change(function() {
-        var selectedOption = $(this).val();
-        if (selectedOption === 'Approved') {
-          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Transaction ID/UTR No');
-        } else if (selectedOption === 'Rejected') {
-          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Reason For Rejection');
-        } else {
-          $(this).closest('td').find('.extra-textbox').attr('placeholder', 'Enter Reason');
-        }
-      });
-
-      $('.open-popup-btn').click(function() {
-    // Get the ID of the corresponding popup based on the button's parent row
-      var popupId = $(this).closest('tr').find('.popup').attr('id');
-      // Show the popup with the matching ID
-      $('#' + popupId).css('display', 'block');
-    });
-
-  // Click event listener for all buttons with class "close-popup-btn"
-  $('.close-popup-btn').click(function() {
-    // Hide the popup that the button belongs to (using closest parent)
-    $(this).closest('.popup').css('display', 'none');
-  });
-     
-
-});
   
-    </script>
-
+ 
 
 
 
