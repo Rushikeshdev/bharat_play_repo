@@ -1,220 +1,358 @@
 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
 <script>
-$(document).ready(function() {
-
-
-//    // Initialize date pickers
-//    flatpickr("#start-date", {
-//         dateFormat: "Y-m-d",
-//         allowInput: true,
-//     });
-//     flatpickr("#end-date", {
-//         dateFormat: "Y-m-d",
-//         allowInput: true,
-//     });
-
-    
-
-    // function fetchFilteredData() {
-    //         var startDate = $('#start-date').val();
-    //         var endDate = $('#end-date').val();
-
-    //         $.ajax({
-    //             url: '/admin_dashboard/template', // Update with the correct URL
-    //             method: 'GET',
-    //             data: {
-    //                 start_date: startDate,
-    //                 end_date: endDate
-    //             },
-    //             success: function(response) {
-    //                 // Update the table with the filtered data
-    //                 var tableBody = $('#superadmin_dashboard_table tbody');
-    //                 tableBody.empty();
-    //                 response.withdrawal_requests.forEach(function(entry, index) {
-    //                     console.log("===",entry);
-    //                     var row = '<tr>';
-    //                     row += '<td data-th="Serial No">' + (index + 1) + '</td>';
-    //                     row += '<td data-th="Client">' + (entry.client_email || entry.withdrawal_request.client.email) + '</td>';
-    //                     row += '<td data-th="UTR/Remark">' + (entry.utr_number) + '</td>';
-    //                     row += '<td data-th="Credit">' + entry.deposit + '</td>';
-    //                     row += '<td data-th="Debit">' + entry.withdraw + '</td>';
-    //                     row += '<td data-th="Status">' + entry.status + '</td>';
-    //                     row += '<td data-th="Admin">' + entry.admin_remark + '</td>';
-    //                     row += '<td data-th="Approved By">' + entry.status_change_by + '</td>';
-    //                     row += '<td data-th="Action"><button class="button_popup open-popup-btn" id="openModalBtn"><i class="fa fa-eye" aria-hidden="true"></i></button></td>';
-    //                     row += '<td data-th="Created Date">' + entry.created_at + '</td>';
-    //                     row += '</tr>';
-    //                     tableBody.append(row);
-    //                 });
-    //             },
-    //             error: function(xhr, status, error) {
-    //                 console.error(error);
-    //             }
-    //         });
-    //     }
-
-    //     $('#start-date, #end-date').on('change', function() {
-    //         fetchFilteredData();
-    //     });
-
-            $("#start-date, #end-date").datepicker({ dateFormat: 'yy-mm-dd' });
-            
-            // Initialize the DataTable
-            var table = $('#superadmin_dashboard_table').DataTable();
-            
-            // Custom filtering function which will search data in date column between two dates
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    var min = $('#start-date').val();
-                    var max = $('#end-date').val();
-                    var date = data[0]; // Use data for the date column
-                    
-                    console.log("Min: ", min, " Max: ", max, " Date: ", date);
-
-                    // Convert strings to dates for comparison
-                    var minDate = min ? new Date(min) : null;
-                    var maxDate = max ? new Date(max) : null;
-                    var targetDate = new Date(date);
-
-                    if ((minDate === null && maxDate === null) ||
-                        (minDate === null && targetDate <= maxDate) ||
-                        (minDate <= targetDate && maxDate === null) ||
-                        (minDate <= targetDate && targetDate <= maxDate)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
-
-            // Event listener to the two range filtering inputs to redraw on input
-            $('#start-date, #end-date').keyup(function() {
-                table.draw();
-            });
-
-    
-
-
-    $('#exportBtn').click(function() {
-
-       
-
-        $.ajax({
-            url: '/admin_dashboard/template', 
-            type: 'GET',
-
-
-            success: function(response) {
-               
-                var data = [];
-                var headers = [
-                    "Sr.No",
-                    "Client Name",
-                    "UTR/Remark",
-                    "Credit",
-                    "Debit",
-                    "Status",
-                    "Admin",
-                    "Approved By",
-                    "Created Date",
-                    " ",
-                  
-                    "Name",
-                    "Account Number",
-                    "Bank Name",
-                    "Bene IFSC Code",
-                   
-                   
-                   
-                   
-                ];
-                data.push(headers);
-                
-                // Process the response data
-                $.each(response.withdrawal_requests, function(index, entry) {
-                    var row = [];
-                    console.log("ENTERY",entry.is_wallet);
-                    if (entry.is_wallet) {
-                        
-                        // Process client wallet statement
-                        row.push(index + 1); // Serial number
-                        row.push(entry.client_email);
-                        row.push(entry.utr_number_superadmin_narration); 
-                        row.push(entry.deposit);
-                        row.push(entry.withdraw);
-                        row.push(entry.status);
-                        row.push(entry.admin_remark_superadmin);
-                        row.push('');
-                        row.push(entry.created_at);
-                        row.push(''); // Approved By (not available in client wallet statement)
-                       
-                        row.push(''); // Bene Name
-                        row.push(''); // Bene Account Number
-                        row.push(''); // Bene Bank Name
-                        row.push(''); // Bene IFSC Code
-                       
-                        
-                       
-                        
-                    } else {
-
-                       
-
-                        // Process withdrawal request
-                        row.push(index + 1); // Serial number
-                        row.push(entry.client_email);
-                        row.push(entry.utr_number);
-                        row.push(entry.deposit);
-                        row.push(entry.withdraw);
-                        row.push(entry.status);
-                        row.push(entry.admin_remark);
-                        row.push(entry.status_change_by);
-                        row.push(entry.created_at);
-                        row.push('');
-
-                       
-                        
-                        row.push(entry.bene_account_name);
-                        row.push(entry.bene_account_number);
-                        row.push(entry.bene_bank_name);
-                        row.push(entry.bene_branch_ifsc);
-                       
-
-                       
-                       
-                       
-                    }
-                    data.push(row);
-                });
-
-                // Convert the extracted data to a worksheet
-                var worksheet = XLSX.utils.aoa_to_sheet(data);
-
-                // Create a new workbook and append the worksheet
-                var workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-                // Export the workbook to an Excel file
-                XLSX.writeFile(workbook, 'superadmin_dashboard_data.xlsx');
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching data:', error);
-                
-            }
+    $(document).ready(function() {
+        // Initialize Flatpickr
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+        });
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
         });
 
+        // Custom function to parse the custom date format
+        function parseCustomDateFormat(dateStr) {
+            if (!dateStr) {
+                console.log('Date string is empty or undefined.');
+                return NaN;
+            }
 
+            console.log('Original date string:', dateStr);
+
+            // Split into date and time parts
+            const dateTimeParts = dateStr.split(', ');
+            if (dateTimeParts.length !== 3) {
+                console.log('Date string does not have the expected format.');
+                return NaN;
+            }
+
+            const monthDayYear = dateTimeParts[0] + ' ' + dateTimeParts[1]; // Combine month and day parts
+            const time = dateTimeParts[2];
+
+            // Split date part into month, day, and year
+            const monthDayYearParts = monthDayYear.split(' ');
+            if (monthDayYearParts.length < 3) {
+                console.log('Month, day, and year are not correctly split.');
+                return NaN;
+            }
+
+            // Split time part into hour, minute, and meridiem
+            const timeParts = time.split(' ');
+            if (timeParts.length !== 2) {
+                console.log('Time is not correctly split into hour and minute.');
+                return NaN;
+            }
+
+            const [month, day, year] = [monthDayYearParts[0], monthDayYearParts[1].replace(',', ''), monthDayYearParts[2]];
+            const [hourMinute, meridiem] = timeParts;
+            const [hour, minute] = hourMinute.split(':');
+
+            console.log('Parsed month:', month);
+            console.log('Parsed day:', day);
+            console.log('Parsed year:', year);
+            console.log('Parsed hour:', hour);
+            console.log('Parsed minute:', minute);
+            console.log('Parsed meridiem:', meridiem);
+
+            // Convert month name to month number
+            const months = {
+                January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+                July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
+            };
+
+            if (!months.hasOwnProperty(month)) {
+                console.log('Invalid month name.');
+                return NaN;
+            }
+
+            let parsedHour = parseInt(hour);
+            if (meridiem.toLowerCase() === 'p.m.' && parsedHour !== 12) {
+                parsedHour += 12;
+            } else if (meridiem.toLowerCase() === 'a.m.' && parsedHour === 12) {
+                parsedHour = 0;
+            }
+
+            const dateObject = new Date(year, months[month], parseInt(day), parsedHour, parseInt(minute));
+            console.log('Parsed date object:', dateObject);
+
+            return dateObject.getTime();
+        }
+
+        // Custom filtering function to filter data based on date range
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var min = $('#start-date').val();
+                var max = $('#end-date').val();
+                var dateStr = data[8]; // Use data for the date column (index 9 in the table)
+
+                // Convert input dates to comparable format
+                if (min) {
+                    min = new Date(min).setHours(0, 0, 0, 0);
+                }
+                if (max) {
+                    max = new Date(max).setHours(23, 59, 59, 999);
+                }
+
+                // Convert table date string to timestamp
+                var date = parseCustomDateFormat(dateStr);
+
+                console.log('Min:', min);
+                console.log('Max:', max);
+                console.log('Date String:', dateStr);
+                console.log('Date:', date);
+
+                if (isNaN(date)) {
+                    return false; // Skip rows with invalid date
+                }
+
+                if (
+                    (min === '' && max === '') ||
+                    (min === '' && date <= max) ||
+                    (min <= date && max === '') ||
+                    (min <= date && date <= max)
+                ) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        // Initialize DataTable
+        var table = $('#admin_dashboard_table').DataTable();
+
+        // Event listener to redraw the table when the date range changes
+        $('#start-date, #end-date').on('change', function() {
+            table.draw();
+        });
+    
+    
+        $('#exportBtnadmin').click(function() {
+
+            // var filteredData = table.rows({ filter: 'applied' }).data().toArray();
+            var filteredData = table.rows({ filter: 'applied' }).nodes().toArray();
+
+            console.log('Filtered Data:', filteredData);
         
+
+        if (filteredData){
+
+            var data = [];
+            var headers = [
+                "Sr.No",
+                "Client Name",
+                "UTR/Remark",
+                "Amount",
+                "Mode",
+                "Status",
+                "Admin",
+                "Created Date",
+                " ",
+                "Name",
+                "Account Number",
+                "Bank Name",
+                "Bene IFSC Code"
+            ];
+            data.push(headers);
+            
+            // Process the filtered data
+            $.each(filteredData, function(index, row) {
+                var $row = $(row);
+                var $button = $row.find('button.open-popup-btn');
+
+                var entry = {
+                    client_email: $row.find('td').eq(1).text(),
+                    utr_number_superadmin_narration: $row.find('td').eq(2).text(),
+                    amount: $row.find('td').eq(3).text(),
+                    mode: $row.find('td').eq(4).text(),
+                    status: $row.find('td').eq(5).text(),
+                    admin_remark_superadmin: $row.find('td').eq(6).text(),
+                   
+
+                    created_at: $row.find('td').eq(8).text(),
+                    is_wallet: $button.data('bene-mode') === 'wallet', // Determine if it is a wallet entry based on the data-bene-mode
+                    bene_account_name: $button.data('bene-name'),
+                    bene_account_number: $button.data('bene-account-number'),
+                    bene_bank_name: $button.data('bene-bank-name'),
+                    bene_branch_ifsc: $button.data('bene-ifsc-code')
+                };
+
+
+
+                var rowData = [];
+                console.log("ENTERY", entry);
+                if (entry.is_wallet) {
+                    // Process client wallet statement
+                    rowData.push(index + 1); // Serial number
+                    rowData.push(entry.client_email);
+                    rowData.push(entry.utr_number_superadmin_narration); 
+                    rowData.push(entry.amount);
+                    rowData.push(entry.mode);
+                    rowData.push(entry.status);
+                    rowData.push(entry.admin_remark_superadmin);
+                    rowData.push(entry.created_at);
+                    rowData.push(''); 
+                    
+                    rowData.push(''); // Bene Name
+                    rowData.push(''); // Bene Account Number
+                    rowData.push(''); // Bene Bank Name
+                    rowData.push(''); // Bene IFSC Code
+                } else {
+                    // Process withdrawal request
+                    rowData.push(index + 1); // Serial number
+                    rowData.push(entry.client_email);
+                    rowData.push(entry.utr_number_superadmin_narration);
+                    rowData.push(entry.amount);
+                    rowData.push(entry.mode);
+                    rowData.push(entry.status);
+                    rowData.push(entry.admin_remark_superadmin);
+                    rowData.push(entry.created_at);
+                    rowData.push('');
+
+                    rowData.push(entry.bene_account_name);
+                    rowData.push(entry.bene_account_number);
+                    rowData.push(entry.bene_bank_name);
+                    rowData.push(entry.bene_branch_ifsc);
+                    
+                }
+                data.push(rowData);
+            });
+
+            // Convert the extracted data to a worksheet
+            var worksheet = XLSX.utils.aoa_to_sheet(data);
+
+            // Create a new workbook and append the worksheet
+            var workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+            // Export the workbook to an Excel file
+            XLSX.writeFile(workbook, 'admin_statement_data.xlsx');
+        
+
+        }
+
+        // else{
+
+
+
+        //         $.ajax({
+        //         url: '/admin_dashboard/template', 
+        //         type: 'GET',
+
+
+        //         success: function(response) {
+                
+        //             var data = [];
+        //             var headers = [
+        //                 "Sr.No",
+        //                 "Client Name",
+        //                 "UTR/Remark",
+        //                 "Credit",
+        //                 "Debit",
+        //                 "Status",
+        //                 "Admin",
+        //                 "Approved By",
+        //                 "Created Date",
+        //                 " ",
+                    
+        //                 "Name",
+        //                 "Account Number",
+        //                 "Bank Name",
+        //                 "Bene IFSC Code",
+                    
+                    
+                    
+                    
+        //             ];
+        //             data.push(headers);
+                    
+        //             // Process the response data
+        //             $.each(response.withdrawal_requests, function(index, entry) {
+        //                 var row = [];
+        //                 console.log("ENTERY",entry.is_wallet);
+        //                 if (entry.is_wallet) {
+                            
+        //                     // Process client wallet statement
+        //                     row.push(index + 1); // Serial number
+        //                     row.push(entry.client_email);
+        //                     row.push(entry.utr_number_superadmin_narration); 
+        //                     row.push(entry.deposit);
+        //                     row.push(entry.withdraw);
+        //                     row.push(entry.status);
+        //                     row.push(entry.admin_remark_superadmin);
+        //                     row.push('');
+        //                     row.push(entry.created_at);
+        //                     row.push(''); // Approved By (not available in client wallet statement)
+                        
+        //                     row.push(''); // Bene Name
+        //                     row.push(''); // Bene Account Number
+        //                     row.push(''); // Bene Bank Name
+        //                     row.push(''); // Bene IFSC Code
+                        
+                            
+                        
+                            
+        //                 } else {
+
+                        
+
+        //                     // Process withdrawal request
+        //                     row.push(index + 1); // Serial number
+        //                     row.push(entry.client_email);
+        //                     row.push(entry.utr_number);
+        //                     row.push(entry.deposit);
+        //                     row.push(entry.withdraw);
+        //                     row.push(entry.status);
+        //                     row.push(entry.admin_remark);
+        //                     row.push(entry.status_change_by);
+        //                     row.push(entry.created_at);
+        //                     row.push('');
+
+                        
+                            
+        //                     row.push(entry.bene_account_name);
+        //                     row.push(entry.bene_account_number);
+        //                     row.push(entry.bene_bank_name);
+        //                     row.push(entry.bene_branch_ifsc);
+                        
+
+                        
+                        
+                        
+        //                 }
+        //                 data.push(row);
+        //             });
+
+        //             // Convert the extracted data to a worksheet
+        //             var worksheet = XLSX.utils.aoa_to_sheet(data);
+
+        //             // Create a new workbook and append the worksheet
+        //             var workbook = XLSX.utils.book_new();
+        //             XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+        //             // Export the workbook to an Excel file
+        //             XLSX.writeFile(workbook, 'admin_statement_data.xlsx');
+        //         },
+        //         error: function(xhr, status, error) {
+        //             console.error('Error fetching data:', error);
+                    
+        //         }
+        //     });
+        // }
+       
+
+            
+
+
+
     });
 
-    
 
 
-});
 
+
+
+
+
+    });
 </script>

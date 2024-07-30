@@ -1,143 +1,236 @@
+
 <script>
     $(document).ready(function() {
+
+       
+        // Initialize Flatpickr
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+        });
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+        });
+
+        // Custom function to parse the custom date format
+        function parseCustomDateFormat(dateStr) {
+            if (!dateStr) {
+                console.log('Date string is empty or undefined.');
+                return NaN;
+            }
+
+            console.log('Original date string:', dateStr);
+
+            // Split into date and time parts
+            const dateTimeParts = dateStr.split(', ');
+            if (dateTimeParts.length !== 3) {
+                console.log('Date string does not have the expected format.');
+                return NaN;
+            }
+
+            const monthDayYear = dateTimeParts[0] + ' ' + dateTimeParts[1]; // Combine month and day parts
+            const time = dateTimeParts[2];
+
+            // Split date part into month, day, and year
+            const monthDayYearParts = monthDayYear.split(' ');
+            if (monthDayYearParts.length < 3) {
+                console.log('Month, day, and year are not correctly split.');
+                return NaN;
+            }
+
+            // Split time part into hour, minute, and meridiem
+            const timeParts = time.split(' ');
+            if (timeParts.length !== 2) {
+                console.log('Time is not correctly split into hour and minute.');
+                return NaN;
+            }
+
+            const [month, day, year] = [monthDayYearParts[0], monthDayYearParts[1].replace(',', ''), monthDayYearParts[2]];
+            const [hourMinute, meridiem] = timeParts;
+            const [hour, minute] = hourMinute.split(':');
+
+            console.log('Parsed month:', month);
+            console.log('Parsed day:', day);
+            console.log('Parsed year:', year);
+            console.log('Parsed hour:', hour);
+            console.log('Parsed minute:', minute);
+            console.log('Parsed meridiem:', meridiem);
+
+            // Convert month name to month number
+            const months = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+            };
+
+            if (!months.hasOwnProperty(month)) {
+                console.log('Invalid month name.');
+                return NaN;
+            }
+
+            let parsedHour = parseInt(hour);
+            if (meridiem.toLowerCase() === 'p.m.' && parsedHour !== 12) {
+                parsedHour += 12;
+            } else if (meridiem.toLowerCase() === 'a.m.' && parsedHour === 12) {
+                parsedHour = 0;
+            }
+
+            const dateObject = new Date(year, months[month], parseInt(day), parsedHour, parseInt(minute));
+            console.log('Parsed date object:', dateObject);
+
+            return dateObject.getTime();
+        }
+
+        // Custom filtering function to filter data based on date range
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var min = $('#start-date').val();
+                var max = $('#end-date').val();
+                var dateStr = data[6]; // Use data for the date column (index 9 in the table)
+
+                // Convert input dates to comparable format
+                if (min) {
+                    min = new Date(min).setHours(0, 0, 0, 0);
+                }
+                if (max) {
+                    max = new Date(max).setHours(23, 59, 59, 999);
+                }
+
+                // Convert table date string to timestamp
+                var date = parseCustomDateFormat(dateStr);
+
+                console.log('Min:', min);
+                console.log('Max:', max);
+                console.log('Date String:', dateStr);
+                console.log('Date:', date);
+
+                if (isNaN(date)) {
+                    return false; // Skip rows with invalid date
+                }
+
+                if (
+                    (min === '' && max === '') ||
+                    (min === '' && date <= max) ||
+                    (min <= date && max === '') ||
+                    (min <= date && date <= max)
+                ) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        // Initialize DataTable
+        var table = $('#client_dashboard_table').DataTable();
+
+
+        // Event listener to redraw the table when the date range changes
+        $('#start-date, #end-date').on('change', function() {
+            table.draw();
+        });
+    
+    
         $('#exportBtnClient').click(function() {
-            // Reference to the table
-            var table = $('#client_dashboard_table')[0];
+
+            // var filteredData = table.rows({ filter: 'applied' }).data().toArray();
+            var filteredData = table.rows({ filter: 'applied' }).nodes().toArray();
+
+            console.log('Filtered Data:', filteredData);
+        
+
+        if (filteredData){
+
+            var data = [];
+            var headers = [
+                "Sr.No",
+                "Name",
+                "Mode",
+                "Amount",
+                "Status",
+                "Created Date",
+                " ",
+                
+                
+                "UTR/Transaction ID",
+                "Account Number",
+            ];
+            data.push(headers);
             
-            // Convert the table to a worksheet
-            var worksheet = XLSX.utils.table_to_sheet(table);
+            // Process the filtered data
+            $.each(filteredData, function(index, row) {
+                var $row = $(row);
+                var $button = $row.find('.client1');
+
+
+                
+                
+
+                
+                console.log('Reference Number:==', $("#ref_number_hide").text());
+               
+
+                var entry = {
+                    name: $row.find('td').eq(1).text(),
+                    mode: $row.find('td').eq(2).text(),
+                    amount: $row.find('td').eq(3).text(),
+                    status: $row.find('td').eq(4).text(),
             
+                   
+
+                    created_at: $row.find('td').eq(6).text(),
+                  
+                    utr_number: $('#ref_number_id').text(),
+                    bene_account_number: '',
+                   
+                };
+
+
+
+                var rowData = [];
+                console.log("ENTERY", entry);
+                
+                    // Process client wallet statement
+                    rowData.push(index + 1); // Serial number
+                    rowData.push(entry.name);
+                    rowData.push(entry.mode);
+                    rowData.push(entry.amount);
+                    rowData.push(entry.status);
+                    rowData.push(entry.created_at);
+                    rowData.push(''); 
+                    
+                    rowData.push(entry.utr_number); // Bene Name
+                    rowData.push(entry.bene_account_number); // Bene Account Number
+                   
+               
+                data.push(rowData);
+            });
+
+            // Convert the extracted data to a worksheet
+            var worksheet = XLSX.utils.aoa_to_sheet(data);
+
             // Create a new workbook and append the worksheet
             var workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-            
+
             // Export the workbook to an Excel file
-            XLSX.writeFile(workbook, 'client_dashboard_data.xlsx');
-        });
+            XLSX.writeFile(workbook, 'client_submit_form.xlsx');
+        
+
+        }
 
        
 
-        $('#searchBarClient').on('input', function() {
-                var value = $(this).val().toLowerCase();
-                var found = false;
-
-                $('#client_dashboard_table tbody tr').each(function(index) {
-                    if (index === 0) return; // Skip the header row
-
-                    var rowText = $(this).text().toLowerCase();
-
-                    if (rowText.includes(value)) {
-                        $(this).show();
-                        found = true;
-                    } else {
-                        $(this).hide();
-                    }
-                });
-
-                // if (found) {
-                //     $('#searchBarClient').val('');
-                // }
-            });
+            
 
 
-              
-        function formatDate(dateString) {
-    // Regular expression to parse the input date string
-    var regex = /(\w+)\s(\d+),\s(\d+),\s(\d+):(\d+)\s(\w+)./;
-    var match = dateString.match(regex);
-
-    if (!match) {
-        return 'Invalid Date';
-    }
-
-    var monthName = match[1];
-    var day = match[2];
-    var year = match[3];
-    var hours = parseInt(match[4]);
-    var minutes = match[5];
-    var period = match[6];
-
-    // Convert month name to abbreviated form
-    var monthAbbr = {
-        January: 'Jan', February: 'Feb', March: 'Mar', April: 'Apr', May: 'May', June: 'Jun',
-        July: 'Jul', August: 'Aug', September: 'Sep', October: 'Oct', November: 'Nov', December: 'Dec'
-    };
-    var month = monthAbbr[monthName];
-
-    // Adjust hours for AM/PM
-    if (period === 'p.m.' && hours < 12) {
-        hours += 12;
-    } else if (period === 'a.m.' && hours === 12) {
-        hours = 0;
-    }
-
-    // Format hours and minutes
-    hours = hours % 12 || 12; // Convert to 12-hour format
-    var formattedHours = hours < 10 ? '0' + hours : hours;
-    var formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
-    var formattedPeriod = period.toUpperCase().replace('A.M.', 'AM').replace('P.M.', 'PM');
-    console.log("formattedPeriod",formattedPeriod);
-    // Construct the formatted date string
-    var formattedDate = `${month} ${day < 10 ? '0' + day : day}, ${year}, ${formattedHours}:${formattedMinutes} ${formattedPeriod+"M"}`;
-    return formattedDate;
-}
-
-
-
-
-        var startDatePicker = flatpickr("#start-date", {
-            dateFormat: "Y-m-d",
-            onChange: filterTable
-        });
-
-        var endDatePicker = flatpickr("#end-date", {
-            dateFormat: "Y-m-d",
-            onChange: filterTable
-        });
-
-        // Filter button event listener
-        $("#filter-button").click(function() {
-            filterTable();
-        });
-
-// Function to filter the table based on selected dates
-function filterTable() {
-    var startDate = startDatePicker.selectedDates[0];
-    var endDate = endDatePicker.selectedDates[0];
-
-    if (endDate) {
-        endDate.setHours(23, 59, 59, 999);
-    }
-
-    var rows = $("#client_dashboard_table tbody tr");
-
-    rows.each(function(index) {
-        if (index === 0) return; // skip header row
-
-        var createdDateStr = $(this).find("td[data-th='Created Date']").text().trim();
-        console.log("createdDateStr",createdDateStr);
-
-        var formattedDate = formatDate(createdDateStr);
-
-        console.log("formattedDate",formattedDate);
-
-
-
-
-        var createdDate = new Date(formattedDate);
-        console.log("created_date",createdDate);
-        console.log("start_date",startDate);
-        console.log("end_date",endDate);
-        // Check if the created date is within the range
-        if ((!startDate || createdDate >= startDate) && (!endDate || createdDate <= endDate)) {
-            $(this).show();
-        } else {
-            $(this).hide();
-        }
-        
 
     });
-}
+
+
+
+
+
+
 
 
     });

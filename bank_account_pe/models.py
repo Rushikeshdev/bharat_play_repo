@@ -116,6 +116,7 @@ class Account(models.Model):
     withdrawal_day = models.DateField()
     withdrawal_request_accepted_by = models.CharField(max_length=255,default='Pending')
     remark_for_client = models.CharField(max_length=255,default='',blank=True,null=True)
+    pre_utr_number = models.CharField(max_length=255,default='',blank=True,null=True)
     updated_at = models.DateTimeField(auto_now=True)
   
 

@@ -321,21 +321,21 @@ button#openModalBtn{
       </div>
       <br>
       <br>
-      <div class="main_date_style">
+      <!-- <div class="main_date_style">
         <div class="date-container">
             <label class="label_Date" for="start-date">Start Date:</label>
-            <!-- <i class="fas fa-calendar-alt start_date" ></i> -->
+           
             <input type="date" class="date_design" id="start-date">
         </div>
         <div class="date-container">
             <label class="label_Date" for="end-date">End Date:</label>
-            <!-- <i class="fas fa-calendar-alt end_date"></i> -->
+            
             <input type="date" class="date_design" id="end-date">
         </div>
         <div>
           <button  class="export-btn" id="superadmin_with_req_Btn">Export</button>
         </div>
-    </div>
+    </div> -->
 
     </div>
       <br>
@@ -359,7 +359,7 @@ button#openModalBtn{
               </thead>
               <tbody>
                   {% for withdrawal_request in withdrawal_requests %}
-                  {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' %}
+                  {% if withdrawal_request.req_status == 'Pending' or withdrawal_request.req_status == 'pending' or withdrawal_request.req_status == 'Approve' %}
                   <tr>
                       <td data-th="Serial No">{{forloop.counter}}</td>
                       <td data-th="Client Name" id="client_id_for_status_change">{{withdrawal_request.client_email}}</td>
@@ -400,7 +400,7 @@ button#openModalBtn{
   
   {% include 'js/withdrawal_request_dashboard_js.html' %}
   {% include 'js/status_change_js.html' %}
-  {% include 'js/superadmin_withdraw_export_js.html' %}
+  <!-- {% include 'js/superadmin_withdraw_export_js.html' %} -->
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
   <script>
     

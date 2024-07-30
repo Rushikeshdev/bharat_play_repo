@@ -218,7 +218,11 @@
         openPopupBtn.on("click", function() {
             var button = $(this);
 
+            var pre_utr = button.data("pre-utr");
+
            
+
+            
             
             $(".status-dropdown-request").attr("data-requested-id", button.data("bene-id"));
             $("#approve_id").attr("data-request-id", button.data("bene-id"));
@@ -301,7 +305,15 @@
             var is_admin = button.data("is_admin");
 
             
+            // for client show pre-utr
 
+            if (button.data("bene-status")==="Approve"){
+
+                console.log("if pre-utr",pre_utr);
+
+                $("#client-utr-number-container").text(pre_utr);
+
+            }
            
           
             if (is_admin===1){

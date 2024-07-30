@@ -29,6 +29,7 @@ from django.db import transaction
 import logging
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +53,71 @@ def local_time():
     now_local = timezone.localtime(timezone.make_aware(now_utc, timezone.utc))
     print("NOW",now_local)
     return now_local
+
+def export_filter_statement(self,account_and_statement):
+
+            data = []
+
+            for item in account_and_statement:
+
+                
+
+                if 'client_wallet_statement' in item:
+                    
+                    
+                    local_time = timezone.localtime(item['client_wallet_statement']['created_at'])
+                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
+                    item['client_wallet_statement']['created_at'] = created_at
+
+                    data.append(item['client_wallet_statement'])
+                else:
+                    
+                    local_time = timezone.localtime(item['withdrawal_request'].created_at)
+                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
+                    
+                    data.append({
+                        'client_email': item['withdrawal_request'].client.email,
+                        'utr_number': item['withdrawal_request'].ref_number,
+                        'deposit': item['tnx']['deposit'],
+                        'withdraw': item['tnx']['withdraw'],
+                        'status': item['tnx']['status'],
+                        'bene_account_name':item['withdrawal_request'].account_bene.bene_account_name,
+                        'bene_account_number':item['withdrawal_request'].account_bene.bene_account_number,
+                        'bene_bank_name':item['withdrawal_request'].account_bene.bene_bank_name,
+                        'bene_branch_ifsc':item['withdrawal_request'].account_bene.bene_branch_ifsc,
+                        'admin_remark': item['withdrawal_request'].admin_remark,
+                        'status_change_by': item['withdrawal_request'].status_change_by,
+                        'created_at': created_at,
+                    })
+            
+            return data
+
+
+
+def generate_pre_approved_utr():
+    import datetime
+    # Fixed prefix
+    prefix = "EL"
+    
+    # Unique identifier (e.g., branch or user-specific)
+    unique_id = "17"
+    
+    # Current year
+    current_year = datetime.datetime.now().year
+    
+    # Random 4-digit number (you could also use a sequence generator or database increment)
+    random_number = random.randint(1000, 9999)
+    
+    # Combine to form UTR number
+    utr_number = f"{prefix}{unique_id}{current_year}{random_number}"
+    
+    return utr_number
+
+# Generate and print a UTR number
+utr_number = generate_pre_approved_utr()
+
+
+
 
 def custom_404(request, exception=None):
     print(request)
@@ -260,98 +326,9 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
 
 
-        def export_filter_statement(self,account_and_statement):
-
-            data = []
-
-            for item in account_and_statement:
-
-                
-
-                if 'client_wallet_statement' in item:
-                    
-                    
-                    local_time = timezone.localtime(item['client_wallet_statement']['created_at'])
-                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
-                    item['client_wallet_statement']['created_at'] = created_at
-
-                    data.append(item['client_wallet_statement'])
-                else:
-                    
-                    local_time = timezone.localtime(item['withdrawal_request'].created_at)
-                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
-                    
-                    data.append({
-                        'client_email': item['withdrawal_request'].client.email,
-                        'utr_number': item['withdrawal_request'].ref_number,
-                        'deposit': item['tnx']['deposit'],
-                        'withdraw': item['tnx']['withdraw'],
-                        'status': item['tnx']['status'],
-                        'bene_account_name':item['withdrawal_request'].account_bene.bene_account_name,
-                        'bene_account_number':item['withdrawal_request'].account_bene.bene_account_number,
-                        'bene_bank_name':item['withdrawal_request'].account_bene.bene_bank_name,
-                        'bene_branch_ifsc':item['withdrawal_request'].account_bene.bene_branch_ifsc,
-                        'admin_remark': item['withdrawal_request'].admin_remark,
-                        'status_change_by': item['withdrawal_request'].status_change_by,
-                        'created_at': created_at,
-                    })
-            
-            return data
-
-        def date_export_filter_statement(self,account_and_statement,start_date,end_date):
-
-            data = []
-
-            for item in account_and_statement:
-
-                
-
-                if 'client_wallet_statement' in item:
-                    
-                    
-                    local_time = timezone.localtime(item['client_wallet_statement']['created_at'])
-                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
-                    item['client_wallet_statement']['created_at'] = created_at
-
-                    if start_date >= created_at or end_date <= created_at:
-                        data.append(item['client_wallet_statement'])
-                else:
-                    
-                    local_time = timezone.localtime(item['withdrawal_request'].created_at)
-                    created_at= local_time.strftime("%b %d, %Y, %I:%M %p")
-                    
-                    if start_date >= created_at or end_date <= created_at:
-                        data.append({
-                            'client_email': item['withdrawal_request'].client.email,
-                            'utr_number': item['withdrawal_request'].ref_number,
-                            'deposit': item['tnx']['deposit'],
-                            'withdraw': item['tnx']['withdraw'],
-                            'status': item['tnx']['status'],
-                            'bene_account_name':item['withdrawal_request'].account_bene.bene_account_name,
-                            'bene_account_number':item['withdrawal_request'].account_bene.bene_account_number,
-                            'bene_bank_name':item['withdrawal_request'].account_bene.bene_bank_name,
-                            'bene_branch_ifsc':item['withdrawal_request'].account_bene.bene_branch_ifsc,
-                            'admin_remark': item['withdrawal_request'].admin_remark,
-                            'status_change_by': item['withdrawal_request'].status_change_by,
-                            'created_at': created_at,
-                        })
-            
-            return data
-
-
-       
-
         def get(self, request):
 
             try:
-
-                start_date_str = request.GET.get('start_date')
-                end_date_str = request.GET.get('end_date')
-                start_date = parse_date(start_date_str) if start_date_str else None
-                end_date = parse_date(end_date_str) if end_date_str else None
-
-                print("start_end",start_date)
-                print("end_date",end_date)
 
                
                 if request.user.is_superadmin:
@@ -368,23 +345,7 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
 
                 if request.user.is_superadmin:
                 
-                    if start_date is not None and end_date is not None:
-                        
-                        start_date = start_date.isoformat()
-                        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-                        start_date = timezone.make_aware(datetime.combine(start_date, datetime.min.time()), timezone.get_current_timezone())
-                        
-
-                        end_date = end_date.isoformat()
-                        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
-                        end_date = timezone.make_aware(datetime.combine(end_date, datetime.max.time()), timezone.get_current_timezone())
-                        
-                        all_statements = AccountStatement.objects.filter(updated_at__range=(start_date, end_date)).order_by('-updated_at')
-                        print("==",all_statements.count())
-                        
-                    else:
-                        
-                        all_statements = AccountStatement.objects.all().order_by('-updated_at')
+                    all_statements = AccountStatement.objects.all().order_by('-updated_at')
                
                     for stmt in all_statements:
                         if stmt.account is None:
@@ -431,17 +392,11 @@ class AdminDashboard(LoginRequiredMixin, APIView, TemplateView):
                    
                     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                        
-                        data = self.export_filter_statement(account_and_statement)
+                        data = export_filter_statement(account_and_statement)
                        
                         return JsonResponse({'withdrawal_requests': data})
 
-                    elif  request.headers.get('x-requested-with') == 'XMLHttpRequest' and start_date is not None and end_date is not None:
-                       
-                        data = self.date_export_filter_statement(account_and_statement,start_date,end_date)
-
-                        print(data.count())
-                       
-                        return JsonResponse({'withdrawal_requests': data})
+                   
                     
 
                    
@@ -589,8 +544,14 @@ class ClientDashboard(LoginRequiredMixin,APIView, TemplateView):
                         acc_ste['acc_number'] = acc.account_bene.bene_account_number
                         acc_ste_list.append(acc_ste)
                 
-                    elif acc.req_status.lower() == 'approved' or acc.req_status.lower() == 'pending' :  
+                    elif acc.req_status.lower() == 'approved' or acc.req_status.lower() == 'pending' or acc.req_status.lower() == 'approve' :  
                         
+                        #Pre-Approved Functinality
+                        if acc.req_status.lower() == 'pending':
+                            acc.req_status = "Approve"
+                            acc.save()
+
+
                         acc_ste['txn'] = 'withdraw'
                         acc_ste['trn_date'] = acc.created_at
                         acc_ste['paid_to'] = acc.account_bene.bene_account_name
@@ -823,7 +784,8 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                     bene=   BeneficiaryDetails.objects.get(bene_account_number=int(request.data['anumber']))
 
                     total_bal = client_wallet_total_balance_obj.client_wallet_total_balance
-                   
+
+                    pre_utr = generate_pre_approved_utr()
                    
                     if   total_bal >= int(request.data['amount']):
                         data = {
@@ -835,7 +797,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                             'account_number':int(request.data['anumber']),
                             'branch_ifsc': request.data['abranch'],
                             'bank_name': request.data['bname'],
-                            'req_status':'pending',
+                            'req_status':'Approve',
                             'admin_remark': 'NA',
                             'remark_for_client':'',
                             'reasons':'NA',
@@ -844,6 +806,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                             'withdraw_request_client':True,
                             'withdrawal_day':datetime.now().date(),
                             'withdrawal_request_accepted_by':'Pending',
+                            'pre_utr_number':pre_utr,
                             'created_at':local_time()
                             
                             
@@ -862,7 +825,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
 
                             current_account = Account.objects.get(id=account_id)
                            
-                            if current_account.req_status.lower() == 'approved' or current_account.req_status.lower() == 'pending': 
+                            if current_account.req_status.lower() == 'approved' or current_account.req_status.lower() == 'pending' or current_account.req_status.lower() == 'approve': 
                                
                                 total_balance = total_bal-int(request.data['amount'])
                                 client_wallet_total_balance_obj.client_wallet_total_balance = total_balance
@@ -872,7 +835,7 @@ class WithdrawalRequestList(LoginRequiredMixin,APIView, TemplateView):
                             try:
                                 account_statement_from_client_withdr = AccountStatement.objects.create(account=current_account,
                                                                         clientwallet=client_wallet_total_balance_obj,
-                                                                        account_tnx_status= current_account.req_status.lower(),
+                                                                        account_tnx_status= current_account.req_status,
                                                                         deposit=0,withdraw=int(request.data['amount']),
                                                                         statement_balance=statement_balance,
                                                                         trn_date=local_time())
@@ -1287,8 +1250,9 @@ class AccountStatementView(LoginRequiredMixin,View):
                                    
 
                                     if acc_s.account.withdraw_request_client:
+                                        
                                         account_statement = {
-                                            
+                                           
                                             'txn_date': acc_s.trn_date,
                                             'deposit': acc_s.deposit,
                                             'withdraw': acc_s.withdraw,
@@ -1300,6 +1264,7 @@ class AccountStatementView(LoginRequiredMixin,View):
                                             'account':acc_s.account
                                         }
                                     else:
+                                       
                                         account_statement = {
                                             'txn_date': acc_s.trn_date,
                                             'deposit': acc_s.deposit,

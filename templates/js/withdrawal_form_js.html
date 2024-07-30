@@ -28,9 +28,10 @@ $(document).ready(function() {
                             OK: {
                                 text: "Close",
                                 btnClass: "btn-blue",
-                                action: function () {
-                                    window.location.reload(); // Reload the page
-                                }
+                                // action: function () {
+                                //     // window.location.reload(); // Reload the page
+                                //     window.location.href = "/dashboard_client/template/";
+                                // }
                                
                                 
                             },
@@ -42,7 +43,8 @@ $(document).ready(function() {
                         // window.location.reload();
                         setTimeout(function() {
                         popup.close();
-                        window.location.reload(); // Reload the page (optional)
+                        // window.location.reload(); // Reload the page (optional)
+                         window.location.href = "/dashboard_client/template/";
                         }, 1000); // Close after 3 seconds
                         
 

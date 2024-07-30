@@ -14,10 +14,22 @@
 
   <link rel="stylesheet" href="{% static 'assets/admin_dashboard.css' %}" />
   <!----===== Iconscout CSS ===== -->
-  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+   
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-  <title>Statement</title>
+
+
+  <!----===== Iconscout CSS ===== -->
+   <link
+     rel="stylesheet"
+     href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  
+     <title>Statement</title>
+  
   <style>
     .top {
       display: flex !important;
@@ -264,7 +276,13 @@
                 {% for acc_ste in account_statement %}
                 <tr>
                   <td data-th="Serial No">{{forloop.counter}}</td>
-                  <td data-th="Narration">{{acc_ste.narration}}</td>
+                  {% if acc_ste.status == 'Approve' %}
+                    <td data-th="Narration">{{acc_ste.account.pre_utr_number}}</td>
+                  {% else %}
+
+                    <td data-th="Narration">{{acc_ste.narration}}</td>
+
+                  {% endif %}
                   <td data-th="Deposit">{{acc_ste.deposit}}</td>
                   <td data-th="Withdraw">{{acc_ste.withdraw}}</td>
                   <td data-th="Status">{{acc_ste.status}}</td>
@@ -280,7 +298,8 @@
                       data-bene-mode="{{ withdrawal_request.mode }}" data-bene-deposit-amount="{{ acc_ste.deposit }}"
                       data-bene-withdraw-amount="{{ acc_ste.withdraw }}" data-bene-status="{{ acc_ste.status }}"
                       data-bene-remarks="{{ acc_ste.account.admin_remark }}"
-                      data-bene-utr="{{ acc_ste.account.ref_number }}">
+                      data-bene-utr="{{ acc_ste.account.ref_number }}"
+                      data-pre-utr="{{ acc_ste.account.pre_utr_number }}">
                       <i class="fa fa-eye" aria-hidden="true"></i>
                     </button>
 
@@ -302,15 +321,12 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.21/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
-  {% include 'js/client_statement_export_js.html' %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  
   {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
+  
+  
   <script>
 
     $(document).ready(function () {
@@ -334,6 +350,9 @@
 
 
   </script>
+
+{% include 'js/client_statement_export_js.html' %}
+ 
 </body>
 
 </html>

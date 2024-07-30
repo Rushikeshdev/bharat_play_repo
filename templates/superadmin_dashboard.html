@@ -267,6 +267,7 @@ table.dataTable thead>tr>th.sorting:before
                         <th>Sr.No</th>
                         <th>Client Name</th>                    
                         <th>UTR/Remark</th>
+                        <th>Pre-UTR</th>
                         <th>Credit</th>
                         <th>Debit</th>
                         <th>Status</th>                   
@@ -283,6 +284,7 @@ table.dataTable thead>tr>th.sorting:before
                                 <td data-th="Serial No">{{ forloop.counter }}</td>
                                 <td data-th="Client">{{ entry.client_wallet_statement.client_email }}</td>
                                 <td data-th="UTR/Remark">{{ entry.client_wallet_statement.utr_number_superadmin_narration }}</td>
+                                <td data-th="Pre-UTR"></td>
                                 <td data-th="Credit">{{ entry.client_wallet_statement.deposit }}</td>
                                 <td data-th="Debit">{{ entry.client_wallet_statement.withdraw }}</td>
                                 <td data-th="Status">{{ entry.client_wallet_statement.status }}</td>
@@ -310,7 +312,7 @@ table.dataTable thead>tr>th.sorting:before
                                 <td data-th="Serial No">{{ forloop.counter }}</td>
                                 <td data-th="Client">{{ entry.withdrawal_request.client.email }}</td>
                                 <td data-th="UTR/Remark">{{ entry.withdrawal_request.ref_number }}</td>
-
+                                <td data-th="Pre-UTR">{{ entry.withdrawal_request.pre_utr_number }}</td>
                                 {% if entry.tnx.tnx == 'deposit' %}
                                     <td data-th="Credit">{{ entry.tnx.deposit }}</td>
                                     <td data-th="Debit">0</td>
@@ -318,7 +320,7 @@ table.dataTable thead>tr>th.sorting:before
                                     <td data-th="Credit">0</td>
                                     <td data-th="Debit">{{ entry.tnx.withdraw }}</td>
                                 {% endif %}
-                                
+
                                 <td data-th="Status">{{ entry.tnx.status }}</td>
                                 <td data-th="Admin">{{ entry.withdrawal_request.admin_remark }}</td>
                                 <td data-th="Approved By">{{ entry.withdrawal_request.status_change_by }}</td>
@@ -372,14 +374,14 @@ table.dataTable thead>tr>th.sorting:before
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     
 
     
    
     
     {% include 'modal/bene_account_modal.html' with withdrawal_request=withdrawal_requests %}
-    {% include 'js/admin_dashboard_export_js.html' %}
+    {% include 'js/superadmin_withdraw_export_js.html' %}
 
     
    
