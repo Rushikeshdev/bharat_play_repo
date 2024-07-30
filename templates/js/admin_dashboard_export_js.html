@@ -84,7 +84,7 @@
             function(settings, data, dataIndex) {
                 var min = $('#start-date').val();
                 var max = $('#end-date').val();
-                var dateStr = data[8]; // Use data for the date column (index 9 in the table)
+                var dateStr = data[9]; // Use data for the date column (index 9 in the table)
 
                 // Convert input dates to comparable format
                 if (min) {
@@ -142,6 +142,7 @@
                 "Sr.No",
                 "Client Name",
                 "UTR/Remark",
+                "Pre-UTR",
                 "Amount",
                 "Mode",
                 "Status",
@@ -163,13 +164,14 @@
                 var entry = {
                     client_email: $row.find('td').eq(1).text(),
                     utr_number_superadmin_narration: $row.find('td').eq(2).text(),
-                    amount: $row.find('td').eq(3).text(),
-                    mode: $row.find('td').eq(4).text(),
-                    status: $row.find('td').eq(5).text(),
-                    admin_remark_superadmin: $row.find('td').eq(6).text(),
+                    pre_utr: $row.find('td').eq(3).text(),
+                    amount: $row.find('td').eq(4).text(),
+                    mode: $row.find('td').eq(5).text(),
+                    status: $row.find('td').eq(6).text(),
+                    admin_remark_superadmin: $row.find('td').eq(7).text(),
                    
 
-                    created_at: $row.find('td').eq(8).text(),
+                    created_at: $row.find('td').eq(9).text(),
                     is_wallet: $button.data('bene-mode') === 'wallet', // Determine if it is a wallet entry based on the data-bene-mode
                     bene_account_name: $button.data('bene-name'),
                     bene_account_number: $button.data('bene-account-number'),
@@ -186,6 +188,7 @@
                     rowData.push(index + 1); // Serial number
                     rowData.push(entry.client_email);
                     rowData.push(entry.utr_number_superadmin_narration); 
+                    rowData.push(entry.pre_utr); 
                     rowData.push(entry.amount);
                     rowData.push(entry.mode);
                     rowData.push(entry.status);
@@ -202,6 +205,7 @@
                     rowData.push(index + 1); // Serial number
                     rowData.push(entry.client_email);
                     rowData.push(entry.utr_number_superadmin_narration);
+                    rowData.push(entry.pre_utr);
                     rowData.push(entry.amount);
                     rowData.push(entry.mode);
                     rowData.push(entry.status);

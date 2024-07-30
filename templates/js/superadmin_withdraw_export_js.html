@@ -84,7 +84,7 @@
             function(settings, data, dataIndex) {
                 var min = $('#start-date').val();
                 var max = $('#end-date').val();
-                var dateStr = data[9]; // Use data for the date column (index 9 in the table)
+                var dateStr = data[10]; // Use data for the date column (index 9 in the table)
 
                 // Convert input dates to comparable format
                 if (min) {
@@ -142,6 +142,7 @@
                 "Sr.No",
                 "Client Name",
                 "UTR/Remark",
+                "Pre-UTR",
                 "Credit",
                 "Debit",
                 "Status",
@@ -164,13 +165,14 @@
                 var entry = {
                     client_email: $row.find('td').eq(1).text(),
                     utr_number_superadmin_narration: $row.find('td').eq(2).text(),
-                    deposit: $row.find('td').eq(3).text(),
-                    withdraw: $row.find('td').eq(4).text(),
-                    status: $row.find('td').eq(5).text(),
-                    admin_remark_superadmin: $row.find('td').eq(6).text(),
-                    status_change_by : $row.find('td').eq(7).text(),
+                    pre_utr: $row.find('td').eq(3).text(),
+                    deposit: $row.find('td').eq(4).text(),
+                    withdraw: $row.find('td').eq(5).text(),
+                    status: $row.find('td').eq(6).text(),
+                    admin_remark_superadmin: $row.find('td').eq(7).text(),
+                    status_change_by : $row.find('td').eq(8).text(),
 
-                    created_at: $row.find('td').eq(9).text(),
+                    created_at: $row.find('td').eq(10).text(),
                     is_wallet: $button.data('bene-mode') === 'wallet', // Determine if it is a wallet entry based on the data-bene-mode
                     bene_account_name: $button.data('bene-name'),
                     bene_account_number: $button.data('bene-account-number'),
@@ -187,6 +189,7 @@
                     rowData.push(index + 1); // Serial number
                     rowData.push(entry.client_email);
                     rowData.push(entry.utr_number_superadmin_narration); 
+                    rowData.push(entry.pre_utr); 
                     rowData.push(entry.deposit);
                     rowData.push(entry.withdraw);
                     rowData.push(entry.status);
@@ -204,6 +207,7 @@
                     rowData.push(index + 1); // Serial number
                     rowData.push(entry.client_email);
                     rowData.push(entry.utr_number_superadmin_narration);
+                    rowData.push(entry.pre_utr);
                     rowData.push(entry.deposit);
                     rowData.push(entry.withdraw);
                     rowData.push(entry.status);
@@ -250,6 +254,7 @@
                         "Sr.No",
                         "Client Name",
                         "UTR/Remark",
+                        "Pre-UTR",
                         "Credit",
                         "Debit",
                         "Status",
@@ -279,6 +284,7 @@
                             row.push(index + 1); // Serial number
                             row.push(entry.client_email);
                             row.push(entry.utr_number_superadmin_narration); 
+                            row.push(entry.pre_utr); 
                             row.push(entry.deposit);
                             row.push(entry.withdraw);
                             row.push(entry.status);
@@ -303,6 +309,7 @@
                             row.push(index + 1); // Serial number
                             row.push(entry.client_email);
                             row.push(entry.utr_number);
+                            row.push(entry.pre_utr);
                             row.push(entry.deposit);
                             row.push(entry.withdraw);
                             row.push(entry.status);
